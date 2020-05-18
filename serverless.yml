@@ -1,10 +1,19 @@
-service: serverless-express-typescript
+service: metabadges-merkle-service
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs12.x
   stage: ${opt:stage, 'dev'}
-  region: eu-west-1
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+      Resource: "*"
 
 package:
   exclude:
@@ -21,6 +30,11 @@ functions:
     events:
       - http: ANY /
       - http: ANY /{proxy+}
+    environment:
+      DYNAMODB_TABLE: ${env:DYNAMODB_TABLE}
+      MAKER_URL: ${env:MAKER_URL}
+      MAKER_USER: ${env:MAKER_USER}
+      MAKER_PW: ${env:MAKER_PW}
 #     ## Uncomment below here to use the private VPC setup
 #     vpc:
 #       subnetIds:
@@ -30,6 +44,21 @@ functions:
 
 # resources:
 #   Resources:
+#     ###### BADGE TEMPLATE TABLE ######
+#     BadgesDynamoDbTable:
+#       Type: "AWS::DynamoDB::Table"
+#       DeletionPolicy: Retain
+#       Properties:
+#         AttributeDefinitions:
+#           - AttributeName: id
+#             AttributeType: S
+#         KeySchema:
+#           - AttributeName: id
+#             KeyType: HASH
+#         ProvisionedThroughput:
+#           ReadCapacityUnits: 1
+#           WriteCapacityUnits: 1
+#         TableName: ${env:DYNAMODB_TABLE}
 #     ###### VPC & Subnets ######
 #     VPC:
 #       Type: 'AWS::EC2::VPC'

@@ -1,12 +1,12 @@
 import { governanceClient } from "../apollo/clients";
-import { USER_POLL_ACTIONS_QUERY } from "../apollo/queries";
+import { USER_POLL_VOTES_QUERY } from "../apollo/queries/governance";
 
 export async function checkGovernancePollsCount(
   address: string,
   count: number,
 ) {
   const result = await governanceClient.query({
-    query: USER_POLL_ACTIONS_QUERY,
+    query: USER_POLL_VOTES_QUERY,
     fetchPolicy: "cache-first",
     variables: {
       address: address.toLowerCase(),

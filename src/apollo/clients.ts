@@ -26,7 +26,7 @@ export const makerVaultsClient = new ApolloClient({
 });
 
 const authLink = setContext((_, { headers }) => {
-  const token = new Buffer(`${MAKER_USER}:${MAKER_PW}`).toString("base64");
+  const token = Buffer.from(`${MAKER_USER}:${MAKER_PW}`).toString("base64");
   return {
     headers: {
       ...headers,
@@ -40,7 +40,7 @@ export const makerClient = new ApolloClient({
     new HttpLink({
       uri: MAKER_URL,
       fetch,
-    })
+    }),
   ),
   cache: new InMemoryCache(),
 });

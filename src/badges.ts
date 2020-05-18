@@ -1,5 +1,8 @@
-import { checkGovernancePollsCount } from "./badgeActions/governance";
-import { checkBadge } from "./utils";
+import {
+  checkTemplateAddressesForAddress,
+  // addOrUpdateTemplateAddresses,
+} from "./utils/aws";
+// import { pollVoteAddressesForFrequency } from "./adminActions/governance";
 
 // HARDER TO TRACK IDEAS
 
@@ -695,29 +698,15 @@ const badgeList = {
 // };
 
 export async function getBadgesForAddress(_address: string) {
+  // addOrUpdateTemplateAddresses(8, await pollVoteAddressesForFrequency(1));
   return Promise.all(
     Object.keys(badgeList).map(async key => {
       let badge = badgeList[key];
 
-      if (key === "MKR8") {
-        badge.unlocked = await checkGovernancePollsCount(_address, 1);
-        badge.redeemed = await checkBadge(_address, 8);
-      }
-      if (key === "MKR9") {
-        badge.unlocked = await checkGovernancePollsCount(_address, 5);
-      }
-      if (key === "MKR10") {
-        badge.unlocked = await checkGovernancePollsCount(_address, 10);
-      }
-      if (key === "MKR11") {
-        badge.unlocked = await checkGovernancePollsCount(_address, 20);
-      }
-      if (key === "MKR12") {
-        badge.unlocked = await checkGovernancePollsCount(_address, 50);
-      }
-      if (key === "MKR13") {
-        badge.unlocked = await checkGovernancePollsCount(_address, 100);
-      }
+      badge.unlocked = await checkTemplateAddressesForAddress(
+        _address,
+        parseFloat(key.slice(3, key.length)),
+      );
 
       return badge;
     }),

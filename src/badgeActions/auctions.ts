@@ -1,7 +1,4 @@
-import {
-  // ALL_FLIP_BIDS_QUERY,
-  USER_FLIP_BIDS_QUERY,
-} from "../apollo/queries";
+import { ALL_FLIP_BIDS_QUERY } from "../apollo/queries/auctions";
 import { makerClient } from "../apollo/clients";
 
 export async function checkFlipBidsCountForAddress(
@@ -9,13 +6,21 @@ export async function checkFlipBidsCountForAddress(
   count: number,
 ) {
   const result = await makerClient.query({
-    query: USER_FLIP_BIDS_QUERY,
+    query: ALL_FLIP_BIDS_QUERY,
     fetchPolicy: "cache-first",
-    variables: {
-      address: address,
-    },
   });
-  if (result.data.votePollActions.length >= count) {
+  const bids = result.data.allFlipBidEvents.nodes
+    .map((bid: any) => {
+      if (bid.tx.nodes.txFrom === address) {
+        return 1;
+      } else {
+        return null;
+      }
+    })
+    .filter((el: any) => {
+      el !== null;
+    });
+  if (bids.length >= count) {
     return 1;
   } else {
     return 0;
