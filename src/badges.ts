@@ -7,8 +7,8 @@ import { pollVoteAddressesForFrequency } from "./adminActions/governance";
 import {
   getBadgeProof,
   getTree,
-  getRoot,
-  checkProof,
+  // getRoot,
+  // checkProof,
 } from "./utils/merkleTree";
 
 // HARDER TO TRACK IDEAS
@@ -770,22 +770,22 @@ const badgeList = {
 export async function getBadgesForAddress(_address: string) {
   addOrUpdateTemplateAddresses(8, await pollVoteAddressesForFrequency(1));
   return Promise.all(
-    Object.keys(badgeList).map(async (key) => {
+    Object.keys(badgeList).map(async key => {
       let badge = badgeList[key];
 
       badge.unlocked = await checkTemplateAddressesForAddress(
         _address,
-        parseFloat(key.slice(3, key.length))
+        parseFloat(key.slice(3, key.length)),
       );
       if (await badge.unlocked) {
         badge.proof = getBadgeProof(
           _address,
           await getTree(
-            await getAddressesByTemplate(parseFloat(key.slice(3, key.length)))
-          )
+            await getAddressesByTemplate(parseFloat(key.slice(3, key.length))),
+          ),
         );
       }
       return badge;
-    })
+    }),
   );
 }

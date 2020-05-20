@@ -2,7 +2,7 @@ const { MerkleTree } = require("merkletreejs");
 const keccak = require("crypto-js/sha3");
 
 export function getTree(addresses: string[]) {
-  const leaves = addresses.map((x) => keccak(x.toLowerCase()));
+  const leaves = addresses.map(x => keccak(x.toLowerCase()));
   // console.log(leaves);
   return new MerkleTree(leaves, keccak);
 }

@@ -46,6 +46,7 @@
     "cors": "^2.8.4",
     "cross-fetch": "^3.0.4",
     "express": "^4.16.2",
+    "graphql": "^15.0.0",
     "graphql-tag": "^2.10.3",
     "merkletreejs": "^0.1.11",
     "node-cron": "^2.0.3",

@@ -14,7 +14,7 @@ const DYNAMODB_TABLE: string = process.env.DYNAMODB_TABLE!;
 
 export async function addOrUpdateTemplateAddresses(
   templateId: number,
-  addresses: string[]
+  addresses: string[],
 ) {
   const timestamp = new Date().getTime();
   const tId = await getIdByTemplate(templateId);
@@ -87,7 +87,7 @@ function getIdByTemplate(templateId: number) {
 
 export async function checkTemplateAddressesForAddress(
   address: string,
-  templateId: number
+  templateId: number,
 ) {
   const addresses: any = await getAddressesByTemplate(templateId);
   if (addresses != [] && addresses.includes(address.toLowerCase()) === true) {

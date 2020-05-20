@@ -30,15 +30,15 @@ export async function pollVoteAddressesForFrequency(frequency: number) {
   const pollVoteAddresses = await allGovernancePollAddresses();
   // console.log(pollVoteAddresses);
   const pollVoteFreq = new Map(
-    [...new Set(pollVoteAddresses)].map((x) => [
+    [...new Set(pollVoteAddresses)].map(x => [
       x,
-      pollVoteAddresses.filter((y) => y === x).length,
-    ])
+      pollVoteAddresses.filter(y => y === x).length,
+    ]),
   );
 
   // console.log(pollVoteFreq);
 
   return Array.from(
-    new Map([...pollVoteFreq].filter(([k, v]) => v >= frequency)).keys()
+    new Map([...pollVoteFreq].filter(([k, v]) => v >= frequency)).keys(),
   );
 }
