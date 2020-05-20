@@ -18,23 +18,24 @@ export async function addOrUpdateTemplateAddresses(
 ) {
   const timestamp = new Date().getTime();
   const tId = await getIdByTemplate(templateId);
-  console.log(tId);
+  // console.log(tId);
+  // console.log(addresses);
   if (tId) {
     const params = {
       TableName: DYNAMODB_TABLE,
       Key: { id: tId },
       UpdateExpression: "set addresses = :x, updatedAt = :y",
       ExpressionAttributeValues: {
-        ":x": JSON.stringify(addresses.sort()),
+        ":x": JSON.stringify(addresses != [] ? addresses.sort() : []),
         ":y": timestamp,
       },
     };
-    console.log(params);
+    // console.log(params);
     dynamoDb.update(params, (error: any, result: any) => {
       if (error) {
         console.log(error);
       }
-      console.log(result);
+      // console.log(result);
       return result;
     });
   } else if (tId === null) {
@@ -48,7 +49,7 @@ export async function addOrUpdateTemplateAddresses(
         updatedAt: timestamp,
       },
     };
-    console.log(params);
+    // console.log(params);
     dynamoDb.put(params, (error: any, result: any) => {
       if (error) {
         console.log(error);
@@ -68,14 +69,14 @@ function getIdByTemplate(templateId: number) {
         ":templateId": templateId,
       },
     };
-    console.log(params);
+    // console.log(params);
     dynamoDb.query(params, (error: any, result: any) => {
       if (error) {
         console.log(error);
         reject();
       }
       if (result.Items.length > 0) {
-        console.log("returned: " + result.Items[0]["id"]);
+        // console.log("returned: " + result.Items[0]["id"]);
         resolve(result.Items[0]["id"]);
       } else {
         resolve(null);
@@ -88,16 +89,14 @@ export async function checkTemplateAddressesForAddress(
   address: string,
   templateId: number
 ) {
-  const addresses: any = await getAddressesByTemplate(templateId)!;
-  if (addresses != null) {
-    if (addresses.indexOf(address) > -1) {
-      return 1;
-    }
+  const addresses: any = await getAddressesByTemplate(templateId);
+  if (addresses != [] && addresses.includes(address.toLowerCase()) === true) {
+    return 1;
   }
   return 0;
 }
 
-function getAddressesByTemplate(templateId: number) {
+export function getAddressesByTemplate(templateId: number): Promise<string[]> {
   return new Promise((resolve, reject) => {
     const params = {
       TableName: DYNAMODB_TABLE,
@@ -114,9 +113,9 @@ function getAddressesByTemplate(templateId: number) {
       }
       if (result.Items.length > 0) {
         const addresses = result.Items[0]["addresses"];
-        resolve(addresses);
+        resolve([...JSON.parse(addresses)]);
       } else {
-        resolve(null);
+        resolve([]);
       }
     });
   });

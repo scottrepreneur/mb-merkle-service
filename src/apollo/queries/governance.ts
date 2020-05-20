@@ -3,8 +3,8 @@ import gql from "graphql-tag";
 // ADMIN QUERIES
 
 export const ALL_POLL_VOTES_QUERY = gql`
-  query votePollActions {
-    votePollActions {
+  query votePollActions($skip: Int) {
+    votePollActions(first: 1000, skip: $skip) {
       id
       sender
       poll {

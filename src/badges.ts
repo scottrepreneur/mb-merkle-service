@@ -1,8 +1,15 @@
 import {
   checkTemplateAddressesForAddress,
-  // addOrUpdateTemplateAddresses,
+  addOrUpdateTemplateAddresses,
+  getAddressesByTemplate,
 } from "./utils/aws";
-// import { pollVoteAddressesForFrequency } from "./adminActions/governance";
+import { pollVoteAddressesForFrequency } from "./adminActions/governance";
+import {
+  getBadgeProof,
+  getTree,
+  getRoot,
+  checkProof,
+} from "./utils/merkleTree";
 
 // HARDER TO TRACK IDEAS
 
@@ -35,6 +42,7 @@ const badgeList = {
     imgPath: "dsr-badge.svg",
     redeemed: 0,
     unlocked: 0,
+    proof: "",
   },
   MKR2: {
     name: "Earn on 10 locked Dai in DSR for 3 months",
@@ -48,6 +56,7 @@ const badgeList = {
     imgPath: "dsr-badge.svg",
     redeemed: 0,
     unlocked: 0,
+    proof: "",
   },
   MKR3: {
     name: "Earn on 10 locked Dai in DSR for 6 months",
@@ -61,6 +70,7 @@ const badgeList = {
     imgPath: "dsr-badge.svg",
     redeemed: 0,
     unlocked: 0,
+    proof: "",
   },
   MKR4: {
     name: "Sent 10 Dai",
@@ -71,6 +81,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR5: {
     name: "Sent 20 Dai",
@@ -81,6 +92,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR6: {
     name: "Join the PoolTogether savings game",
@@ -91,6 +103,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR7: {
     name: "Lend Dai on Compound",
@@ -101,6 +114,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR8: {
     name: "Vote on a Governance Poll",
@@ -111,6 +125,7 @@ const badgeList = {
     imgPath: "poll-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR9: {
     name: "Vote on 5 Governance Polls",
@@ -121,6 +136,7 @@ const badgeList = {
     imgPath: "polls-x5-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR10: {
     name: "Vote on 10 Governance Polls",
@@ -131,6 +147,7 @@ const badgeList = {
     imgPath: "polls-x5-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR11: {
     name: "Vote on 20 Governance Polls",
@@ -141,6 +158,7 @@ const badgeList = {
     imgPath: "polls-x5-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR12: {
     name: "Vote on 50 Governance Polls",
@@ -151,6 +169,7 @@ const badgeList = {
     imgPath: "polls-x5-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR13: {
     name: "Vote on 100 Governance Polls",
@@ -161,6 +180,7 @@ const badgeList = {
     imgPath: "polls-x5-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR14: {
     name: "Vote on 2 consecutive Governance Polls",
@@ -171,6 +191,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR15: {
     name: "Vote on 5 consecutive Governance Polls",
@@ -181,6 +202,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR16: {
     name: "Vote on 10 consecutive Governance Polls",
@@ -191,6 +213,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR17: {
     name: "Vote on an Executive Proposal",
@@ -201,6 +224,7 @@ const badgeList = {
     imgPath: "executive-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR18: {
     name: "Vote on 5 Executive Proposals",
@@ -211,6 +235,7 @@ const badgeList = {
     imgPath: "executive-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR19: {
     name: "Vote on 10 Executive Proposals",
@@ -221,6 +246,7 @@ const badgeList = {
     imgPath: "executive-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR20: {
     name: "Vote on 20 Executive Proposals",
@@ -231,6 +257,7 @@ const badgeList = {
     imgPath: "executive-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR21: {
     name: "Vote on 50 Executive Proposals",
@@ -241,6 +268,7 @@ const badgeList = {
     imgPath: "executive-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR22: {
     name: "First Executive Voter",
@@ -251,6 +279,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR23: {
     name: "First Governance Poller",
@@ -261,6 +290,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR24: {
     name: "Bite an unsafe Vault",
@@ -271,6 +301,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR25: {
     name: "Bite 10 unsafe Vaults",
@@ -281,6 +312,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR26: {
     name: "Bite 50 unsafe Vaults",
@@ -291,6 +323,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR27: {
     name: "Bite 100 unsafe Vault",
@@ -301,6 +334,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR28: {
     name: "Bid on a Collateral Auction",
@@ -311,6 +345,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR29: {
     name: "Bid on 5 Collateral Auctions",
@@ -321,6 +356,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR30: {
     name: "Bid on 10 Collateral Auctions",
@@ -331,6 +367,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR31: {
     name: "Bid on 25 Collateral Auctions",
@@ -341,6 +378,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR32: {
     name: "Won a Collateral Auction",
@@ -351,6 +389,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR33: {
     id: "MKR2",
@@ -363,6 +402,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR34: {
     name: "Won 10 Collateral Auctions",
@@ -373,6 +413,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR35: {
     name: "Won 25 Collateral Auctions",
@@ -383,6 +424,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR36: {
     name: "Bid on a Surplus Auction",
@@ -393,6 +435,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR37: {
     name: "Bid on 5 Surplus Auctions",
@@ -403,6 +446,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR38: {
     name: "Bid on 10 Surplus Auctions",
@@ -413,6 +457,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR39: {
     name: "Bid on 25 Surplus Auctions",
@@ -423,6 +468,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR40: {
     name: "Won a Surplus Auction",
@@ -433,6 +479,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR41: {
     name: "Won 5 Surplus Auctions",
@@ -443,6 +490,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR42: {
     name: "Won 10 Surplus Auctions",
@@ -453,6 +501,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR43: {
     name: "Won 25 Surplus Auctions",
@@ -463,6 +512,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR44: {
     name: "Bid on a Debt Auction",
@@ -473,6 +523,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR45: {
     name: "Bid on 5 Debt Auctions",
@@ -483,6 +534,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR46: {
     name: "Bid on 10 Debt Auctions",
@@ -493,6 +545,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR47: {
     name: "Bid on 25 Debt Auctions",
@@ -503,6 +556,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR48: {
     name: "Won a Debt Auction",
@@ -513,6 +567,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR49: {
     name: "Won 5 Debt Auctions",
@@ -523,6 +578,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR50: {
     name: "Won 10 Debt Auctions",
@@ -533,6 +589,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR51: {
     name: "Won 25 Debt Auctions",
@@ -543,6 +600,7 @@ const badgeList = {
     imgPath: "quick-vote-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR52: {
     name: "MKR in Voting Contract for 3 months",
@@ -553,6 +611,7 @@ const badgeList = {
     imgPath: "lock-mkr-x3-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR53: {
     name: "MKR in Voting Contract for 6 months",
@@ -563,6 +622,7 @@ const badgeList = {
     imgPath: "lock-mkr-x3-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR54: {
     name: "MKR in Voting Contract for 12 months",
@@ -573,6 +633,7 @@ const badgeList = {
     imgPath: "lock-mkr-x12-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR55: {
     name: "Enact a Proposal",
@@ -583,6 +644,7 @@ const badgeList = {
     imgPath: "cast-spell-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR56: {
     name: "Create a Proposal that gets 10 votes",
@@ -594,6 +656,7 @@ const badgeList = {
     imgPath: "spell-10-votes-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR57: {
     name: "Create a Proposal that is passed",
@@ -605,6 +668,7 @@ const badgeList = {
     imgPath: "spell-is-cast-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR58: {
     name: "Create 5 Proposals that pass",
@@ -616,6 +680,7 @@ const badgeList = {
     imgPath: "spell-is-cast-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR59: {
     name: "Create 10 Proposals that pass",
@@ -627,6 +692,7 @@ const badgeList = {
     imgPath: "spell-is-cast-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR60: {
     name: "Create a Governance Poll",
@@ -638,6 +704,7 @@ const badgeList = {
     imgPath: "spell-is-cast-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR61: {
     name: "Create 5 Governance Polls",
@@ -649,6 +716,7 @@ const badgeList = {
     imgPath: "spell-is-cast-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR62: {
     name: "Create 10 Governance Polls",
@@ -660,6 +728,7 @@ const badgeList = {
     imgPath: "spell-is-cast-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
   MKR63: {
     name: "Create 25 Governance Polls",
@@ -671,6 +740,7 @@ const badgeList = {
     imgPath: "spell-is-cast-badge.svg",
     unlocked: 0,
     redeemed: 0,
+    proof: "",
   },
 };
 
@@ -698,17 +768,24 @@ const badgeList = {
 // };
 
 export async function getBadgesForAddress(_address: string) {
-  // addOrUpdateTemplateAddresses(8, await pollVoteAddressesForFrequency(1));
+  addOrUpdateTemplateAddresses(8, await pollVoteAddressesForFrequency(1));
   return Promise.all(
-    Object.keys(badgeList).map(async key => {
+    Object.keys(badgeList).map(async (key) => {
       let badge = badgeList[key];
 
       badge.unlocked = await checkTemplateAddressesForAddress(
         _address,
-        parseFloat(key.slice(3, key.length)),
+        parseFloat(key.slice(3, key.length))
       );
-
+      if (await badge.unlocked) {
+        badge.proof = getBadgeProof(
+          _address,
+          await getTree(
+            await getAddressesByTemplate(parseFloat(key.slice(3, key.length)))
+          )
+        );
+      }
       return badge;
-    }),
+    })
   );
 }
