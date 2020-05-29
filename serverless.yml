@@ -26,7 +26,7 @@ package:
 functions:
   http:
     handler: src/lambda.http
-    timeout: 2
+    timeout: 15
     events:
       - http: ANY /
       - http: ANY /{proxy+}

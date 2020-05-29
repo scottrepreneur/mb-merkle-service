@@ -22,15 +22,14 @@ async function allBiteAddresses() {
 
 export async function biteAddressesForFrequency(frequency: number) {
   const biteAddresses = await allBiteAddresses();
-  const biteFreq = biteAddresses.reduce(function(acc, curr) {
-    if (typeof acc[curr] == "undefined") {
-      acc[curr] = 1;
-    } else {
-      acc[curr] += 1;
-    }
+  const biteFreq = new Map(
+    [...new Set(biteAddresses)].map(x => [
+      x,
+      biteAddresses.filter(y => y === x).length,
+    ]),
+  );
 
-    return acc;
-  }, {});
-
-  return Object.keys(biteFreq).filter(el => biteFreq[el] > frequency);
+  return Array.from(
+    new Map([...biteFreq].filter(([k, v]) => v >= frequency)).keys(),
+  );
 }

@@ -26,10 +26,10 @@
     "clean": "find ./src -name '*.js' -delete",
     "test": "jest && tsc --noEmit",
     "start": "ts-node src/local.ts",
-    "build": "yarn clean && jest && tsc",
+    "build": "jest && tsc",
     "prepare": "yarn format && yarn test",
     "package": "yarn build && serverless package",
-    "deploy": "yarn build && eval \"serverless deploy\" && yarn clean"
+    "deploy": "yarn build && eval \"serverless deploy\""
   },
   "dependencies": {
     "@types/aws-serverless-express": "^3.0.1",
@@ -45,6 +45,8 @@
     "compression": "^1.7.1",
     "cors": "^2.8.4",
     "cross-fetch": "^3.0.4",
+    "ethereumjs-util": "^7.0.1",
+    "ethers": "^4.0.47",
     "express": "^4.16.2",
     "graphql": "^15.0.0",
     "graphql-tag": "^2.10.3",
