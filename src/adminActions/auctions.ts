@@ -4,32 +4,40 @@ import {
 } from "../apollo/queries/auctions";
 import { makerClient } from "../apollo/clients";
 // import { addOrUpdateTemplateAddresses } from "../utils/aws";
+import { collateralFlippers } from "../constants";
 
-async function allBiteAddresses() {
-  const result = await makerClient.query({
-    query: ALL_BITES_QUERY,
-    fetchPolicy: "cache-first",
-    variables: {
-      collateral: "ETH-A",
-    },
-  });
-  const biteAddresses = result.data.allBites.nodes.map((bite: any) => {
-    return bite.tx.txFrom;
+async function allBiteAddresses(): Promise<any[]> {
+  let allBites: any[] = [];
+  Object.keys(collateralFlippers).map(async (_collateral) => {
+    const result = await makerClient.query({
+      query: ALL_BITES_QUERY,
+      fetchPolicy: "cache-first",
+      variables: {
+        collateral: _collateral,
+      },
+    });
+    allBites.push(
+      result.data.allBites.nodes.map((bite: any) => {
+        return bite.tx.txFrom;
+      })
+    );
   });
 
-  return biteAddresses;
+  return allBites;
 }
 
-export async function biteAddressesForFrequency(frequency: number) {
+export async function biteAddressesForFrequency(
+  frequency: number
+): Promise<any[]> {
   const biteAddresses = await allBiteAddresses();
   const biteFreq = new Map(
-    [...new Set(biteAddresses)].map(x => [
+    [...new Set(biteAddresses)].map((x) => [
       x,
-      biteAddresses.filter(y => y === x).length,
-    ]),
+      biteAddresses.filter((y) => y === x).length,
+    ])
   );
 
   return Array.from(
-    new Map([...biteFreq].filter(([k, v]) => v >= frequency)).keys(),
+    new Map([...biteFreq].filter(([k, v]) => v >= frequency)).keys()
   );
 }

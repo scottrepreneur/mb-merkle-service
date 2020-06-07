@@ -23,13 +23,13 @@
   },
   "scripts": {
     "format": "prettier --write --config .prettierrc.yaml '**/*.ts'",
-    "clean": "find ./src -name '*.js' -delete",
+    "clean": "tsc --build --clean",
     "test": "jest && tsc --noEmit",
     "start": "ts-node src/local.ts",
     "build": "jest && tsc",
     "prepare": "yarn format && yarn test",
     "package": "yarn build && serverless package",
-    "deploy": "yarn build && eval \"serverless deploy\""
+    "deploy": "yarn clean && yarn build && eval \"serverless deploy\""
   },
   "dependencies": {
     "@types/aws-serverless-express": "^3.0.1",

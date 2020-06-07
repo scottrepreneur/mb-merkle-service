@@ -13,11 +13,12 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
 const DYNAMODB_TABLE: string = process.env.DYNAMODB_TABLE!;
 
 export async function addOrUpdateTemplateAddresses(
-  templateId: number,
-  addresses: string[],
+  _templateId: number,
+  _addresses: string[],
+  _root: string
 ) {
   const timestamp = new Date().getTime();
-  const tId = await getIdByTemplate(templateId);
+  const tId = await getIdByTemplate(_templateId);
   // console.log(tId);
   // console.log(addresses);
   if (tId) {
@@ -26,7 +27,7 @@ export async function addOrUpdateTemplateAddresses(
       Key: { id: tId },
       UpdateExpression: "set addresses = :x, updatedAt = :y",
       ExpressionAttributeValues: {
-        ":x": JSON.stringify(addresses != [] ? addresses.sort() : []),
+        ":x": JSON.stringify(_addresses != [] ? _addresses.sort() : []),
         ":y": timestamp,
       },
     };
@@ -42,9 +43,10 @@ export async function addOrUpdateTemplateAddresses(
     const params = {
       TableName: DYNAMODB_TABLE,
       Item: {
-        id: uuidv4.v1(),
-        templateId: templateId,
-        addresses: JSON.stringify(addresses),
+        id: uuidv4(),
+        templateId: _templateId,
+        addresses: JSON.stringify(_addresses),
+        root: _root,
         createdAt: timestamp,
         updatedAt: timestamp,
       },
@@ -87,7 +89,7 @@ function getIdByTemplate(templateId: number) {
 
 export async function checkTemplateAddressesForAddress(
   address: string,
-  templateId: number,
+  templateId: number
 ) {
   const addresses: any = await getAddressesByTemplate(templateId);
   if (addresses != [] && addresses.includes(address.toLowerCase()) === true) {

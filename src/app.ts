@@ -5,6 +5,8 @@ import * as cors from "cors";
 import { eventContext } from "aws-serverless-express/middleware";
 import { join } from "path";
 import { getBadgesForAddress } from "./badges";
+// import { checkConsecutiveGovernancePollsCount } from "./badgeActions/governance";
+import { updateRoots } from "./adminActions";
 
 export function configureApp() {
   const app = express();
@@ -23,12 +25,17 @@ export function configureApp() {
 
   app.get("/address/:address", async (req, res) => {
     getBadgesForAddress(req.params.address)
-      .then(badgeList => {
+      .then((badgeList) => {
         res.json({ badges: badgeList });
       })
-      .catch(e => {
+      .catch((e) => {
         console.log(e);
       });
+  });
+
+  app.get("/update-roots", async (req, res) => {
+    updateRoots();
+    res.json({ success: true });
   });
 
   return app;

@@ -33,11 +33,15 @@ export const ALL_FLIP_BIDS_QUERY = gql`
 `;
 
 export const ALL_FLIPS_WON_QUERY = gql`
-  query allFlips($collateral: String!) {
-    allFlips(ilk: $collateral) {
+  query allFlipBidGuys($flipper: String!) {
+    allFlipBidGuys(
+      filter: {
+        addressByAddressId: { address: { equalToInsensitive: $flipper } }
+      }
+      orderBy: HEADER_BY_HEADER_ID__BLOCK_NUMBER_DESC
+    ) {
       nodes {
         bidId
-        end
         guy
       }
     }
