@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
 export const ALL_BITES_QUERY = gql`
-  query allBites($collateral: String!) {
-    allBites(ilkIdentifier: $collateral) {
+  query allBites($collateral: String!, $offset: Int) {
+    allBites(ilkIdentifier: $collateral, first: 1000, offset: $offset) {
       nodes {
         bidId
         ilk {
@@ -17,8 +17,8 @@ export const ALL_BITES_QUERY = gql`
 `;
 
 export const ALL_FLIP_BIDS_QUERY = gql`
-  query allFlipBidEvents {
-    allFlipBidEvents {
+  query allFlipBidEvents($offset: Int) {
+    allFlipBidEvents(first: 1000, offset: $offset) {
       nodes {
         bidId
         act
@@ -33,12 +33,14 @@ export const ALL_FLIP_BIDS_QUERY = gql`
 `;
 
 export const ALL_FLIPS_WON_QUERY = gql`
-  query allFlipBidGuys($flipper: String!) {
+  query allFlipBidGuys($flipper: String!, $offset: Int) {
     allFlipBidGuys(
       filter: {
         addressByAddressId: { address: { equalToInsensitive: $flipper } }
       }
       orderBy: HEADER_BY_HEADER_ID__BLOCK_NUMBER_DESC
+      first: 1000
+      offset: $offset
     ) {
       nodes {
         bidId

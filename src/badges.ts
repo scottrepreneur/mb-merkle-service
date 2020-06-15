@@ -1,7 +1,5 @@
-import {
-  checkTemplateAddressesForAddress,
-  getAddressesByTemplate,
-} from "./utils/aws";
+import { checkTemplateAddressesForAddress } from "./utils";
+import { getTemplate } from "./utils/aws";
 import { MerkleTree } from "./utils/merkleTree";
 
 // HARDER TO TRACK IDEAS
@@ -39,12 +37,13 @@ const badgeList = {
     redeemed: 0,
     unlocked: 0,
     proof: [],
+    root: "",
   },
   MKR2: {
     id: 2,
     parent: 1,
     tier: 2,
-    name: "Earn on 10 locked Dai in DSR for 3 months",
+    name: "Earn in DSR for 3 months",
     longName: "Lock 10 Dai from the Dai Savings Rate",
     description:
       "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
@@ -56,12 +55,13 @@ const badgeList = {
     redeemed: 0,
     unlocked: 0,
     proof: [],
+    root: "",
   },
   MKR3: {
     id: 3,
     parent: 2,
     tier: 3,
-    name: "Earn on 10 locked Dai in DSR for 6 months",
+    name: "Earn in DSR for 6 months",
     longName: "Earn on 10 locked Dai in DSR for 6 months",
     description:
       "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
@@ -73,13 +73,14 @@ const badgeList = {
     redeemed: 0,
     unlocked: 0,
     proof: [],
+    root: "",
   },
   MKR4: {
     id: 4,
     parent: 0,
     tier: 1,
-    name: "Sent 10 Dai",
-    longName: "Sent 10 Dai",
+    name: "Send 10 Dai",
+    longName: "Send 10 Dai",
     description:
       "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
     resource: "https://vote.makerdao.com",
@@ -87,13 +88,14 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR5: {
     id: 5,
     parent: 4,
     tier: 2,
-    name: "Sent 20 Dai",
-    longName: "Sent 20 Dai",
+    name: "Send 20 Dai",
+    longName: "Send 20 Dai",
     description:
       "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
     resource: "https://vote.makerdao.com",
@@ -101,6 +103,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR6: {
     id: 6,
@@ -115,6 +118,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR7: {
     id: 7,
@@ -129,6 +133,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR8: {
     id: 8,
@@ -143,6 +148,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR9: {
     id: 9,
@@ -157,6 +163,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR10: {
     id: 10,
@@ -171,6 +178,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR11: {
     id: 11,
@@ -185,6 +193,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR12: {
     id: 12,
@@ -199,6 +208,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR13: {
     id: 13,
@@ -213,6 +223,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR14: {
     id: 14,
@@ -227,6 +238,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR15: {
     id: 15,
@@ -241,6 +253,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR16: {
     id: 16,
@@ -255,6 +268,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR17: {
     id: 17,
@@ -269,6 +283,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR18: {
     id: 18,
@@ -283,6 +298,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR19: {
     id: 19,
@@ -297,6 +313,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR20: {
     id: 20,
@@ -311,6 +328,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR21: {
     id: 21,
@@ -325,6 +343,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR22: {
     id: 22,
@@ -339,6 +358,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR23: {
     id: 23,
@@ -353,6 +373,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR24: {
     id: 24,
@@ -367,6 +388,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR25: {
     id: 25,
@@ -381,6 +403,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR26: {
     id: 26,
@@ -395,6 +418,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR27: {
     id: 27,
@@ -409,6 +433,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR28: {
     id: 28,
@@ -423,6 +448,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR29: {
     id: 29,
@@ -437,6 +463,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR30: {
     id: 30,
@@ -451,6 +478,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR31: {
     id: 31,
@@ -465,6 +493,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR32: {
     id: 32,
@@ -479,6 +508,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR33: {
     id: 33,
@@ -493,6 +523,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR34: {
     id: 34,
@@ -507,6 +538,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
   MKR35: {
     id: 35,
@@ -521,6 +553,7 @@ const badgeList = {
     unlocked: 0,
     redeemed: 0,
     proof: [],
+    root: "",
   },
 
   // *** SET PARENT AND TIER *** //
@@ -895,18 +928,27 @@ const badgeList = {
 
 export async function getBadgesForAddress(_address: string) {
   return Promise.all(
-    Object.keys(badgeList).map(async (key) => {
+    Object.keys(badgeList).map(async key => {
       let badge = badgeList[key];
       console.log(key);
-      let addresses = await getAddressesByTemplate(
-        parseFloat(key.slice(3, key.length))
-      );
-      if (addresses.length > 0) {
-        let tree = new MerkleTree(addresses);
+      let template = await getTemplate(parseFloat(key.slice(3, key.length)));
+      if (badge.progress != {}) {
+        if (template.progress[_address]) {
+          badge.progress = template.progress[_address];
+        } else {
+          badge.progress = 0;
+        }
+      } else {
+        badge.progress = 0;
+      }
 
-        badge.unlocked = await checkTemplateAddressesForAddress(
+      if (template.addresses.length > 0) {
+        let tree = new MerkleTree(template.addresses);
+        badge.root = tree.getHexRoot();
+
+        badge.unlocked = checkTemplateAddressesForAddress(
           _address,
-          parseFloat(key.slice(3, key.length))
+          template.addresses,
         );
 
         if (badge.unlocked && !badge.redeemed) {
@@ -915,6 +957,6 @@ export async function getBadgesForAddress(_address: string) {
       }
 
       return badge;
-    })
+    }),
   );
 }

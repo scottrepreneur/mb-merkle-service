@@ -3,6 +3,7 @@ import {
   ALL_POLL_VOTES_QUERY,
   ALL_SPELL_VOTES_QUERY,
 } from "../apollo/queries/governance";
+import { mapFrequenciesToProgressObject } from "../utils";
 
 // GOVERNANCE POLLS
 
@@ -32,19 +33,22 @@ async function allGovernancePollAddresses() {
 }
 
 export async function pollVoteAddressesForFrequency(
-  frequency: number
-): Promise<any[]> {
+  frequency: number,
+): Promise<{ addresses: any[]; progress: Object }> {
   const pollVoteAddresses = await allGovernancePollAddresses();
   const pollVoteFreq = new Map(
-    [...new Set(pollVoteAddresses)].map((x) => [
+    [...new Set(pollVoteAddresses)].map(x => [
       x,
-      pollVoteAddresses.filter((y) => y === x).length,
-    ])
+      pollVoteAddresses.filter(y => y === x).length,
+    ]),
   );
 
-  return Array.from(
-    new Map([...pollVoteFreq].filter(([k, v]) => v >= frequency)).keys()
-  );
+  return {
+    addresses: Array.from(
+      new Map([...pollVoteFreq].filter(([k, v]) => v >= frequency)).keys(),
+    ),
+    progress: mapFrequenciesToProgressObject(pollVoteFreq, frequency),
+  };
 }
 
 // EXECUTIVE PROPOSALS (SPELLS)
@@ -62,8 +66,8 @@ async function allExecutiveSpellAddresses() {
         skip: i * 1000,
       },
     });
-    if (result.data.votePollActions.length > 0) {
-      wholeResult.push.apply(wholeResult, result.data.votePollActions);
+    if (result.data.addActions.length > 0) {
+      wholeResult.push.apply(wholeResult, result.data.addActions);
     } else {
       b = false;
     }
@@ -74,16 +78,21 @@ async function allExecutiveSpellAddresses() {
   });
 }
 
-export async function spellVoteAddressesForFrequency(frequency: number) {
+export async function spellVoteAddressesForFrequency(
+  frequency: number,
+): Promise<{ addresses: string[]; progress: Object }> {
   const spellVoteAddresses = await allExecutiveSpellAddresses();
   const spellVoteFreq = new Map(
-    [...new Set(spellVoteAddresses)].map((x) => [
+    [...new Set(spellVoteAddresses)].map(x => [
       x,
-      spellVoteAddresses.filter((y) => y === x).length,
-    ])
+      spellVoteAddresses.filter(y => y === x).length,
+    ]),
   );
 
-  return Array.from(
-    new Map([...spellVoteFreq].filter(([k, v]) => v >= frequency)).keys()
-  );
+  return {
+    addresses: Array.from(
+      new Map([...spellVoteFreq].filter(([k, v]) => v >= frequency)).keys(),
+    ),
+    progress: mapFrequenciesToProgressObject(spellVoteFreq, frequency),
+  };
 }

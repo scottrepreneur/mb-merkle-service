@@ -1,9 +1,13 @@
-import { addOrUpdateTemplateAddresses } from "../utils/aws";
+import { addOrUpdateTemplateRecord } from "../utils/aws";
 import {
   pollVoteAddressesForFrequency,
   spellVoteAddressesForFrequency,
 } from "./governance";
-import { biteAddressesForFrequency } from "./auctions";
+import {
+  biteAddressesForFrequency,
+  // bidAddressesForFrequency,
+  // bidGuyAddressesForFrequency,
+} from "./auctions";
 import { MerkleTree } from "../utils/merkleTree";
 
 export async function updateRoots() {
@@ -41,8 +45,13 @@ export async function updateRoots() {
   ];
   governanceVoteFrequencies.map(async (freq) => {
     const addresses = await pollVoteAddressesForFrequency(freq.frequency);
-    const tree = new MerkleTree(addresses);
-    addOrUpdateTemplateAddresses(freq.templateId, addresses, tree.getHexRoot());
+    const tree = new MerkleTree(addresses.addresses);
+    addOrUpdateTemplateRecord(
+      freq.templateId,
+      addresses.addresses,
+      tree.getHexRoot(),
+      addresses.progress
+    );
   });
 
   // voting on N (frequency) consecutive governance polls
@@ -65,8 +74,23 @@ export async function updateRoots() {
   ];
   executiveSpellFrequencies.map(async (freq) => {
     const addresses = await spellVoteAddressesForFrequency(freq.frequency);
-    const tree = new MerkleTree(addresses);
-    addOrUpdateTemplateAddresses(freq.templateId, addresses, tree.getHexRoot());
+    // console.log(addresses.length);
+    if (addresses.addresses.length > 0) {
+      const tree = new MerkleTree(addresses.addresses);
+      addOrUpdateTemplateRecord(
+        freq.templateId,
+        addresses.addresses,
+        tree.getHexRoot(),
+        addresses.progress
+      );
+    } else {
+      addOrUpdateTemplateRecord(
+        freq.templateId,
+        [],
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+        {}
+      );
+    }
   });
 
   // early voter on Executive Spell (within 60 minutes of creation)
@@ -84,8 +108,14 @@ export async function updateRoots() {
   ];
   bitingVaultsFrequencies.map(async (freq) => {
     const addresses = await biteAddressesForFrequency(freq.frequency);
-    const tree = new MerkleTree(addresses);
-    addOrUpdateTemplateAddresses(freq.templateId, addresses, tree.getHexRoot());
+    console.log(addresses.addresses);
+    const tree = new MerkleTree(addresses.addresses);
+    addOrUpdateTemplateRecord(
+      freq.templateId,
+      addresses.addresses,
+      tree.getHexRoot(),
+      addresses.progress
+    );
   });
 
   // bidding on at least N (frequency) collateral auctions
@@ -96,7 +126,15 @@ export async function updateRoots() {
     { templateId: 31, frequency: 25 },
   ];
   bidCollateralAuctionFrequencies.map(async (freq) => {
+    // const addresses = await bidAddressesForFrequency(freq.frequency);
     console.log(freq);
+    // const tree = new MerkleTree(addresses.addresses);
+    // addOrUpdateTemplateRecord(
+    //   freq.templateId,
+    //   addresses.addresses,
+    //   tree.getHexRoot(),
+    //   addresses.progress
+    // );
   });
 
   // winning at least N (frequency) collateral auctions
@@ -107,6 +145,14 @@ export async function updateRoots() {
     { templateId: 35, frequency: 25 },
   ];
   winCollateralAuctionFrequencies.map(async (freq) => {
+    // const addresses = await bidGuyAddressesForFrequency(freq.frequency);
     console.log(freq);
+    // const tree = new MerkleTree(addresses.addresses);
+    // addOrUpdateTemplateRecord(
+    //   freq.templateId,
+    //   addresses.addresses,
+    //   tree.getHexRoot(),
+    //   addresses.progress
+    // );
   });
 }
