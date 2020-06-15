@@ -12,10 +12,11 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 const DYNAMODB_TABLE: string = process.env.DYNAMODB_TABLE!;
 
-export async function addOrUpdateTemplateAddresses(
+export async function addOrUpdateTemplateRecord(
   _templateId: number,
   _addresses: string[],
-  _root: string
+  _root: string,
+  _progress: object,
 ) {
   const timestamp = new Date().getTime();
   const tId = await getIdByTemplate(_templateId);
@@ -25,9 +26,12 @@ export async function addOrUpdateTemplateAddresses(
     const params = {
       TableName: DYNAMODB_TABLE,
       Key: { id: tId },
-      UpdateExpression: "set addresses = :x, updatedAt = :y",
+      UpdateExpression:
+        "set addresses = :v, root = :w, progress = :x, updatedAt = :y",
       ExpressionAttributeValues: {
-        ":x": JSON.stringify(_addresses != [] ? _addresses.sort() : []),
+        ":v": JSON.stringify(_addresses != [] ? _addresses.sort() : []),
+        ":w": _root,
+        ":x": JSON.stringify(_progress),
         ":y": timestamp,
       },
     };
@@ -47,6 +51,7 @@ export async function addOrUpdateTemplateAddresses(
         templateId: _templateId,
         addresses: JSON.stringify(_addresses),
         root: _root,
+        progress: JSON.stringify(_root),
         createdAt: timestamp,
         updatedAt: timestamp,
       },
@@ -87,18 +92,9 @@ function getIdByTemplate(templateId: number) {
   });
 }
 
-export async function checkTemplateAddressesForAddress(
-  address: string,
-  templateId: number
-) {
-  const addresses: any = await getAddressesByTemplate(templateId);
-  if (addresses != [] && addresses.includes(address.toLowerCase()) === true) {
-    return 1;
-  }
-  return 0;
-}
-
-export function getAddressesByTemplate(templateId: number): Promise<string[]> {
+export function getTemplate(
+  templateId: number,
+): Promise<{ addresses: string[]; root: string; progress: Object }> {
   return new Promise((resolve, reject) => {
     const params = {
       TableName: DYNAMODB_TABLE,
@@ -115,9 +111,17 @@ export function getAddressesByTemplate(templateId: number): Promise<string[]> {
       }
       if (result.Items.length > 0) {
         const addresses = result.Items[0]["addresses"];
-        resolve([...JSON.parse(addresses)]);
+        resolve({
+          addresses: [...JSON.parse(addresses)],
+          root: result.Items[0]["root"],
+          progress: result.Items[0]["progress"],
+        });
       } else {
-        resolve([]);
+        resolve({
+          addresses: [],
+          root: "",
+          progress: {},
+        });
       }
     });
   });

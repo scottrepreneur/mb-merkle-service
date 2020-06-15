@@ -25,10 +25,10 @@ export function configureApp() {
 
   app.get("/address/:address", async (req, res) => {
     getBadgesForAddress(req.params.address)
-      .then((badgeList) => {
+      .then(badgeList => {
         res.json({ badges: badgeList });
       })
-      .catch((e) => {
+      .catch(e => {
         console.log(e);
       });
   });
