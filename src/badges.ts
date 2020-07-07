@@ -336,7 +336,7 @@ const badgeList = {
   },
   MKR20: {
     id: 20,
-    parent: 0,
+    parent: 15,
     tier: 1,
     name: "First Executive Voter",
     longName: "Be one of the first voters on<br>a new Executive Proposal",
@@ -352,7 +352,7 @@ const badgeList = {
   },
   MKR21: {
     id: 21,
-    parent: 0,
+    parent: 6,
     tier: 1,
     name: "First Governance Poller",
     longName: "Be one of the first voters on<br>a new Governance Poll",
@@ -496,7 +496,7 @@ const badgeList = {
   },
   MKR30: {
     id: 30,
-    parent: 0,
+    parent: 26,
     tier: 1,
     name: "Won a Collateral Auction",
     longName: "Won a Collateral Auction",
@@ -965,7 +965,7 @@ const badgeList = {
 
 export async function getBadgesForAddress(_address: string) {
   return Promise.all(
-    Object.keys(badgeList).map(async (key) => {
+    Object.keys(badgeList).map(async key => {
       let badge = badgeList[key];
       console.log(key);
       let template = await getTemplate(parseFloat(key.slice(3, key.length)));
@@ -985,7 +985,7 @@ export async function getBadgesForAddress(_address: string) {
 
         badge.unlocked = checkTemplateAddressesForAddress(
           _address,
-          template.addresses
+          template.addresses,
         );
 
         if (badge.unlocked && !badge.redeemed) {
@@ -994,6 +994,6 @@ export async function getBadgesForAddress(_address: string) {
       }
 
       return badge;
-    })
+    }),
   );
 }
