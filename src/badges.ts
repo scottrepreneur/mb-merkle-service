@@ -28,11 +28,14 @@ const badgeList = {
     name: "Accrue 1 Dai from DSR",
     longName: "Accrue 1 Dai from the Dai Savings Rate",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
+      "Accruing Dai in the Dai Savings Rate is a great way to earn while maintaining the value of your holdings. You can start accumulating with Dai from an exchange. Accrue 1 Dai by locking Dai in Oasis Save to unlock this achievement.",
     resource: "https://oasis.app/save",
     steps: {
-      1: "",
+      1: "Head over to Oasis Save and unlock your Web3 wallet",
+      2: "Select Deposit and enter an amount to deposit",
+      3: "Sign the transaction and come back when you've accrued enough Dai from the DSR",
     },
+    note: "",
     imgPath: "mkr_1_dai_locked_1.png",
     redeemed: 0,
     unlocked: 0,
@@ -47,11 +50,14 @@ const badgeList = {
     name: "Earn in DSR for 3 months",
     longName: "Lock 10 Dai from the Dai Savings Rate",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
+      "Accruing Dai in the Dai Savings Rate is a great way to earn while maintaining the value of your holdings. You can start accumulating with Dai from an exchange. Earn on 10 locked Dai in DSR for 3 months to unlock this achievement.",
     resource: "https://oasis.app/save",
     steps: {
-      1: "",
+      1: "Head over to Oasis Save and unlock your Web3 wallet",
+      2: "Select Deposit and enter an amount to deposit (above 10)",
+      3: "Sign the transaction and come back when you've locked enough Dai for long enough",
     },
+    note: "",
     imgPath: "mkr_2_dai_locked_2.png",
     redeemed: 0,
     unlocked: 0,
@@ -66,11 +72,14 @@ const badgeList = {
     name: "Earn in DSR for 6 months",
     longName: "Earn on 10 locked Dai in DSR for 6 months",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
+      "Accruing Dai in the Dai Savings Rate is a great way to earn while maintaining the value of your holdings. You can start accumulating with Dai from an exchange. Earn on 10 locked Dai in DSR for 6 months to unlock this achievement.",
     resource: "https://oasis.app/save",
     steps: {
-      1: "",
+      1: "Head over to Oasis Save and unlock your Web3 wallet",
+      2: "Select Deposit and enter an amount to deposit (above 10)",
+      3: "Sign the transaction and come back when you've locked enough Dai for long enough",
     },
+    note: "",
     imgPath: "mkr_3_dai_locked_3.png",
     redeemed: 0,
     unlocked: 0,
@@ -85,8 +94,13 @@ const badgeList = {
     name: "Send 10 Dai",
     longName: "Send 10 Dai",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
+      "Sending Dai is the backbone of the decentralized ecosystem. Send 10 Dai for gifts, rent, or returning the favor to unlock this achievement.",
     resource: "https://vote.makerdao.com",
+    steps: {
+      1: "Head over to your Web3 wallet and unlock it",
+      2: "Send at least 10 Dai to another address",
+    },
+    note: "",
     imgPath: "mkr_4_dai_sent_1.png",
     unlocked: 0,
     redeemed: 0,
@@ -101,8 +115,13 @@ const badgeList = {
     name: "Send 20 Dai",
     longName: "Send 20 Dai",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
+      "Sending Dai is the backbone of the decentralized ecosystem. Send 100 Dai for gifts, rent, or returning the favor to unlock this achievement.",
     resource: "https://vote.makerdao.com",
+    steps: {
+      1: "Head over to your Web3 wallet and unlock it",
+      2: "Send at least 100 Dai to another address",
+    },
+    note: "",
     imgPath: "mkr_5_dai_sent_2.png",
     unlocked: 0,
     redeemed: 0,
@@ -117,8 +136,14 @@ const badgeList = {
     name: "Vote on a Governance Poll",
     longName: "Vote on one Governance Poll",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
+      "Driving decision making through on-chain consensus is a determined aspect of scientific governance. On-chain polling is done to understand sentiment from token holders around actions taken for risk parameters. Vote on a Governance Poll to unlock this achievement.",
     resource: "https://vote.makerdao.com",
+    steps: {
+      1: "Head over to the Governance portal",
+      2: "Unlock your Web3 wallet",
+      3: "Register a vote on a Governance Poll",
+    },
+    note: "",
     imgPath: "mkr_6_poll_1.png",
     unlocked: 0,
     redeemed: 0,
@@ -133,8 +158,14 @@ const badgeList = {
     name: "Vote on 5 Governance Polls",
     longName: "Vote on at least 5 Governance Polls",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
+      "Driving decision making through on-chain consensus is a determined aspect of scientific governance. On-chain polling is done to understand sentiment from token holders around actions taken for risk parameters. Vote on 5 Governance Polls to unlock this achievement.",
     resource: "https://vote.makerdao.com",
+    steps: {
+      1: "Head over to the Governance portal",
+      2: "Unlock your Web3 wallet",
+      3: "Register a vote on 5 Governance Polls",
+    },
+    note: "",
     imgPath: "mkr_7_poll_2.png",
     unlocked: 0,
     redeemed: 0,
@@ -149,8 +180,14 @@ const badgeList = {
     name: "Vote on 10 Governance Polls",
     longName: "Vote on at least 10 Governance Polls",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
+      "Driving decision making through on-chain consensus is a determined aspect of scientific governance. On-chain polling is done to understand sentiment from token holders around actions taken for risk parameters. Vote on 10 Governance Polls to unlock this achievement.",
     resource: "https://vote.makerdao.com",
+    steps: {
+      1: "Head over to the Governance portal",
+      2: "Unlock your Web3 wallet",
+      3: "Register a vote on 10 Governance Polls",
+    },
+    note: "",
     imgPath: "mkr_8_poll_3.png",
     unlocked: 0,
     redeemed: 0,
@@ -165,8 +202,14 @@ const badgeList = {
     name: "Vote on 20 Governance Polls",
     longName: "Vote on at least 20 Governance Polls",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
+      "Driving decision making through on-chain consensus is a determined aspect of scientific governance. On-chain polling is done to understand sentiment from token holders around actions taken for risk parameters. Vote on 20 Governance Polls to unlock this achievement.",
     resource: "https://vote.makerdao.com",
+    steps: {
+      1: "Head over to the Governance portal",
+      2: "Unlock your Web3 wallet",
+      3: "Register a vote on 20 Governance Polls",
+    },
+    note: "",
     imgPath: "mkr_9_poll_4.png",
     unlocked: 0,
     redeemed: 0,
@@ -181,8 +224,14 @@ const badgeList = {
     name: "Vote on 50 Governance Polls",
     longName: "Vote on at least 50 Governance Polls",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
+      "Driving decision making through on-chain consensus is a determined aspect of scientific governance. On-chain polling is done to understand sentiment from token holders around actions taken for risk parameters. Vote on 50 Governance Polls to unlock this achievement.",
     resource: "https://vote.makerdao.com",
+    steps: {
+      1: "Head over to the Governance portal",
+      2: "Unlock your Web3 wallet",
+      3: "Register a vote on 50 Governance Polls",
+    },
+    note: "",
     imgPath: "mkr_10_poll_5.png",
     unlocked: 0,
     redeemed: 0,
@@ -197,8 +246,14 @@ const badgeList = {
     name: "Vote on 100 Governance Polls",
     longName: "Vote on at least 100 Governance Polls",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
+      "Driving decision making through on-chain consensus is a determined aspect of scientific governance. On-chain polling is done to understand sentiment from token holders around actions taken for risk parameters. Vote on 100 Governance Polls to unlock this achievement.",
     resource: "https://vote.makerdao.com",
+    steps: {
+      1: "Head over to the Governance portal",
+      2: "Unlock your Web3 wallet",
+      3: "Register a vote on 100 Governance Polls",
+    },
+    note: "",
     imgPath: "mkr_11_poll_6.png",
     unlocked: 0,
     redeemed: 0,
@@ -213,8 +268,14 @@ const badgeList = {
     name: "Vote on 2 consecutive Governance Polls",
     longName: "Vote on at least 2 consecutive Governance Polls",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
+      "Governance requires regular decisions to sufficiently govern. Consensus requires many voices to be heard. Vote on consecutive governance polls to unlock this achievement.",
     resource: "https://vote.makerdao.com",
+    steps: {
+      1: "Since you've successfully voted in one Governance Poll, you can head over to the Governance portal to cast another vote.",
+      2: "Register a vote in back-to-back Governance Polls",
+    },
+    note:
+      "Polls are indexed by deploy timestamp but not necessarily ordered in the voting interface",
     imgPath: "mkr_12_consecutive_poll_1.png",
     unlocked: 0,
     redeemed: 0,
@@ -229,8 +290,14 @@ const badgeList = {
     name: "Vote on 5 consecutive Governance Polls",
     longName: "Vote on at least 5 consecutive Governance Polls",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
+      "Governance requires regular decisions to sufficiently govern. Consensus requires many voices to be heard. Vote on 5 consecutive governance polls to unlock this achievement.",
     resource: "https://vote.makerdao.com",
+    steps: {
+      1: "Since you've successfully voted in one Governance Poll, you can head over to the Governance portal to cast another vote.",
+      2: "Register a vote in 5 sequential Governance Polls",
+    },
+    note:
+      "Polls are indexed by deploy timestamp but not necessarily ordered in the voting interface",
     imgPath: "mkr_13_consecutive_poll_2.png",
     unlocked: 0,
     redeemed: 0,
@@ -245,8 +312,14 @@ const badgeList = {
     name: "Vote on 10 consecutive Governance Polls",
     longName: "Vote on at least 10 consecutive Governance Polls",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
+      "Governance requires regular decisions to sufficiently govern. Consensus requires many voices to be heard. Vote on 10 consecutive governance polls to unlock this achievement.",
     resource: "https://vote.makerdao.com",
+    steps: {
+      1: "Since you've successfully voted in one Governance Poll, you can head over to the Governance portal to cast another vote.",
+      2: "Register a vote in 10 consecutive Governance Polls",
+    },
+    note:
+      "Polls are indexed by deploy timestamp but not necessarily ordered in the voting interface",
     imgPath: "mkr_14_consecutive_poll_3.png",
     unlocked: 0,
     redeemed: 0,
@@ -261,8 +334,14 @@ const badgeList = {
     name: "Vote on an Executive Proposal",
     longName: "Vote on one Executive Vote<br>to enact a new Proposal",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
+      "Using Continuous Approval Voting, governance is able to implement progressive changes while protecting the system from unintended changes. Vote on an Executive Proposal to unlock this achievement.",
     resource: "https://vote.makerdao.com",
+    steps: {
+      1: "Head over to the Governance Portal",
+      2: "Unlock your Web3 wallet and set up a voting proxy",
+      3: "Cast a vote on one Executive Proposal",
+    },
+    note: "",
     imgPath: "mkr_15_spell_1.png",
     unlocked: 0,
     redeemed: 0,
@@ -277,8 +356,14 @@ const badgeList = {
     name: "Vote on 5 Executive Proposals",
     longName: "Vote on one Executive Vote<br>to enact a new Proposal",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
+      "Using Continuous Approval Voting, governance is able to implement progressive changes while protecting the system from unintended changes. Vote on 5 Executive Proposals to unlock this achievement.",
     resource: "https://vote.makerdao.com",
+    steps: {
+      1: "Head over to the Governance Portal",
+      2: "Unlock your Web3 wallet and set up a voting proxy",
+      3: "Cast a vote on five Executive Proposals",
+    },
+    note: "",
     imgPath: "mkr_16_spell_2.png",
     unlocked: 0,
     redeemed: 0,
@@ -293,8 +378,14 @@ const badgeList = {
     name: "Vote on 10 Executive Proposals",
     longName: "Vote on one Executive Vote<br>to enact a new Proposal",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
+      "Using Continuous Approval Voting, governance is able to implement progressive changes while protecting the system from unintended changes. Vote on 10 Executive Proposals to unlock this achievement.",
     resource: "https://vote.makerdao.com",
+    steps: {
+      1: "Head over to the Governance Portal",
+      2: "Unlock your Web3 wallet and set up a voting proxy",
+      3: "Cast a vote on ten Executive Proposals",
+    },
+    note: "",
     imgPath: "mkr_17_spell_3.png",
     unlocked: 0,
     redeemed: 0,
@@ -309,8 +400,14 @@ const badgeList = {
     name: "Vote on 20 Executive Proposals",
     longName: "Vote on one Executive Vote<br>to enact a new Proposal",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
+      "Using Continuous Approval Voting, governance is able to implement progressive changes while protecting the system from unintended changes. Vote on 20 Executive Proposals to unlock this achievement.",
     resource: "https://vote.makerdao.com",
+    steps: {
+      1: "Head over to the Governance Portal",
+      2: "Unlock your Web3 wallet and set up a voting proxy",
+      3: "Cast a vote on twenty Executive Proposals",
+    },
+    note: "",
     imgPath: "mkr_18_spell_4.png",
     unlocked: 0,
     redeemed: 0,
@@ -325,8 +422,14 @@ const badgeList = {
     name: "Vote on 50 Executive Proposals",
     longName: "Vote on one Executive Vote<br>to enact a new Proposal",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
+      "Using Continuous Approval Voting, governance is able to implement progressive changes while protecting the system from unintended changes. Vote on 50 Executive Proposals to unlock this achievement.",
     resource: "https://vote.makerdao.com",
+    steps: {
+      1: "Head over to the Governance Portal",
+      2: "Unlock your Web3 wallet and set up a voting proxy",
+      3: "Cast a vote on 50 Executive Proposals",
+    },
+    note: "",
     imgPath: "mkr_19_spell_5.png",
     unlocked: 0,
     redeemed: 0,
@@ -341,8 +444,14 @@ const badgeList = {
     name: "First Executive Voter",
     longName: "Be one of the first voters on<br>a new Executive Proposal",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
+      "Vote on an Executive Proposal within an hour of its creation to unlock this achievement.",
     resource: "https://vote.makerdao.com",
+    steps: {
+      1: "Head over to the Governance Portal",
+      2: "Unlock your Web3 wallet and set up a voting proxy",
+      3: "Cast a vote on an Executive Proposal in the first hour after it has been deployed on chain",
+    },
+    note: "",
     imgPath: "mkr_20_early_spell_1.png",
     unlocked: 0,
     redeemed: 0,
@@ -357,8 +466,15 @@ const badgeList = {
     name: "First Governance Poller",
     longName: "Be one of the first voters on<br>a new Governance Poll",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
+      "Vote on a Governance Poll within an hour of its creation to unlock this achievement.",
     resource: "https://vote.makerdao.com",
+    steps: {
+      1: "Head over to the Governance Portal",
+      2: "Unlock your Web3 wallet",
+      3: "Register a vote on a Governance Poll in the first hour after it's start time",
+    },
+    note:
+      "Governance Polls have specified start times rather than being available when deployed",
     imgPath: "mkr_21_early_poll_1.png",
     unlocked: 0,
     redeemed: 0,
@@ -373,8 +489,14 @@ const badgeList = {
     name: "Bite an unsafe Vault",
     longName: "Bite an unsafe Vault",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
-    resource: "https://vote.makerdao.com",
+      "In order to keep Dai stable MKR holders need to ensure collateral can be swiftly swapped to repay Dai debt. Help maintain the system by biting a vault that is below the required collateralization ratio to unlock this achievement.",
+    resource: "https://app.keeperdao.com",
+    steps: {
+      1: "KeeperDAO.com and Atomica.org are running pooled keepers",
+      2: "Alternatively run your own keeper bot, though this route is more advanced.",
+      3: "Once you've chosen one of these options keep an eye out (probably automatically) for unsafe vaults and call the bite() function to trigger the collateral auction",
+    },
+    note: "",
     imgPath: "mkr_22_bite_1.png",
     unlocked: 0,
     redeemed: 0,
@@ -389,8 +511,14 @@ const badgeList = {
     name: "Bite 10 unsafe Vaults",
     longName: "Bite an unsafe Vault",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
-    resource: "https://vote.makerdao.com",
+      "In order to keep Dai stable MKR holders need to ensure collateral can be swiftly swapped to repay Dai debt. Help maintain the system by biting 10 vaults that are below the required collateralization ratio to unlock this achievement.",
+    resource: "https://app.keeperdao.com",
+    steps: {
+      1: "KeeperDAO.com and Atomica.org are running pooled keepers",
+      2: "Alternatively run your own keeper bot, though this route is more advanced.",
+      3: "Once you've chosen one of these options keep an eye out (probably automatically) for unsafe vaults and call the bite() function to trigger the collateral auction for 10 unsafe vaults",
+    },
+    note: "",
     imgPath: "mkr_23_bite_2.png",
     unlocked: 0,
     redeemed: 0,
@@ -405,8 +533,14 @@ const badgeList = {
     name: "Bite 50 unsafe Vaults",
     longName: "Bite an unsafe Vault",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
-    resource: "https://vote.makerdao.com",
+      "In order to keep Dai stable MKR holders need to ensure collateral can be swiftly swapped to repay Dai debt. Help maintain the system by biting 50 vaults that are below the required collateralization ratio to unlock this achievement.",
+    resource: "https://app.keeperdao.com",
+    steps: {
+      1: "KeeperDAO.com and Atomica.org are running pooled keepers",
+      2: "Alternatively run your own keeper bot, though this route is more advanced.",
+      3: "Once you've chosen one of these options keep an eye out (probably automatically) for unsafe vaults and call the bite() function to trigger the collateral auction for 50 unsafe vaults",
+    },
+    note: "",
     imgPath: "mkr_24_bite_3.png",
     unlocked: 0,
     redeemed: 0,
@@ -421,8 +555,14 @@ const badgeList = {
     name: "Bite 100 unsafe Vault",
     longName: "Bite 100 unsafe Vault",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
-    resource: "https://vote.makerdao.com",
+      "In order to keep Dai stable MKR holders need to ensure collateral can be swiftly swapped to repay Dai debt. Help maintain the system by biting 100 vaults that are below the required collateralization ratio to unlock this achievement.",
+    resource: "https://app.keeperdao.com",
+    steps: {
+      1: "KeeperDAO.com and Atomica.org are running pooled keepers",
+      2: "Alternatively run your own keeper bot, though this route is more advanced.",
+      3: "Once you've chosen one of these options keep an eye out (probably automatically) for unsafe vaults and call the bite() function to trigger the collateral auction for 100 unsafe vaults",
+    },
+    note: "",
     imgPath: "mkr_25_bite_4.png",
     unlocked: 0,
     redeemed: 0,
@@ -437,8 +577,14 @@ const badgeList = {
     name: "Bid on a Collateral Auction",
     longName: "Bid on a Collateral Auction",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
-    resource: "https://vote.makerdao.com",
+      "Once unsafe vaults are bitten the collateral is swapped for Dai to pay back the outstanding debt. Help the system and keep stable bids on collateral. Bid on a collateral auction from a liquidated vault to unlock this achievement.",
+    resource: "https://defiexplore.com/liquidations",
+    steps: {
+      1: "Head over to an auctions portal (Dai Auctions/Defi Explore)",
+      2: "Connect your Web3 wallet",
+      3: "Place a bid on a collateral auction",
+    },
+    note: "Includes Tend and Dent bids",
     imgPath: "mkr_26_flip_bid_1.png",
     unlocked: 0,
     redeemed: 0,
@@ -453,8 +599,14 @@ const badgeList = {
     name: "Bid on 5 Collateral Auctions",
     longName: "Bid on 5 Collateral Auction",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
-    resource: "https://vote.makerdao.com",
+      "Once unsafe vaults are bitten the collateral is swapped for Dai to pay back the outstanding debt. Help the system and keep stable bids on collateral. Bid on 5 collateral auctions from liquidated vaults to unlock this achievement.",
+    resource: "https://defiexplore.com/liquidations",
+    steps: {
+      1: "Head over to an auctions portal (Dai Auctions/Defi Explore)",
+      2: "Connect your Web3 wallet",
+      3: "Place a bid on 5 collateral auctions",
+    },
+    note: "Includes Tend and Dent bids",
     imgPath: "mkr_27_flip_bid_2.png",
     unlocked: 0,
     redeemed: 0,
@@ -469,8 +621,14 @@ const badgeList = {
     name: "Bid on 10 Collateral Auctions",
     longName: "Bid on 10 Collateral Auctions",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
-    resource: "https://vote.makerdao.com",
+      "Once unsafe vaults are bitten the collateral is swapped for Dai to pay back the outstanding debt. Help the system and keep stable bids on collateral. Bid on 10 collateral auctions from liquidated vaults to unlock this achievement.",
+    resource: "https://defiexplore.com/liquidations",
+    steps: {
+      1: "Head over to an auctions portal (Dai Auctions/Defi Explore)",
+      2: "Connect your Web3 wallet",
+      3: "Place a bid on 10 collateral auctions",
+    },
+    note: "Includes Tend and Dent bids",
     imgPath: "mkr_28_flip_bid_3.png",
     unlocked: 0,
     redeemed: 0,
@@ -485,8 +643,14 @@ const badgeList = {
     name: "Bid on 25 Collateral Auctions",
     longName: "Bid on 25 Collateral Auctions",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
-    resource: "https://vote.makerdao.com",
+      "Once unsafe vaults are bitten the collateral is swapped for Dai to pay back the outstanding debt. Help the system and keep stable bids on collateral. Bid on 25 collateral auctions from liquidated vaults to unlock this achievement.",
+    resource: "https://defiexplore.com/liquidations",
+    steps: {
+      1: "Head over to an auctions portal (Dai Auctions/Defi Explore)",
+      2: "Connect your Web3 wallet",
+      3: "Place a bid on 25 collateral auctions",
+    },
+    note: "Includes Tend and Dent bids",
     imgPath: "mkr_29_flip_bid_4.png",
     unlocked: 0,
     redeemed: 0,
@@ -501,8 +665,14 @@ const badgeList = {
     name: "Won a Collateral Auction",
     longName: "Won a Collateral Auction",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
-    resource: "https://vote.makerdao.com",
+      "Be the winner of a collateral auction from a liquidated vault to unlock this achievement.",
+    resource: "https://defiexplore.com/liquidations",
+    steps: {
+      1: "Head over to an auctions portal (Dai Auctions/Defi Explore)",
+      2: "Connect your Web3 wallet",
+      3: "Call the Deal() function to complete an auction and finalize the collateral and Dai swap",
+    },
+    note: "",
     imgPath: "mkr_30_flip_win_1.png",
     unlocked: 0,
     redeemed: 0,
@@ -517,8 +687,14 @@ const badgeList = {
     name: "Won 5 Collateral Auctions",
     longName: "Won 5 Collateral Auctions",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
-    resource: "https://vote.makerdao.com",
+      "Be the winner of 5 collateral auctions from liquidated vaults to unlock this achievement.",
+    resource: "https://defiexplore.com/liquidations",
+    steps: {
+      1: "Head over to an auctions portal (Dai Auctions/Defi Explore)",
+      2: "Connect your Web3 wallet",
+      3: "Call the Deal() function to complete 5 auctions and finalize the collateral and Dai swaps",
+    },
+    note: "",
     imgPath: "mkr_31_flip_win_2.png",
     unlocked: 0,
     redeemed: 0,
@@ -533,8 +709,14 @@ const badgeList = {
     name: "Won 10 Collateral Auctions",
     longName: "Won 10 Collateral Auctions",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
-    resource: "https://vote.makerdao.com",
+      "Be the winner of 10 collateral auctions from liquidated vaults to unlock this achievement.",
+    resource: "https://defiexplore.com/liquidations",
+    steps: {
+      1: "Head over to an auctions portal (Dai Auctions/Defi Explore)",
+      2: "Connect your Web3 wallet",
+      3: "Call the Deal() function to complete 10 auctions and finalize the collateral and Dai swaps",
+    },
+    note: "",
     imgPath: "mkr_32_flip_win_3.png",
     unlocked: 0,
     redeemed: 0,
@@ -549,8 +731,14 @@ const badgeList = {
     name: "Won 25 Collateral Auctions",
     longName: "Won 25 Collateral Auctions",
     description:
-      "Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
-    resource: "https://vote.makerdao.com",
+      "Be the winner of 25 collateral auctions from liquidated vaults to unlock this achievement.",
+    resource: "https://defiexplore.com/liquidations",
+    steps: {
+      1: "Head over to an auctions portal (Dai Auctions/Defi Explore)",
+      2: "Connect your Web3 wallet",
+      3: "Call the Deal() function to complete 25 auctions and finalize the collateral and Dai swaps",
+    },
+    note: "",
     imgPath: "mkr_33_flip_win_4.png",
     unlocked: 0,
     redeemed: 0,
@@ -965,7 +1153,7 @@ const badgeList = {
 
 export async function getBadgesForAddress(_address: string) {
   return Promise.all(
-    Object.keys(badgeList).map(async key => {
+    Object.keys(badgeList).map(async (key) => {
       let badge = badgeList[key];
       console.log(key);
       let template = await getTemplate(parseFloat(key.slice(3, key.length)));
@@ -985,7 +1173,7 @@ export async function getBadgesForAddress(_address: string) {
 
         badge.unlocked = checkTemplateAddressesForAddress(
           _address,
-          template.addresses,
+          template.addresses
         );
 
         if (badge.unlocked && !badge.redeemed) {
@@ -994,6 +1182,6 @@ export async function getBadgesForAddress(_address: string) {
       }
 
       return badge;
-    }),
+    })
   );
 }
