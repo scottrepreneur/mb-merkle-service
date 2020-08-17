@@ -66,11 +66,12 @@ export async function addOrUpdateTemplateRecord(
   }
 }
 
+// TODO: revert change "templateId-index-copy" => "templateId-index"
 function getIdByTemplate(templateId: number) {
   return new Promise((resolve, reject) => {
     const params = {
       TableName: DYNAMODB_TABLE,
-      IndexName: "templateId-index",
+      IndexName: "templateId-index-copy",
       KeyConditionExpression: "templateId = :templateId",
       ExpressionAttributeValues: {
         ":templateId": templateId,
@@ -92,13 +93,14 @@ function getIdByTemplate(templateId: number) {
   });
 }
 
+// TODO: revert change "templateId-index-copy" => "templateId-index"
 export function getTemplate(
   templateId: number,
 ): Promise<{ addresses: string[]; root: string; progress: Object }> {
   return new Promise((resolve, reject) => {
     const params = {
       TableName: DYNAMODB_TABLE,
-      IndexName: "templateId-index",
+      IndexName: "templateId-index-copy",
       KeyConditionExpression: "templateId = :templateId",
       ExpressionAttributeValues: {
         ":templateId": templateId,
