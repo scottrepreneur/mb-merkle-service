@@ -38,5 +38,20 @@ export function configureApp() {
     res.json({ success: true });
   });
 
+  app.get("/discourse/:message", async (req, res) => {
+    // parse message
+    let message = req.params.message;
+
+    // recover signature address
+    // getBadgesForAddress
+    // filter for unlocked==1
+    // map lookup for badgeId equivalency
+    // for each badge, call discourse badge api
+    // on complete return res.json({success: true, badgeIds: [...]})
+
+    // test responses go here
+    res.json({ response: message });
+  });
+
   return app;
 }
