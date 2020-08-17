@@ -8,6 +8,9 @@ import { getBadgesForAddress } from "./badges";
 // import { checkConsecutiveGovernancePollsCount } from "./badgeActions/governance";
 import { updateRoots } from "./adminActions";
 
+// replace window.ethereum with ethers.js
+import ethers from "ethers";
+
 export function configureApp() {
   const app = express();
   app.set("view engine", "jade");
@@ -40,9 +43,30 @@ export function configureApp() {
 
   app.get("/discourse/:message", async (req, res) => {
     // parse message
-    let message = req.params.message;
+    let message = JSON.parse(req.params.message);
+    console.log("message:", message);
 
     // recover signature address
+    // window.ethereum.sendAsync(  {
+    //   method: 'personal_ecRecover',
+    //   params: [
+    //     `${username}`, response.result
+    //           ],
+    //   from: window.ethereum.selectedAddress
+
+    // },
+    // (error, response) => {
+    //   if (error) {
+    //     console.error("error with recovering address:", error);
+    //   } else {
+    //     console.log(response.result);
+    //   }
+    // });
+    let signer = ethers.utils.recoverAddress(
+      message.username,
+      message.signature,
+    );
+    console.log("signer:", signer);
     // getBadgesForAddress
     // filter for unlocked==1
     // map lookup for badgeId equivalency
@@ -50,7 +74,7 @@ export function configureApp() {
     // on complete return res.json({success: true, badgeIds: [...]})
 
     // test responses go here
-    res.json({ response: message });
+    res.json({ response: signer });
   });
 
   return app;
