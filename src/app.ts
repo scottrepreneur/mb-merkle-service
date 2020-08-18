@@ -10,6 +10,8 @@ import { updateRoots } from "./adminActions";
 
 // replace window.ethereum with ethers.js
 import { ethers } from "ethers";
+import { badgeMap } from "./utils/badgeMap";
+import fetch from "node-fetch";
 
 export function configureApp() {
   const app = express();
@@ -42,43 +44,78 @@ export function configureApp() {
   });
 
   app.get("/discourse/:message", async (req, res) => {
-    let unlockedBadges: {}[] = [];
+    let unlockedBadges: { id: number; description: string }[] = [];
     // parse message
     let message = JSON.parse(req.params.message);
-    console.log("message:", message);
+    // console.log("message:", message);
     let signer = ethers.utils.verifyMessage(
       message.username,
       message.signature,
     );
-    console.log("signer:", signer);
-    console.log("message.address === signer", message.address, signer);
+    // console.log("signer:", signer);
+    // console.log("message.address === signer", message.address, signer);
     if (signer.toLowerCase() !== message.address.toLowerCase()) {
       res.json({ success: false });
       return false;
     }
-    // getBadgesForAddress
+    // getBadgesForAddress && filter for unlocked==1
     getBadgesForAddress(signer)
       .then(badgeList => {
         unlockedBadges = badgeList.filter(badge => {
-          console.log("badge#", badge.id, badge.unlocked);
           return badge.unlocked === 1;
         });
-        console.log("unlockedBadges:", unlockedBadges);
-        res.json({ response: unlockedBadges });
-        // return tempBadges;
+
+        // res.json({ response: unlockedBadges });
+        // map lookup for badgeId equivalency
+        console.log("Object.keys(badgeMap):", Object.keys(badgeMap));
+        const discourseBadgeIds: any = unlockedBadges.map(badge => {
+          console.log("badge.description:", badge.description);
+          if (Object.keys(badgeMap).includes(badge.id.toString())) {
+            // for each badge, call discourse badge api
+            // console.log(
+            //   "content:",
+            //   `{
+            //     username: ${message.username},
+            //     badge_id: ${badge.id},
+            //     reason: 0,
+            //   }`,
+            // );
+            // TODO: replace "Api-Key" value with process.env.Api-Key
+            const requestOptions = {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Api-Username": "aaron",
+                "Api-Key":
+                  "4e266cbb726c5f1533bfed87a62d43f2f9263786d6e403adbbaa36b69f840ff0",
+              },
+              body: JSON.stringify({
+                username: message.username,
+                badge_id: badgeMap[badge.id],
+              }),
+            };
+            fetch(
+              `http://157.245.226.106:9292/user_badges.json`,
+              requestOptions,
+            )
+              .then(res => res.json())
+              .then(resolved =>
+                console.log("Discourse API response:", resolved),
+              );
+            return badgeMap[badge.id];
+          } else {
+            return false;
+          }
+        });
+        // on complete return res.json({success: true, badgeIds: [...]})
+
+        res.json({ response: discourseBadgeIds });
       })
       .catch(e => {
         console.log(e);
       });
 
-    // console.log("unlockedBadges:", unlockedBadges);
-    // filter for unlocked==1
-    // map lookup for badgeId equivalency
-    // for each badge, call discourse badge api
-    // on complete return res.json({success: true, badgeIds: [...]})
-
     // test responses go here
-    // res.json({ response: unlockedBadges });
     return true;
   });
 
