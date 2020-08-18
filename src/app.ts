@@ -9,7 +9,7 @@ import { getBadgesForAddress } from "./badges";
 import { updateRoots } from "./adminActions";
 
 // replace window.ethereum with ethers.js
-import ethers from "ethers";
+import { ethers } from "ethers";
 
 export function configureApp() {
   const app = express();
@@ -62,7 +62,7 @@ export function configureApp() {
     //     console.log(response.result);
     //   }
     // });
-    let signer = ethers.utils.recoverAddress(
+    let signer = ethers.utils.verifyMessage(
       message.username,
       message.signature,
     );
