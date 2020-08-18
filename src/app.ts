@@ -42,6 +42,7 @@ export function configureApp() {
   });
 
   app.get("/discourse/:message", async (req, res) => {
+    let unlockedBadges: {}[] = [];
     // parse message
     let message = JSON.parse(req.params.message);
     console.log("message:", message);
@@ -56,13 +57,28 @@ export function configureApp() {
       return false;
     }
     // getBadgesForAddress
+    getBadgesForAddress(signer)
+      .then(badgeList => {
+        unlockedBadges = badgeList.filter(badge => {
+          console.log("badge#", badge.id, badge.unlocked);
+          return badge.unlocked === 1;
+        });
+        console.log("unlockedBadges:", unlockedBadges);
+        res.json({ response: unlockedBadges });
+        // return tempBadges;
+      })
+      .catch(e => {
+        console.log(e);
+      });
+
+    // console.log("unlockedBadges:", unlockedBadges);
     // filter for unlocked==1
     // map lookup for badgeId equivalency
     // for each badge, call discourse badge api
     // on complete return res.json({success: true, badgeIds: [...]})
 
     // test responses go here
-    res.json({ response: signer });
+    // res.json({ response: unlockedBadges });
     return true;
   });
 
