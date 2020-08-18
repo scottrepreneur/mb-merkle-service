@@ -45,6 +45,7 @@ export function configureApp() {
 
   app.get("/discourse/:message", async (req, res) => {
     let unlockedBadges: { id: number; description: string }[] = [];
+    let errors: {} = {};
     // parse message
     let message = JSON.parse(req.params.message);
     // console.log("message:", message);
@@ -68,19 +69,10 @@ export function configureApp() {
         // res.json({ response: unlockedBadges });
         // map lookup for badgeId equivalency
         console.log("Object.keys(badgeMap):", Object.keys(badgeMap));
-        const discourseBadgeIds: any = unlockedBadges.map(badge => {
+        const discourseBadgeIds = unlockedBadges.map(badge => {
           console.log("badge.description:", badge.description);
           if (Object.keys(badgeMap).includes(badge.id.toString())) {
             // for each badge, call discourse badge api
-            // console.log(
-            //   "content:",
-            //   `{
-            //     username: ${message.username},
-            //     badge_id: ${badge.id},
-            //     reason: 0,
-            //   }`,
-            // );
-            // TODO: replace "Api-Key" value with process.env.Api-Key
             const requestOptions = {
               method: "POST",
               headers: {
@@ -99,17 +91,27 @@ export function configureApp() {
               requestOptions,
             )
               .then(res => res.json())
-              .then(resolved =>
-                console.log("Discourse API response:", resolved),
+              .then(
+                // resolved => console.log("Discourse API response:", resolved),
+                resolved => {
+                  Object.keys(resolved).includes("badges")
+                    ? console.log("success state:", resolved)
+                    : (errors = resolved);
+                },
               );
+            // .catch(err => errors.push(err));
             return badgeMap[badge.id];
           } else {
             return false;
           }
         });
         // on complete return res.json({success: true, badgeIds: [...]})
-
-        res.json({ response: discourseBadgeIds });
+        // console.log("errors", errors);
+        res.json({
+          success: true || false,
+          badgeIds: discourseBadgeIds,
+          errors: errors,
+        });
       })
       .catch(e => {
         console.log(e);
