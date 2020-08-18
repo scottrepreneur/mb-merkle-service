@@ -45,28 +45,16 @@ export function configureApp() {
     // parse message
     let message = JSON.parse(req.params.message);
     console.log("message:", message);
-
-    // recover signature address
-    // window.ethereum.sendAsync(  {
-    //   method: 'personal_ecRecover',
-    //   params: [
-    //     `${username}`, response.result
-    //           ],
-    //   from: window.ethereum.selectedAddress
-
-    // },
-    // (error, response) => {
-    //   if (error) {
-    //     console.error("error with recovering address:", error);
-    //   } else {
-    //     console.log(response.result);
-    //   }
-    // });
     let signer = ethers.utils.verifyMessage(
       message.username,
       message.signature,
     );
     console.log("signer:", signer);
+    console.log("message.address === signer", message.address, signer);
+    if (signer.toLowerCase() !== message.address.toLowerCase()) {
+      res.json({ success: false });
+      return false;
+    }
     // getBadgesForAddress
     // filter for unlocked==1
     // map lookup for badgeId equivalency
@@ -75,6 +63,7 @@ export function configureApp() {
 
     // test responses go here
     res.json({ response: signer });
+    return true;
   });
 
   return app;
