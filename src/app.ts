@@ -13,6 +13,8 @@ import { ethers } from "ethers";
 import { badgeMap } from "./utils/badgeMap";
 import fetch from "node-fetch";
 
+const DISCOURSE_BADGES_API: string = process.env.DISCOURSE_BADGES_API!;
+
 export function configureApp() {
   const app = express();
   app.set("view engine", "jade");
@@ -78,8 +80,7 @@ export function configureApp() {
               headers: {
                 "Content-Type": "application/json",
                 "Api-Username": "aaron",
-                "Api-Key":
-                  "4e266cbb726c5f1533bfed87a62d43f2f9263786d6e403adbbaa36b69f840ff0",
+                "Api-Key": `${DISCOURSE_BADGES_API}`,
               },
               body: JSON.stringify({
                 username: message.username,
@@ -87,7 +88,7 @@ export function configureApp() {
               }),
             };
             fetch(
-              `http://157.245.226.106:9292/user_badges.json`,
+              `https://staging-forum.makerfoundation.com/user_badges.json`,
               requestOptions,
             )
               .then(res => res.json())
