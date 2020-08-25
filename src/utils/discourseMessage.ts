@@ -4,6 +4,8 @@ import { getBadgesForAddress } from "../badges";
 import { ethers } from "ethers";
 import { badgeMap } from "./badgeMap";
 import fetch from "node-fetch";
+// import { stringify } from "querystring";
+// import { v4String } from "uuid/interfaces";
 
 const DISCOURSE_BADGES_API: string = process.env.DISCOURSE_BADGES_API!;
 const DISCOURSE_API_USERNAME: string = process.env.DISCOURSE_API_USERNAME!;
@@ -11,7 +13,9 @@ const DISCOURSE_FORUM_URL: string = process.env.DISCOURSE_FORUM_URL!;
 
 export async function discourseMessage(req, res) {
   let unlockedBadges: { id: number; description: string }[] = [];
-  let errors: {} = {};
+  let discourseBadgeIds: any;
+  let errors: any[] = [];
+  let responseSent: boolean = false;
   // parse message
   let message = JSON.parse(req.params.message);
   // console.log("message:", message);
@@ -28,9 +32,9 @@ export async function discourseMessage(req, res) {
       });
 
       // map lookup for badgeId equivalency
-      console.log("Object.keys(badgeMap):", Object.keys(badgeMap));
-      const discourseBadgeIds = unlockedBadges.map(badge => {
-        console.log("badge.description:", badge.description);
+      // console.log("Object.keys(badgeMap):", Object.keys(badgeMap));
+      discourseBadgeIds = unlockedBadges.map(badge => {
+        // console.log("badge.description:", badge.description);
         if (Object.keys(badgeMap).includes(badge.id.toString())) {
           // for each badge, call discourse badge api
           const requestOptions = {
@@ -45,27 +49,53 @@ export async function discourseMessage(req, res) {
               badge_id: badgeMap[badge.id],
             }),
           };
-          fetch(`${DISCOURSE_FORUM_URL}`, requestOptions)
-            .then(res => res.json())
-            .then(resolved => {
-              Object.keys(resolved).includes("badges")
-                ? console.log("success state:", resolved)
-                : (errors = resolved);
-            });
+          let fetchResult = async () => {
+            let response = await fetch(
+              `${DISCOURSE_FORUM_URL}`,
+              requestOptions,
+            );
+            console.log("response.status:", response.status);
+
+            if (response.status !== 200 && responseSent === false) {
+              errors.push(response);
+              // console.log("discourseError:", response);
+
+              responseSent = true;
+            }
+            return response;
+          };
+          fetchResult();
+          // console.log("fetchResult:", fetchResult);
           return badgeMap[badge.id];
         } else {
           return false;
         }
       });
-      // on complete return res.json({success: true, badgeIds: [...]})
-      res.json({
-        success: true || false,
-        badgeIds: discourseBadgeIds,
-        errors: errors,
-      });
     })
-    .catch(e => {
-      console.log(e);
+    .then(() => {
+      // console.log("errors line 67:", errors);
+      if (responseSent === true) {
+        // console.log("response already sent.");
+        res.json({
+          success: false,
+          badgeIds: null,
+          errors: ["Problem connecting to Discourse API."],
+        });
+      } else {
+        if (unlockedBadges.length === 0) {
+          res.json({
+            success: false,
+            badgeIds: null,
+            errors: ["No eligible badges found."],
+          });
+        } else {
+          res.json({
+            success: true,
+            badgeIds: discourseBadgeIds,
+            errors: errors,
+          });
+        }
+      }
     });
 
   // test responses go here
