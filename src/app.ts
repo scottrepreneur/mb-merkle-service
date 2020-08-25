@@ -9,14 +9,6 @@ import { getBadgesForAddress } from "./badges";
 import { updateRoots } from "./adminActions";
 import { discourseMessage } from "./utils/discourseMessage";
 
-// // replace window.ethereum with ethers.js
-// import { ethers } from "ethers";
-// import { badgeMap } from "./utils/badgeMap";
-// import fetch from "node-fetch";
-
-// const DISCOURSE_BADGES_API: string = process.env.DISCOURSE_BADGES_API!;
-// const DISCOURSE_API_USERNAME: string = process.env.DISCOURSE_API_USERNAME!;
-
 export function configureApp() {
   const app = express();
   app.set("view engine", "jade");

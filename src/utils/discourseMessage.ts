@@ -7,6 +7,7 @@ import fetch from "node-fetch";
 
 const DISCOURSE_BADGES_API: string = process.env.DISCOURSE_BADGES_API!;
 const DISCOURSE_API_USERNAME: string = process.env.DISCOURSE_API_USERNAME!;
+const DISCOURSE_FORUM_URL: string = process.env.DISCOURSE_FORUM_URL!;
 
 export async function discourseMessage(req, res) {
   let unlockedBadges: { id: number; description: string }[] = [];
@@ -44,10 +45,7 @@ export async function discourseMessage(req, res) {
               badge_id: badgeMap[badge.id],
             }),
           };
-          fetch(
-            `https://staging-forum.makerfoundation.com/user_badges.json`,
-            requestOptions,
-          )
+          fetch(`${DISCOURSE_FORUM_URL}`, requestOptions)
             .then(res => res.json())
             .then(resolved => {
               Object.keys(resolved).includes("badges")
