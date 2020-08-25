@@ -45,20 +45,20 @@ async function allBiteAddresses(): Promise<any[]> {
 }
 
 export async function biteAddressesForFrequency(
-  frequency: number
+  frequency: number,
 ): Promise<{ addresses: any[]; progress: Object }> {
   const biteAddresses = await allBiteAddresses();
   // console.log(biteAddresses);
   const biteFreq = new Map(
-    [...new Set(biteAddresses)].map((x) => [
+    [...new Set(biteAddresses)].map(x => [
       x,
-      biteAddresses.filter((y) => y === x).length,
-    ])
+      biteAddresses.filter(y => y === x).length,
+    ]),
   );
   // console.log(biteFreq);
 
   let _addresses = Array.from(
-    new Map([...biteFreq].filter(([k, v]) => v >= frequency)).keys()
+    new Map([...biteFreq].filter(([k, v]) => v >= frequency)).keys(),
   );
   // console.log(test.length);
   return {
@@ -76,7 +76,7 @@ async function allBidAddresses(): Promise<any[]> {
   let b = true;
   let i = 0;
   while (b === true) {
-    setTimeout(async function () {
+    setTimeout(async function() {
       i = i + 1;
       const result = await makerClient.query({
         query: ALL_FLIP_BIDS_QUERY,
@@ -95,7 +95,7 @@ async function allBidAddresses(): Promise<any[]> {
             return null;
           }
         });
-        let newResults = bidResults.filter((x) => x);
+        let newResults = bidResults.filter(x => x);
         wholeResult.push.apply(wholeResult, newResults);
       } else {
         b = false;
@@ -108,20 +108,20 @@ async function allBidAddresses(): Promise<any[]> {
 
 // for now, a tend and dent on the same auction are counted as 2 bids
 export async function bidAddressesForFrequency(
-  frequency: number
+  frequency: number,
 ): Promise<{ addresses: any[]; progress: object }> {
   const bidAddresses = await allBidAddresses();
 
   const bidFreq = new Map(
-    [...new Set(bidAddresses)].map((x) => [
+    [...new Set(bidAddresses)].map(x => [
       x,
-      bidAddresses.filter((y) => y === x).length,
-    ])
+      bidAddresses.filter(y => y === x).length,
+    ]),
   );
   // console.log(bidFreq);
 
   let _addresses = Array.from(
-    new Map([...bidFreq].filter(([k, v]) => v >= frequency)).keys()
+    new Map([...bidFreq].filter(([k, v]) => v >= frequency)).keys(),
   );
   // console.log(_addresses.length);
   return {
@@ -137,7 +137,7 @@ async function allBidGuyAddresses(): Promise<any[]> {
     let b = true;
     let i = 0;
     while (b === true) {
-      setTimeout(async function () {
+      setTimeout(async function() {
         i = i + 1;
         const result = await makerClient.query({
           query: ALL_FLIPS_WON_QUERY,
@@ -154,11 +154,11 @@ async function allBidGuyAddresses(): Promise<any[]> {
                 guy: bid.guy,
                 bidId: bid.bidId,
               };
-            }
+            },
           );
 
           // remove the 0x000 cleared result
-          let noZero = bidGuyResults.filter((bid) => {
+          let noZero = bidGuyResults.filter(bid => {
             if (bid.guy != "0x0000000000000000000000000000000000000000") {
               return true;
             } else {
@@ -168,10 +168,10 @@ async function allBidGuyAddresses(): Promise<any[]> {
 
           // select the first from the array (most recent in time)
           let onlyWinners = noZero.filter(
-            (e, i) => noZero.findIndex((a) => a["bidId"] === e["bidId"]) === i
+            (e, i) => noZero.findIndex(a => a["bidId"] === e["bidId"]) === i,
           );
 
-          let winnerResults = onlyWinners.map((bid) => {
+          let winnerResults = onlyWinners.map(bid => {
             return bid.guy;
           });
           // console.log(bidResults);
@@ -188,20 +188,20 @@ async function allBidGuyAddresses(): Promise<any[]> {
 }
 
 export async function bidGuyAddressesForFrequency(
-  frequency: number
+  frequency: number,
 ): Promise<{ addresses: any[]; progress: object }> {
   const bidGuyAddresses = await allBidGuyAddresses();
 
   const bidGuyFreq = new Map(
-    [...new Set(bidGuyAddresses)].map((x) => [
+    [...new Set(bidGuyAddresses)].map(x => [
       x,
-      bidGuyAddresses.filter((y) => y === x).length,
-    ])
+      bidGuyAddresses.filter(y => y === x).length,
+    ]),
   );
   // console.log(bidGuyFreq);
 
   let _addresses = Array.from(
-    new Map([...bidGuyFreq].filter(([k, v]) => v >= frequency)).keys()
+    new Map([...bidGuyFreq].filter(([k, v]) => v >= frequency)).keys(),
   );
   // console.log(_addresses.length);
   return {

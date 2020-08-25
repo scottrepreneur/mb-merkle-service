@@ -7,6 +7,7 @@ import { join } from "path";
 import { getBadgesForAddress } from "./badges";
 // import { checkConsecutiveGovernancePollsCount } from "./badgeActions/governance";
 import { updateRoots } from "./adminActions";
+import { discourseMessage } from "./utils/discourseMessage";
 
 export function configureApp() {
   const app = express();
@@ -36,6 +37,10 @@ export function configureApp() {
   app.get("/update-roots", async (req, res) => {
     updateRoots();
     res.json({ success: true });
+  });
+
+  app.get("/discourse/:message", async (req, res) => {
+    discourseMessage(req, res);
   });
 
   return app;

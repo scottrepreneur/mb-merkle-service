@@ -1153,7 +1153,7 @@ const badgeList = {
 
 export async function getBadgesForAddress(_address: string) {
   return Promise.all(
-    Object.keys(badgeList).map(async (key) => {
+    Object.keys(badgeList).map(async key => {
       let badge = badgeList[key];
       console.log(key);
       let template = await getTemplate(parseFloat(key.slice(3, key.length)));
@@ -1173,7 +1173,7 @@ export async function getBadgesForAddress(_address: string) {
 
         badge.unlocked = checkTemplateAddressesForAddress(
           _address,
-          template.addresses
+          template.addresses,
         );
 
         if (badge.unlocked && !badge.redeemed) {
@@ -1182,6 +1182,6 @@ export async function getBadgesForAddress(_address: string) {
       }
 
       return badge;
-    })
+    }),
   );
 }
