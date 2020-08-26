@@ -31,6 +31,7 @@ functions:
       - http: ANY /
       - http: ANY /{proxy+}
     environment:
+      ENVIRONMENT: production
       DYNAMODB_TABLE: ${env:DYNAMODB_TABLE}
       MAKER_URL: ${env:MAKER_URL}
       MAKER_USER: ${env:MAKER_USER}
