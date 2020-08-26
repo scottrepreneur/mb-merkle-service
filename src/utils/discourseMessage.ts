@@ -68,9 +68,7 @@ export async function discourseMessage(req, res) {
           // console.log("fetchResult:", fetchResult);
           return badgeMap[badge.id];
         } else {
-          // returning false populates the badges array with false
-          // perhaps returning nothing will not push anything to the array
-          return;
+          return false;
         }
       });
     })
@@ -84,6 +82,7 @@ export async function discourseMessage(req, res) {
           errors: ["Problem connecting to Discourse API."],
         });
       } else {
+        // discourseBadgeIds = discourseBadgeIds.filter(e => e !== false);
         if (unlockedBadges.length === 0) {
           res.json({
             success: false,

@@ -71,7 +71,7 @@ function getIdByTemplate(templateId: number) {
   return new Promise((resolve, reject) => {
     const params = {
       TableName: DYNAMODB_TABLE,
-      IndexName: "templateId-index-copy",
+      IndexName: "templateId-index",
       KeyConditionExpression: "templateId = :templateId",
       ExpressionAttributeValues: {
         ":templateId": templateId,
@@ -100,7 +100,7 @@ export function getTemplate(
   return new Promise((resolve, reject) => {
     const params = {
       TableName: DYNAMODB_TABLE,
-      IndexName: "templateId-index-copy",
+      IndexName: "templateId-index",
       KeyConditionExpression: "templateId = :templateId",
       ExpressionAttributeValues: {
         ":templateId": templateId,
