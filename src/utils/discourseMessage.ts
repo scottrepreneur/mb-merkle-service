@@ -68,7 +68,9 @@ export async function discourseMessage(req, res) {
           // console.log("fetchResult:", fetchResult);
           return badgeMap[badge.id];
         } else {
-          return false;
+          // returning false populates the badges array with false
+          // perhaps returning nothing will not push anything to the array
+          return;
         }
       });
     })
