@@ -35,6 +35,9 @@ functions:
       MAKER_URL: ${env:MAKER_URL}
       MAKER_USER: ${env:MAKER_USER}
       MAKER_PW: ${env:MAKER_PW}
+      DISCOURSE_BADGES_API: ${env:DISCOURSE_BADGES_API}
+      DISCOURSE_API_USERNAME: ${env:DISCOURSE_API_USERNAME}
+      DISCOURSE_FORUM_URL: ${env:DISCOURSE_FORUM_URL}
 #     ## Uncomment below here to use the private VPC setup
 #     vpc:
 #       subnetIds:

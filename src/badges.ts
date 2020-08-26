@@ -1178,6 +1178,8 @@ export async function getBadgesForAddress(_address: string) {
 
         if (badge.unlocked && !badge.redeemed) {
           badge.proof = tree.getHexProof(_address);
+        } else {
+          badge.proof = [];
         }
       }
 
