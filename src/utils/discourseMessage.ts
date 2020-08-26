@@ -36,8 +36,6 @@ export async function discourseMessage(req, res) {
       discourseBadgeIds = unlockedBadges.map(badge => {
         // console.log("badge.description:", badge.description);
         if (Object.keys(badgeMap).includes(badge.id.toString())) {
-          // filter false values out
-
           // for each badge, call discourse badge api
           const requestOptions = {
             method: "POST",
