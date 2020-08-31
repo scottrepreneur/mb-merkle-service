@@ -354,7 +354,7 @@ const badgeList = {
     parent: 15,
     tier: 2,
     name: "Vote on 5 Executive Proposals",
-    longName: "Vote on one Executive Vote<br>to enact a new Proposal",
+    longName: "Vote on five Executive Votes<br>to upgrade the Maker System",
     description:
       "Using Continuous Approval Voting, governance is able to implement progressive changes while protecting the system from unintended changes. Vote on 5 Executive Proposals to unlock this achievement.",
     resource: "https://vote.makerdao.com",
@@ -376,7 +376,7 @@ const badgeList = {
     parent: 16,
     tier: 3,
     name: "Vote on 10 Executive Proposals",
-    longName: "Vote on one Executive Vote<br>to enact a new Proposal",
+    longName: "Vote on ten Executive Votes<br>to upgrade the Maker System",
     description:
       "Using Continuous Approval Voting, governance is able to implement progressive changes while protecting the system from unintended changes. Vote on 10 Executive Proposals to unlock this achievement.",
     resource: "https://vote.makerdao.com",
@@ -398,7 +398,7 @@ const badgeList = {
     parent: 17,
     tier: 4,
     name: "Vote on 20 Executive Proposals",
-    longName: "Vote on one Executive Vote<br>to enact a new Proposal",
+    longName: "Vote on twenty Executive Vote<br>to upgrade the Maker System",
     description:
       "Using Continuous Approval Voting, governance is able to implement progressive changes while protecting the system from unintended changes. Vote on 20 Executive Proposals to unlock this achievement.",
     resource: "https://vote.makerdao.com",
@@ -420,7 +420,7 @@ const badgeList = {
     parent: 18,
     tier: 5,
     name: "Vote on 50 Executive Proposals",
-    longName: "Vote on one Executive Vote<br>to enact a new Proposal",
+    longName: "Vote on fifty Executive Vote<br>to upgrade the Maker System",
     description:
       "Using Continuous Approval Voting, governance is able to implement progressive changes while protecting the system from unintended changes. Vote on 50 Executive Proposals to unlock this achievement.",
     resource: "https://vote.makerdao.com",
@@ -509,7 +509,7 @@ const badgeList = {
     parent: 22,
     tier: 2,
     name: "Bite 10 unsafe Vaults",
-    longName: "Bite an unsafe Vault",
+    longName: "Bite at least 10 unsafe Vaults",
     description:
       "In order to keep Dai stable MKR holders need to ensure collateral can be swiftly swapped to repay Dai debt. Help maintain the system by biting 10 vaults that are below the required collateralization ratio to unlock this achievement.",
     resource: "https://app.keeperdao.com",
@@ -531,7 +531,7 @@ const badgeList = {
     parent: 23,
     tier: 3,
     name: "Bite 50 unsafe Vaults",
-    longName: "Bite an unsafe Vault",
+    longName: "Bite at least fifty unsafe Vaults",
     description:
       "In order to keep Dai stable MKR holders need to ensure collateral can be swiftly swapped to repay Dai debt. Help maintain the system by biting 50 vaults that are below the required collateralization ratio to unlock this achievement.",
     resource: "https://app.keeperdao.com",
@@ -553,7 +553,7 @@ const badgeList = {
     parent: 24,
     tier: 4,
     name: "Bite 100 unsafe Vault",
-    longName: "Bite 100 unsafe Vault",
+    longName: "Bite at least 100 unsafe Vaults",
     description:
       "In order to keep Dai stable MKR holders need to ensure collateral can be swiftly swapped to repay Dai debt. Help maintain the system by biting 100 vaults that are below the required collateralization ratio to unlock this achievement.",
     resource: "https://app.keeperdao.com",
@@ -1178,6 +1178,8 @@ export async function getBadgesForAddress(_address: string) {
 
         if (badge.unlocked && !badge.redeemed) {
           badge.proof = tree.getHexProof(_address);
+        } else {
+          badge.proof = [];
         }
       }
 

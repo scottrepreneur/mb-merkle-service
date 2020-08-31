@@ -32,8 +32,6 @@ export async function updateRoots() {
     console.log(amount);
   });
 
-  // skip 6 & 7, ecosystem partners Dai challenges
-
   // voting on at least N (frequency) governance polls
   const governanceVoteFrequencies = [
     { templateId: 6, frequency: 1 },
@@ -46,12 +44,18 @@ export async function updateRoots() {
   governanceVoteFrequencies.map(async freq => {
     const addresses = await pollVoteAddressesForFrequency(freq.frequency);
     const tree = new MerkleTree(addresses.addresses);
-    addOrUpdateTemplateRecord(
-      freq.templateId,
-      addresses.addresses,
-      tree.getHexRoot(),
-      addresses.progress,
-    );
+
+    if (process.env.ENVIRONMENT === "production") {
+      addOrUpdateTemplateRecord(
+        freq.templateId,
+        addresses.addresses,
+        tree.getHexRoot(),
+        addresses.progress,
+      );
+    } else {
+      // console.log(addresses);
+      console.log(tree.getHexRoot());
+    }
   });
 
   // voting on N (frequency) consecutive governance polls
@@ -74,22 +78,19 @@ export async function updateRoots() {
   ];
   executiveSpellFrequencies.map(async freq => {
     const addresses = await spellVoteAddressesForFrequency(freq.frequency);
-    // console.log(addresses.length);
-    if (addresses.addresses.length > 0) {
-      const tree = new MerkleTree(addresses.addresses);
+    const tree = new MerkleTree(addresses.addresses);
+
+    if (process.env.ENVIRONMENT === "production") {
       addOrUpdateTemplateRecord(
         freq.templateId,
-        addresses.addresses,
-        tree.getHexRoot(),
-        addresses.progress,
+        addresses.addresses || [],
+        tree.getHexRoot() ||
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+        addresses.progress || {},
       );
     } else {
-      addOrUpdateTemplateRecord(
-        freq.templateId,
-        [],
-        "0x0000000000000000000000000000000000000000000000000000000000000000",
-        {},
-      );
+      // console.log(addresses);
+      console.log(tree.getHexRoot());
     }
   });
 
@@ -108,14 +109,20 @@ export async function updateRoots() {
   ];
   bitingVaultsFrequencies.map(async freq => {
     const addresses = await biteAddressesForFrequency(freq.frequency);
-    console.log(addresses.addresses);
     const tree = new MerkleTree(addresses.addresses);
-    addOrUpdateTemplateRecord(
-      freq.templateId,
-      addresses.addresses,
-      tree.getHexRoot(),
-      addresses.progress,
-    );
+
+    if (process.env.ENVIRONMENT === "production") {
+      addOrUpdateTemplateRecord(
+        freq.templateId,
+        addresses.addresses || [],
+        tree.getHexRoot() ||
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+        addresses.progress || {},
+      );
+    } else {
+      // console.log(addresses);
+      console.log(tree.getHexRoot());
+    }
   });
 
   // bidding on at least N (frequency) collateral auctions
@@ -127,14 +134,21 @@ export async function updateRoots() {
   ];
   bidCollateralAuctionFrequencies.map(async freq => {
     // const addresses = await bidAddressesForFrequency(freq.frequency);
-    console.log(freq);
     // const tree = new MerkleTree(addresses.addresses);
-    // addOrUpdateTemplateRecord(
-    //   freq.templateId,
-    //   addresses.addresses,
-    //   tree.getHexRoot(),
-    //   addresses.progress
-    // );
+
+    if (process.env.ENVIRONMENT === "production") {
+      // addOrUpdateTemplateRecord(
+      //   freq.templateId,
+      //   addresses.addresses || [],
+      //   tree.getHexRoot() ||
+      //     "0x0000000000000000000000000000000000000000000000000000000000000000",
+      //   addresses.progress || {},
+      // );
+    } else {
+      console.log(freq);
+      // console.log(addresses);
+      // console.log(tree.getHexRoot());
+    }
   });
 
   // winning at least N (frequency) collateral auctions
@@ -146,13 +160,20 @@ export async function updateRoots() {
   ];
   winCollateralAuctionFrequencies.map(async freq => {
     // const addresses = await bidGuyAddressesForFrequency(freq.frequency);
-    console.log(freq);
     // const tree = new MerkleTree(addresses.addresses);
-    // addOrUpdateTemplateRecord(
-    //   freq.templateId,
-    //   addresses.addresses,
-    //   tree.getHexRoot(),
-    //   addresses.progress
-    // );
+
+    if (process.env.ENVIRONMENT === "production") {
+      // addOrUpdateTemplateRecord(
+      //   freq.templateId,
+      //   addresses.addresses || [],
+      //   tree.getHexRoot() ||
+      //     "0x0000000000000000000000000000000000000000000000000000000000000000",
+      //   addresses.progress || {},
+      // );
+    } else {
+      console.log(freq);
+      // console.log(addresses);
+      // console.log(tree.getHexRoot());
+    }
   });
 }

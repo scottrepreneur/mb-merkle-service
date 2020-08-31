@@ -66,7 +66,6 @@ export async function addOrUpdateTemplateRecord(
   }
 }
 
-// TODO: revert change "templateId-index-copy" => "templateId-index"
 function getIdByTemplate(templateId: number) {
   return new Promise((resolve, reject) => {
     const params = {
@@ -93,7 +92,6 @@ function getIdByTemplate(templateId: number) {
   });
 }
 
-// TODO: revert change "templateId-index-copy" => "templateId-index"
 export function getTemplate(
   templateId: number,
 ): Promise<{ addresses: string[]; root: string; progress: Object }> {
