@@ -1,4 +1,7 @@
-import { checkTemplateAddressesForAddress } from "./utils";
+import {
+  checkTemplateAddressesForAddress,
+  // checkProxyAddresses
+} from "./utils";
 import { getTemplate } from "./utils/aws";
 import { MerkleTree } from "./utils/merkleTree";
 
@@ -37,11 +40,6 @@ const badgeList = {
     },
     note: "",
     imgPath: "mkr_1_dai_locked_1.png",
-    redeemed: 0,
-    unlocked: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR2: {
     id: 2,
@@ -59,11 +57,6 @@ const badgeList = {
     },
     note: "",
     imgPath: "mkr_2_dai_locked_2.png",
-    redeemed: 0,
-    unlocked: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR3: {
     id: 3,
@@ -81,11 +74,6 @@ const badgeList = {
     },
     note: "",
     imgPath: "mkr_3_dai_locked_3.png",
-    redeemed: 0,
-    unlocked: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR4: {
     id: 4,
@@ -102,11 +90,6 @@ const badgeList = {
     },
     note: "",
     imgPath: "mkr_4_dai_sent_1.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR5: {
     id: 5,
@@ -123,11 +106,6 @@ const badgeList = {
     },
     note: "",
     imgPath: "mkr_5_dai_sent_2.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR6: {
     id: 6,
@@ -145,11 +123,6 @@ const badgeList = {
     },
     note: "",
     imgPath: "mkr_6_poll_1.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR7: {
     id: 7,
@@ -167,11 +140,6 @@ const badgeList = {
     },
     note: "",
     imgPath: "mkr_7_poll_2.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR8: {
     id: 8,
@@ -189,11 +157,6 @@ const badgeList = {
     },
     note: "",
     imgPath: "mkr_8_poll_3.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR9: {
     id: 9,
@@ -211,11 +174,6 @@ const badgeList = {
     },
     note: "",
     imgPath: "mkr_9_poll_4.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR10: {
     id: 10,
@@ -233,11 +191,6 @@ const badgeList = {
     },
     note: "",
     imgPath: "mkr_10_poll_5.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR11: {
     id: 11,
@@ -255,11 +208,6 @@ const badgeList = {
     },
     note: "",
     imgPath: "mkr_11_poll_6.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR12: {
     id: 12,
@@ -277,11 +225,6 @@ const badgeList = {
     note:
       "Polls are indexed by deploy timestamp but not necessarily ordered in the voting interface",
     imgPath: "mkr_12_consecutive_poll_1.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR13: {
     id: 13,
@@ -299,11 +242,6 @@ const badgeList = {
     note:
       "Polls are indexed by deploy timestamp but not necessarily ordered in the voting interface",
     imgPath: "mkr_13_consecutive_poll_2.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR14: {
     id: 14,
@@ -321,11 +259,6 @@ const badgeList = {
     note:
       "Polls are indexed by deploy timestamp but not necessarily ordered in the voting interface",
     imgPath: "mkr_14_consecutive_poll_3.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR15: {
     id: 15,
@@ -343,11 +276,6 @@ const badgeList = {
     },
     note: "",
     imgPath: "mkr_15_spell_1.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR16: {
     id: 16,
@@ -365,11 +293,6 @@ const badgeList = {
     },
     note: "",
     imgPath: "mkr_16_spell_2.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR17: {
     id: 17,
@@ -387,11 +310,6 @@ const badgeList = {
     },
     note: "",
     imgPath: "mkr_17_spell_3.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR18: {
     id: 18,
@@ -409,11 +327,6 @@ const badgeList = {
     },
     note: "",
     imgPath: "mkr_18_spell_4.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR19: {
     id: 19,
@@ -431,11 +344,6 @@ const badgeList = {
     },
     note: "",
     imgPath: "mkr_19_spell_5.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR20: {
     id: 20,
@@ -453,11 +361,6 @@ const badgeList = {
     },
     note: "",
     imgPath: "mkr_20_early_spell_1.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR21: {
     id: 21,
@@ -476,11 +379,6 @@ const badgeList = {
     note:
       "Governance Polls have specified start times rather than being available when deployed",
     imgPath: "mkr_21_early_poll_1.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR22: {
     id: 22,
@@ -498,11 +396,6 @@ const badgeList = {
     },
     note: "",
     imgPath: "mkr_22_bite_1.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR23: {
     id: 23,
@@ -520,11 +413,6 @@ const badgeList = {
     },
     note: "",
     imgPath: "mkr_23_bite_2.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR24: {
     id: 24,
@@ -542,11 +430,6 @@ const badgeList = {
     },
     note: "",
     imgPath: "mkr_24_bite_3.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR25: {
     id: 25,
@@ -564,11 +447,6 @@ const badgeList = {
     },
     note: "",
     imgPath: "mkr_25_bite_4.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR26: {
     id: 26,
@@ -586,11 +464,6 @@ const badgeList = {
     },
     note: "Includes Tend and Dent bids",
     imgPath: "mkr_26_flip_bid_1.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR27: {
     id: 27,
@@ -608,11 +481,6 @@ const badgeList = {
     },
     note: "Includes Tend and Dent bids",
     imgPath: "mkr_27_flip_bid_2.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR28: {
     id: 28,
@@ -630,11 +498,6 @@ const badgeList = {
     },
     note: "Includes Tend and Dent bids",
     imgPath: "mkr_28_flip_bid_3.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR29: {
     id: 29,
@@ -652,11 +515,6 @@ const badgeList = {
     },
     note: "Includes Tend and Dent bids",
     imgPath: "mkr_29_flip_bid_4.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR30: {
     id: 30,
@@ -674,11 +532,6 @@ const badgeList = {
     },
     note: "",
     imgPath: "mkr_30_flip_win_1.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR31: {
     id: 31,
@@ -696,11 +549,6 @@ const badgeList = {
     },
     note: "",
     imgPath: "mkr_31_flip_win_2.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR32: {
     id: 32,
@@ -718,11 +566,6 @@ const badgeList = {
     },
     note: "",
     imgPath: "mkr_32_flip_win_3.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
   MKR33: {
     id: 33,
@@ -740,11 +583,6 @@ const badgeList = {
     },
     note: "",
     imgPath: "mkr_33_flip_win_4.png",
-    unlocked: 0,
-    redeemed: 0,
-    progress: 0,
-    proof: [],
-    root: "",
   },
 };
 
@@ -1152,34 +990,37 @@ const badgeList = {
 // };
 
 export async function getBadgesForAddress(_address: string) {
+  // const addressList = await checkProxyAddresses(_address)
+
   return Promise.all(
     Object.keys(badgeList).map(async key => {
       let badge = badgeList[key];
-      console.log(key);
+      badge.progress = 0;
+      badge.unlocked = 0;
+      badge.verified = 0;
+      badge.redeemed = 0;
+      badge.completedAddress = '0x';
+      badge.proof = [];
+      badge.root = "";
+
       let template = await getTemplate(parseFloat(key.slice(3, key.length)));
       if (badge.progress != {}) {
         if (template.progress[_address]) {
           badge.progress = template.progress[_address];
-        } else {
-          badge.progress = 0;
         }
-      } else {
-        badge.progress = 0;
       }
 
       if (template.addresses.length > 0) {
         let tree = new MerkleTree(template.addresses);
         badge.root = tree.getHexRoot();
 
-        badge.unlocked = checkTemplateAddressesForAddress(
-          _address,
+        badge.unlocked = await checkTemplateAddressesForAddress(
+          [_address],
           template.addresses,
         );
 
         if (badge.unlocked && !badge.redeemed) {
           badge.proof = tree.getHexProof(_address);
-        } else {
-          badge.proof = [];
         }
       }
 
