@@ -17,7 +17,7 @@ export async function discourseMessage(req, res) {
   let errors: any[] = [];
   let responseSent: boolean = false;
   // parse message
-  let message = JSON.parse(req.params.message);
+  let message = JSON.parse(req.body);
   // console.log("message:", message);
   let signer = ethers.utils.verifyMessage(message.username, message.signature);
   if (signer.toLowerCase() !== message.address.toLowerCase()) {
