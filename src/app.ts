@@ -39,7 +39,8 @@ export function configureApp() {
     res.json({ success: true });
   });
 
-  app.get("/discourse/:message", async (req, res) => {
+  app.get("/discourse", async (req, res) => {
+    console.log("request.body:", req.body);
     discourseMessage(req, res);
   });
 
