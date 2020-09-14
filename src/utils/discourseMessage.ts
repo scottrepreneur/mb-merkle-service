@@ -17,9 +17,10 @@ export async function discourseMessage(req, res) {
   let errors: any[] = [];
   let responseSent: boolean = false;
   // parse message
+  console.log("discourseMessage.ts:", req.query);
   let message;
   try {
-    message = JSON.parse(req.params);
+    message = req.query;
   } catch {
     console.log("JSON parse error");
     return;

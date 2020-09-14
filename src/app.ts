@@ -40,7 +40,10 @@ export function configureApp() {
   });
 
   app.get("/dev/discourse", async (req, res) => {
-    console.log("request.params:", req.params);
+    // console.log("request.params:", req.params);
+    // console.log("request.body:", req.body);
+    console.log("request.query:", req.query);
+    // console.log(req);
     discourseMessage(req, res);
   });
 
