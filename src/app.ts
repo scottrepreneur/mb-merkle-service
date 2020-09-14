@@ -39,7 +39,7 @@ export function configureApp() {
     res.json({ success: true });
   });
 
-  app.get("/discourse", async (req, res) => {
+  app.get("/dev/discourse", async (req, res) => {
     console.log("request.params:", req.params);
     discourseMessage(req, res);
   });
