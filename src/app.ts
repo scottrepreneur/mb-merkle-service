@@ -7,7 +7,7 @@ import { join } from "path";
 import { getBadgesForAddress } from "./badges";
 // import { checkConsecutiveGovernancePollsCount } from "./badgeActions/governance";
 import { updateRoots } from "./adminActions";
-import { discourseMessage } from "./utils/discourseMessage";
+import discourseMessage from "./utils/discourseMessage";
 
 export function configureApp() {
   const app = express();
@@ -39,7 +39,7 @@ export function configureApp() {
     res.json({ success: true });
   });
 
-  app.get("/dev/discourse", async (req, res) => {
+  app.get("/dev/discourse", (req, res) => {
     // console.log("request.params:", req.params);
     // console.log("request.body:", req.body);
     console.log("request.query:", req.query);
