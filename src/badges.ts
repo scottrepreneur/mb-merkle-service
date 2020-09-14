@@ -999,7 +999,7 @@ export async function getBadgesForAddress(_address: string) {
       badge.unlocked = 0;
       badge.verified = 0;
       badge.redeemed = 0;
-      badge.completedAddress = '0x';
+      badge.completedAddress = "0x";
       badge.proof = [];
       badge.root = "";
 
@@ -1015,7 +1015,7 @@ export async function getBadgesForAddress(_address: string) {
         badge.root = tree.getHexRoot();
 
         badge.unlocked = await checkTemplateAddressesForAddress(
-          [_address],
+          _address,
           template.addresses,
         );
 

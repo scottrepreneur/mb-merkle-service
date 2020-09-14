@@ -64,6 +64,7 @@ export async function discourseMessage(req, res) {
             }
             return response;
           };
+          // add await below
           fetchResult();
           // console.log("fetchResult:", fetchResult);
           return badgeMap[badge.id];
