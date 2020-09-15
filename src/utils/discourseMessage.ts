@@ -33,9 +33,18 @@ export default function discourseMessage(req, res) {
   }
   // getBadgesForAddress && filter for unlocked==1
   getBadgesForAddress(signer).then(async badgeList => {
-    unlockedBadges = badgeList.filter(badge => {
-      return badge.unlocked === 1;
-    });
+    // unlockedBadges = badgeList.filter(badge => {
+    //   return badge.unlocked === 1;
+    // });
+
+    // testing unlocked badges length 0
+    // unlockedBadges = [];
+
+    if (unlockedBadges.length === 0) {
+      console.log("we hit the no eligible badges error");
+
+      return false;
+    }
 
     // map lookup for badgeId equivalency
     // console.log("Object.keys(badgeMap):", Object.keys(badgeMap));
@@ -63,32 +72,20 @@ export default function discourseMessage(req, res) {
         if (response.status !== 200 && responseSent === false) {
           // errors.push(response);
           // responseSent = true;
-          res
-            .status(500)
-            .send({
-              success: false,
-              badgeIds: null,
-              errors: "Problem connecting to Discourse API.",
-            })
-            .end();
-
-          return;
-        }
-
-        if (unlockedBadges.length === 0) {
-          res.status(200).json({
+          return res.status(500).json({
             success: false,
             badgeIds: null,
-            errors: "No eligible badges found.",
+            errors: "Problem connecting to Discourse API.",
           });
-          return;
         }
+
+        console.log("unlocked badges", unlockedBadges);
       }
 
       return false;
     });
 
-    res.json({
+    return res.json({
       success: true,
       badgeIds: discourseBadgeIds,
       errors: errors,
@@ -96,5 +93,5 @@ export default function discourseMessage(req, res) {
   });
 
   // test responses go here
-  return true;
+  return false;
 }
