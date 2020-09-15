@@ -3,7 +3,7 @@ import { getBadgesForAddress } from "../badges";
 import { ethers } from "ethers";
 import { badgeMap } from "./badgeMap";
 import fetch from "node-fetch";
-import _ from "lodash";
+import * as _ from "lodash";
 
 const DISCOURSE_BADGES_API: string = process.env.DISCOURSE_BADGES_API!;
 const DISCOURSE_API_USERNAME: string = process.env.DISCOURSE_API_USERNAME!;
