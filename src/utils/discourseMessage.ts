@@ -12,10 +12,12 @@ let status: number = 200;
 let success: boolean = true;
 let badgeIds: any = null;
 let signer: any = undefined;
-const errors: any[] = ["DiscourseMessage Failed"];
+let errors: any[] = [];
 
 // Default Export
 const discourseMessage = (req, res) => {
+  errors = ["DiscourseMessage Failed"];
+
   if (isBlank(req.query)) {
     status = 500;
     success = false;
@@ -84,13 +86,11 @@ const discourseMessage = (req, res) => {
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 const jsonResponse = res => {
-  res.status(status).json({
+  return res.status(status).json({
     success,
     badgeIds,
     errors,
   });
-
-  return errors.pop();
 };
 
 const VerifyMessage = msg => {
