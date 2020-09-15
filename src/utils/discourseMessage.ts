@@ -16,7 +16,7 @@ let errors: any[] = [];
 
 // Default Export
 const discourseMessage = (req, res) => {
-  errors = ["DiscourseMessage Failed"];
+  // errors = ["DiscourseMessage Failed"];
 
   if (isBlank(req.query)) {
     status = 500;
