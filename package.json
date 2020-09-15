@@ -50,6 +50,7 @@
     "express": "^4.16.2",
     "graphql": "^15.0.0",
     "graphql-tag": "^2.10.3",
+    "lodash": "^4.17.20",
     "merkletreejs": "^0.1.11",
     "node-cron": "^2.0.3",
     "node-fetch": "^2.6.0",
