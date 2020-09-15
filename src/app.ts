@@ -44,15 +44,7 @@ export function configureApp() {
     // console.log("request.body:", req.body);
     console.log("request.query:", req.query);
     // console.log(req);
-    const result = discourseMessage(req, res);
-    if (result === false) {
-      console.log("We're at line 50");
-      res.json({
-        success: false,
-        badgeIds: null,
-        errors: "No eligible badges found.",
-      });
-    }
+    discourseMessage(req, res);
   });
 
   return app;

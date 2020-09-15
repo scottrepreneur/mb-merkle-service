@@ -43,7 +43,11 @@ export default function discourseMessage(req, res) {
     if (unlockedBadges.length === 0) {
       console.log("we hit the no eligible badges error");
 
-      return false;
+      return res.json({
+        success: false,
+        badgeIds: null,
+        errors: "No eligible badges found.",
+      });
     }
 
     // map lookup for badgeId equivalency
