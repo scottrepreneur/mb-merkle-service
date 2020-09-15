@@ -11,6 +11,8 @@ import discourseMessage from "./utils/discourseMessage";
 
 export function configureApp() {
   const app = express();
+  app.enable("trust proxy");
+  app.set("trust proxy", true);
   app.set("view engine", "jade");
   app.use(express.static(join(__dirname, "public")));
   // app.use(compression());
