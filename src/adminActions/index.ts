@@ -8,7 +8,7 @@ import {
   // bidAddressesForFrequency,
   // bidGuyAddressesForFrequency,
 } from "./auctions";
-import { MerkleTree } from "../utils/merkleTree";
+import { MerkleTree } from "merkletreejs";
 
 export async function updateRoots() {
   // saving at least 1 dai in DSR
@@ -43,7 +43,7 @@ export async function updateRoots() {
   ];
   governanceVoteFrequencies.map(async freq => {
     const addresses = await pollVoteAddressesForFrequency(freq.frequency);
-    const tree = new MerkleTree(addresses.addresses);
+    const tree = new MerkleTree(addresses.addresses, addresses.progress);
 
     if (process.env.ENVIRONMENT === "production") {
       addOrUpdateTemplateRecord(
@@ -78,7 +78,7 @@ export async function updateRoots() {
   ];
   executiveSpellFrequencies.map(async freq => {
     const addresses = await spellVoteAddressesForFrequency(freq.frequency);
-    const tree = new MerkleTree(addresses.addresses);
+    const tree = new MerkleTree(addresses.addresses, addresses.progress);
 
     if (process.env.ENVIRONMENT === "production") {
       addOrUpdateTemplateRecord(
@@ -109,7 +109,7 @@ export async function updateRoots() {
   ];
   bitingVaultsFrequencies.map(async freq => {
     const addresses = await biteAddressesForFrequency(freq.frequency);
-    const tree = new MerkleTree(addresses.addresses);
+    const tree = new MerkleTree(addresses.addresses, addresses.progress);
 
     if (process.env.ENVIRONMENT === "production") {
       addOrUpdateTemplateRecord(

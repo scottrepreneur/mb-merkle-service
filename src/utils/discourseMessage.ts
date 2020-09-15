@@ -3,14 +3,14 @@ import { getBadgesForAddress } from "../badges";
 import { ethers } from "ethers";
 import { badgeMap } from "./badgeMap";
 import fetch from "node-fetch";
-import * as _ from "lodash";
+import { isEmpty, isNumber, isNaN } from "lodash";
 
 const DISCOURSE_BADGES_API: string = process.env.DISCOURSE_BADGES_API!;
 const DISCOURSE_API_USERNAME: string = process.env.DISCOURSE_API_USERNAME!;
 const DISCOURSE_FORUM_URL: string = process.env.DISCOURSE_FORUM_URL!;
 
 const isBlank = value => {
-  return (_.isEmpty(value) && !_.isNumber(value)) || _.isNaN(value);
+  return (isEmpty(value) && !isNumber(value)) || isNaN(value);
 };
 
 export default function discourseMessage(req, res) {
