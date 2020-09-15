@@ -33,12 +33,9 @@ export default function discourseMessage(req, res) {
   }
   // getBadgesForAddress && filter for unlocked==1
   getBadgesForAddress(signer).then(async badgeList => {
-    // unlockedBadges = badgeList.filter(badge => {
-    //   return badge.unlocked === 1;
-    // });
-
-    // testing unlocked badges length 0
-    // unlockedBadges = [];
+    unlockedBadges = badgeList.filter(badge => {
+      return badge.unlocked === 1;
+    });
 
     if (unlockedBadges.length === 0) {
       console.log("we hit the no eligible badges error");
