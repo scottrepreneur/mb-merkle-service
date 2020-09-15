@@ -2,10 +2,10 @@ const { v4: uuidv4 } = require("uuid");
 
 var AWS = require("aws-sdk");
 
-if (process.env.ENVIRONMENT === "local") {
-  var credentials = new AWS.SharedIniFileCredentials({ profile: "stwoh2" });
-  AWS.config.credentials = credentials;
-}
+// if (process.env.ENVIRONMENT === "local") {
+//   var credentials = new AWS.SharedIniFileCredentials({ profile: "stwoh2" });
+//   AWS.config.credentials = credentials;
+// }
 AWS.config.update({ region: "us-east-1" });
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
