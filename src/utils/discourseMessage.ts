@@ -1,39 +1,37 @@
+import fetch from "node-fetch";
 import { getBadgesForAddress } from "../badges";
-
 import { ethers } from "ethers";
 import { badgeMap } from "./badgeMap";
-import fetch from "node-fetch";
-import * as _ from "lodash";
+import { isEmpty, isNumber, isNaN } from "lodash";
 
 const DISCOURSE_BADGES_API: string = process.env.DISCOURSE_BADGES_API!;
 const DISCOURSE_API_USERNAME: string = process.env.DISCOURSE_API_USERNAME!;
 const DISCOURSE_FORUM_URL: string = process.env.DISCOURSE_FORUM_URL!;
 
-const isBlank = value => {
-  return (_.isEmpty(value) && !_.isNumber(value)) || _.isNaN(value);
-};
+let status: number = 200;
+let success: boolean = true;
+let badgeIds: any = null;
+let signer: any = undefined;
+let errors: any[] = [];
 
-export default function discourseMessage(req, res) {
-  let unlockedBadges: { id: number; description: string }[] = [];
-  let discourseBadgeIds: any;
-  let errors: any[] = [];
-  let message = req.query;
+// Default Export
+const discourseMessage = (req, res) => {
+  errors = ["DiscourseMessage Failed"];
 
-  if (isBlank(message)) {
-    return res.json({
-      success: false,
-      badgeIds: null,
-      errors: "Invalid request query, please check request params.",
-    });
+  if (isBlank(req.query)) {
+    status = 500;
+    success = false;
+    errors.push("Invalid request query, please check request params.");
+
+    return jsonResponse(res);
   }
 
-  let signer = ethers.utils.verifyMessage(message.username, message.signature);
-
-  if (signer.toLowerCase() !== message.address.toLowerCase()) {
-    return res.json({ success: false, errors: "Error signing the message." });
+  if (!VerifyMessage(req.query)) {
+    return jsonResponse(res);
   }
 
   getBadgesForAddress(signer).then(badgeList => {
+    let unlockedBadges: { id: number; description: string }[] = [];
     // filter for any unlocked badges
     unlockedBadges = badgeList.filter(badge => {
       return badge.unlocked === 1;
@@ -41,15 +39,15 @@ export default function discourseMessage(req, res) {
 
     // return if no user has no unlocked badges
     if (unlockedBadges.length === 0) {
-      return res.json({
-        success: false,
-        badgeIds: null,
-        errors: "No eligible badges found.",
-      });
+      success = false;
+      status = 200;
+      errors.push("No eligible badges found.");
+
+      return jsonResponse(res);
     }
 
     // map over each badge & call discourse badge api
-    discourseBadgeIds = unlockedBadges.map(async badge => {
+    badgeIds = unlockedBadges.map(async badge => {
       if (Object.keys(badgeMap).includes(badge.id.toString())) {
         // Request Options/Config
         const requestOptions = {
@@ -60,7 +58,7 @@ export default function discourseMessage(req, res) {
             "Api-Key": `${DISCOURSE_BADGES_API}`,
           },
           body: JSON.stringify({
-            username: message.username,
+            username: req.query.username,
             badge_id: badgeMap[badge.id],
           }),
         };
@@ -70,23 +68,54 @@ export default function discourseMessage(req, res) {
 
         // response error handling
         if (response.status !== 200) {
-          return res.status(500).json({
-            success: false,
-            badgeIds: null,
-            errors: "Problem connecting to Discourse API.",
-          });
+          success = false;
+          status = 200;
+          errors.push("Problem connecting to Discourse API.");
+
+          return jsonResponse(res);
         }
       }
     });
 
     // valid response
-    return res.json({
-      success: true,
-      badgeIds: discourseBadgeIds,
-      errors: errors,
-    });
+    return jsonResponse(res);
   });
 
-  // discourseMessage Failed
-  return false;
-}
+  return jsonResponse(res);
+};
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+const jsonResponse = res => {
+  return res.status(status).json({
+    success,
+    badgeIds,
+    errors,
+  });
+};
+
+const VerifyMessage = msg => {
+  try {
+    signer = ethers.utils.verifyMessage(msg.username, msg.signature);
+  } catch (error) {
+    success = false;
+    status = 500;
+    errors.push(error);
+  } finally {
+    if (!signer) {
+      return false;
+    }
+
+    if (signer.toLowerCase() !== msg.address.toLowerCase()) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+const isBlank = value => {
+  return (isEmpty(value) && !isNumber(value)) || isNaN(value);
+};
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+export default discourseMessage;

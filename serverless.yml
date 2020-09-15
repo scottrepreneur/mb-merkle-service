@@ -22,6 +22,8 @@ package:
     - "scripts/**"
     - ".vscode/**"
     - "*"
+plugins:
+  - serverless-plugin-typescript
 
 functions:
   http:
