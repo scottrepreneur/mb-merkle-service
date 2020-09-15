@@ -65,6 +65,6 @@ typings/
 # Custom ignores
 .DS_Store
 *.d.ts
-*.js
+# *.js
 *.js.map
 .serverless/

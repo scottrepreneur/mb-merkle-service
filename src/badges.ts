@@ -3,7 +3,7 @@ import {
   // checkProxyAddresses
 } from "./utils";
 import { getTemplate } from "./utils/aws";
-import { MerkleTree } from "merkletreejs";
+import { MerkleTree } from "./utils/merkleTree";
 
 // HARDER TO TRACK IDEAS
 
@@ -1011,11 +1011,7 @@ export async function getBadgesForAddress(_address: string) {
       }
 
       if (template.addresses.length > 0) {
-        let tree = new MerkleTree(
-          template.addresses,
-          template.root,
-          template.progress,
-        );
+        let tree = new MerkleTree(template.addresses);
         badge.root = tree.getHexRoot();
 
         badge.unlocked = await checkTemplateAddressesForAddress(
