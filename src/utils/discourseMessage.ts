@@ -30,7 +30,7 @@ const discourseMessage = async query => {
       .then(badgeList      => { return badgeList.filter(b => { return b.unlocked === 1; }); })
       .then(unlockedBadges => { return grantUnlockedBadges(query, unlockedBadges); })
       .then(keepPromises   => { return Promise.all(keepPromises); })
-      .then(data           => { success = true; resolve(responseObject()); })
+      .then(()             => { success = true; resolve(responseObject()); })
       .catch(error         => { errors.push(error); reject(responseObject());
     });
   });
