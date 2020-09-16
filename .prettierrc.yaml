@@ -1,3 +1,4 @@
-parser: typescript
-trailingComma: all
-singleQuote: false
+parser: typescript;
+trailingComma: all;
+singleQuote: false;
+semi: true;

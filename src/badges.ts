@@ -1,6 +1,7 @@
 import {
-  checkTemplateAddressesForAddress,
-  // checkProxyAddresses
+  checkTemplateAddressesForAddressList,
+  // checkTemplateProgressForAddressList,
+  checkForProxyAddresses
 } from "./utils";
 import { getTemplate } from "./utils/aws";
 import { MerkleTree } from "./utils/merkleTree";
@@ -990,37 +991,55 @@ const badgeList = {
 // };
 
 export async function getBadgesForAddress(_address: string) {
-  // const addressList = await checkProxyAddresses(_address)
+  const addressList = await checkForProxyAddresses(_address)
 
   return Promise.all(
     Object.keys(badgeList).map(async key => {
       let badge = badgeList[key];
-      badge.progress = 0;
-      badge.unlocked = 0;
-      badge.verified = 0;
-      badge.redeemed = 0;
-      badge.completedAddress = '0x';
-      badge.proof = [];
-      badge.root = "";
-
-      let template = await getTemplate(parseFloat(key.slice(3, key.length)));
-      if (badge.progress != {}) {
-        if (template.progress[_address]) {
-          badge.progress = template.progress[_address];
-        }
+      badge = {
+        ...badge,
+        progress: 0,
+        unlocked: 0,
+        verified: 0,
+        redeemed: 0,
+        completedAddress: '0x',
+        proof: [],
+        root: ""
       }
+
+      // WORKAROUND FOR FORUM ROLL OUT
+
+      // if (key === 'MKR1') {
+      //   console.log('test')
+      // }
+
+      // STANDARD IMPLEMENTATION
+      let template = await getTemplate(parseFloat(key.slice(3, key.length)));
+      // if (template.progress != {}) {
+      //   // if (template.progress[_address]) {
+      //   //   badge.progress = template.progress[_address];
+      //   // }
+      //   badge.progress = await checkTemplateProgressForAddressList(
+      //     addressList,
+      //     template.progress,
+      //   );
+      // }
 
       if (template.addresses.length > 0) {
         let tree = new MerkleTree(template.addresses);
         badge.root = tree.getHexRoot();
 
-        badge.unlocked = await checkTemplateAddressesForAddress(
-          [_address],
+        badge.completedAddress = await checkTemplateAddressesForAddressList(
+          addressList,
           template.addresses,
         );
 
+        if (badge.completedAddress !== '0x') {
+          badge.unlocked = 1
+        }
+
         if (badge.unlocked && !badge.redeemed) {
-          badge.proof = tree.getHexProof(_address);
+          badge.proof = tree.getHexProof(badge.completedAddress);
         }
       }
 

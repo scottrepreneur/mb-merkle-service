@@ -31,6 +31,32 @@ export const ALL_SPELL_VOTES_QUERY = gql`
 
 // USER QUERIES
 
+export const PROXY_HOT_LOOKUP_QUERY = gql`
+  query hotProxyLookup($address: String) {
+    voterRegistries(where: {hotAddress: $address}) {
+      id
+      coldAddress
+      hotAddress
+      voteProxies {
+        id
+      }
+    }
+  }
+`;
+
+export const PROXY_COLD_LOOKUP_QUERY = gql`
+  query coldProxyLookup($address: String) {
+    voterRegistries(where: {coldAddress: $address}) {
+      id
+      coldAddress
+      hotAddress
+      voteProxies {
+        id
+      }
+    }
+  }
+`;
+
 export const USER_POLL_VOTES_QUERY = gql`
   query votePollActions($address: String) {
     votePollActions(where: { sender: $address }) {

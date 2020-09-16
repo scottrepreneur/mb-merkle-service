@@ -25,6 +25,14 @@ export const makerVaultsClient = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
+export const daiClient = new ApolloClient({
+  link: new HttpLink({
+    uri: "https://api.thegraph.com/subgraphs/name/raid-guild/dai-subgraph",
+    fetch,
+  }),
+  cache: new InMemoryCache(),
+});
+
 const authLink = setContext((_, { headers }) => {
   const token = Buffer.from(`${MAKER_USER}:${MAKER_PW}`).toString("base64");
   return {

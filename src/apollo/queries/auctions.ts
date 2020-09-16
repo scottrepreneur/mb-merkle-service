@@ -50,7 +50,26 @@ export const ALL_FLIPS_WON_QUERY = gql`
   }
 `;
 
-// ALL_FLAP_BIDS
-// ALL_FLAP_WINS
-// ALL_FLOP_BIDS
-// ALL_FLOP_WINS
+// USER QUERIES
+
+// FLIP BIDS FOR USER
+export const USER_FLIPS_BIDS_QUERY = gql`
+  query userFlipBids($flipper: String!, $address: String) {
+    allFlipBidGuys(
+      filter: {
+        addressByAddressId: { address: { equalToInsensitive: $flipper } },
+        guy: { equalToInsensitive: $address}
+      }
+      orderBy: HEADER_BY_HEADER_ID__BLOCK_NUMBER_DESC
+      first: 1000
+      offset: 0
+    ) {
+      nodes {
+        bidId
+        guy
+      }
+    }
+  }
+`;
+
+// FLIP WINS FOR USER

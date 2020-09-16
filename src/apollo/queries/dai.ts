@@ -28,8 +28,6 @@ export const ALL_POT_EXITS_QUERY = gql`
           transactionByTxHash {
             txFrom
           }
-          blockNumber
-          txHash
         }
       }
     }
@@ -37,5 +35,30 @@ export const ALL_POT_EXITS_QUERY = gql`
 `;
 
 // TRANSFERRED_DAI_QUERY
-// POOL_TOGETHER
-// COMPOUND_DAI
+export const USER_DAI_TRANSFERS_QUERY = gql`
+  query userDaiTransfers($address: String) {
+    transfers(where: {src: $address}) {
+      wad
+    }
+  }
+`;
+
+export const USER_POT_JOINS_QUERY = gql`
+  query userPotJoins($address: String) {
+    joins(where: {address: $address}) {
+      address
+      wad
+      timestamp
+    }
+  }
+`;
+
+export const USER_POT_EXITS_QUERY = gql`
+  query userPotExits($address: String) {
+    exits(where: {address: $address}) {
+      address
+      wad
+      timestamp
+    }
+  }
+`;
