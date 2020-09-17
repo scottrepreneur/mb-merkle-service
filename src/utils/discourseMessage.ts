@@ -103,20 +103,20 @@ const grantUnlockedBadges = (query) => {
   });
 };
 
-const getUnlockedBadges = (query) => { query.unlockedBadges = filterUnlockedBadges(query.makerBadges); console.log("getUnlockBadges returns:", query); return query; };
-const getUserBadges = (query) => { query.userBadges = getUserBadgesFor(query.username); console.log("getUserBadges returns:", query); return query; };
+const getUnlockedBadges = (query) => { query.unlockedBadges = filterUnlockedBadges(query.makerBadges); return query; };
+const getUserBadges = (query) => { query.userBadges = getUserBadgesFor(query.username); return query; };
 
 const filterUnlockedBadges = (makerBadges) => {
   return makerBadges.filter(b => { return b.unlocked === 1; });
 };
 
-const getUserBadgesFor = async (username) => {
-  console.log("username", username)
-  let userAccount = await fetch(`${DISCOURSE_USER_BADGES_URL}/${username}.json`);
-  let userBadges  = await userAccount.json();
-  console.log("userBadges:", userBadges)
-
-  return userBadges;
+const getUserBadgesFor = (username) => {
+  return new Promise(async resolve => {
+    let userAccount = await fetch(`${DISCOURSE_USER_BADGES_URL}/${username}.json`);
+    let userBadges  = await userAccount.json();
+  
+    resolve(userBadges);
+  })
 };
 
 const isBlank = value => { return (isEmpty(value) && !isNumber(value)) || isNaN(value); };
