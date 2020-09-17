@@ -111,8 +111,10 @@ const filterUnlockedBadges = (makerBadges) => {
 };
 
 const getUserBadgesFor = async (username) => {
+  console.log("username", username)
   let userAccount = await fetch(`${DISCOURSE_USER_BADGES_URL}/${username}.json`);
   let userBadges  = await userAccount.json();
+  console.log("userBadges:", userBadges)
 
   return userBadges;
 };
