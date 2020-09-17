@@ -115,7 +115,7 @@ const getUserBadgesFor = (username) => {
     let userAccount = await fetch(`${DISCOURSE_USER_BADGES_URL}/${username}.json`);
     let userBadges  = await userAccount.json();
   
-    resolve(userBadges);
+    resolve(userBadges.badges);
   })
 };
 
