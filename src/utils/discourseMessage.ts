@@ -22,7 +22,6 @@ const discourseMessage = async query => {
   errors = []; badgeIds = [];
 
   return new Promise( async (resolve, reject) => {
-    // let query = {...requestQuery};
 
     if (isBlank(query)) { errors.push("Missing query params"); reject(responseObject()); }
 
