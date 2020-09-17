@@ -30,7 +30,7 @@ const discourseMessage = async requestQuery => {
     // get the unlocked badges from discourse for this user
     const userAccount = await fetch(`${DISCOURSE_FORUM_URL}?username=${query.username}`);
     console.log("userAccount:", userAccount);
-    query.account = userAccount;
+    query.account = await userAccount.json();
 
     getBadgesForAddress(signer)
       .then(badgeList      => { return badgeList.filter(b => { return b.unlocked === 1; }); })
