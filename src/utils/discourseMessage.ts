@@ -17,10 +17,11 @@ let errors: any[] = [];
 
 // (((((((((((((((((((((((((((((((((((((((((())))))))))))))))))))))))))))))))))))))))))
 // (((((((((((((((((((((((((((((((((((((((((())))))))))))))))))))))))))))))))))))))))))
-const discourseMessage = async query => {
+const discourseMessage = async requestQuery => {
   errors = []; badgeIds = [];
 
   return new Promise( async (resolve, reject) => {
+    let query = {...requestQuery};
 
     if (isBlank(query)) { errors.push("Missing query params"); reject(responseObject()); }
 
