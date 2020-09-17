@@ -41,17 +41,28 @@ export function configureApp() {
   });
 
   app.get("/dev/discourse", async (req, res) => {
+    console.log("req.query:", req.query);
     const validParams = ["username", "address", "signature"];
-    const matchesQueryParams = (k) => { return R.contains(k, R.keys(req.query)); };
+    const matchesQueryParams = k => {
+      return R.contains(k, R.keys(req.query));
+    };
 
     if (!validParams.every(key => matchesQueryParams(key))) {
-      res.json({ errors: ["Invalid request query, please check request params."] });
+      res.json({
+        errors: ["Invalid request query, please check request params."],
+      });
       return;
     }
 
     discourseMessage(req.query)
-      .then(response => { console.log(response); res.json(response); })
-      .catch(error => { console.log(error); res.json(error); });
+      .then(response => {
+        console.log(response);
+        res.json(response);
+      })
+      .catch(error => {
+        console.log(error);
+        res.json(error);
+      });
   });
 
   return app;
