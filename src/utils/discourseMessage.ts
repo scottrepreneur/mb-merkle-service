@@ -28,16 +28,12 @@ const discourseMessage = async query => {
 
     if (!VerifyMessage(query)) { reject(responseObject()); }
 
-    // get the unlocked badges from discourse for this user
-    const userAccount = await fetch(`${DISCOURSE_USER_BADGES_URL}/${query.username}.json`);
-    query.account     = await userAccount.json();
-    console.log("query.account", query.account);
-
     getBadgesForAddress(signer)
+      .then(()             => { return query.userBadges = getUserBadges(query.username); })
       .then(badgeList      => { return badgeList.filter(b => { return b.unlocked === 1; }); })
       .then(unlockedBadges => { return grantUnlockedBadges(query, unlockedBadges); })
       .then(keepPromises   => { return Promise.all(keepPromises); })
-      .then(()             => { success = true; resolve(responseObject()); })
+      .then(()             => { success = true;     resolve(responseObject()); })
       .catch(error         => { errors.push(error); reject(responseObject());
     });
   });
@@ -75,13 +71,14 @@ const grantUnlockedBadges = (query, unlockedBadges) => {
     return;
   }
 
+
   return unlockedBadges.map(async badge => {
     if (Object.keys(badgeMap).includes(badge.id.toString())) {
-      // prevent request from executing if 
-      const userBadges = query.account.badges.map(b => b.id);
-      console.log("userBadges:", userBadges);
-      if ( includes(userBadges, badgeMap[badge.id]) ){
-        return
+
+      // if user already unlocked badge, then move on to the next one
+      if (includes(query.userBadges.map(b => b.id), badgeMap[badge.id])) {
+        errors.push(`${badge.id} already unlocked for ${query.username}`);
+        return;
       }
 
       const requestOptions = {
@@ -105,6 +102,13 @@ const grantUnlockedBadges = (query, unlockedBadges) => {
       return json;
     }
   });
+};
+
+const getUserBadges = async (username) => {
+  let userAccount = await fetch(`${DISCOURSE_USER_BADGES_URL}/${username}.json`);
+  let userBadges  = await userAccount.json();
+
+  return userBadges;
 };
 
 const isBlank = value => { return (isEmpty(value) && !isNumber(value)) || isNaN(value); };
