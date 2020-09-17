@@ -2,7 +2,7 @@ import fetch from "node-fetch";
 import { getBadgesForAddress } from "../badges";
 import { ethers } from "ethers";
 import { badgeMap } from "./badgeMap";
-import { isEmpty, isNumber, isNaN } from "lodash";
+import { includes, isEmpty, isNumber, isNaN } from "lodash";
 
 const DISCOURSE_BADGES_API: string = process.env.DISCOURSE_BADGES_API!;
 const DISCOURSE_API_USERNAME: string = process.env.DISCOURSE_API_USERNAME!;
@@ -20,11 +20,16 @@ let errors: any[] = [];
 const discourseMessage = async query => {
   errors = []; badgeIds = [];
 
-  return new Promise((resolve, reject) => {
+  return new Promise( async (resolve, reject) => {
 
     if (isBlank(query)) { errors.push("Missing query params"); reject(responseObject()); }
 
     if (!VerifyMessage(query)) { reject(responseObject()); }
+
+    // get the unlocked badges from discourse for this user
+    const userAccount = await fetch(`${DISCOURSE_FORUM_URL}?username=${query.username}`);
+    console.log("userAccount:", userAccount);
+    query.account = userAccount;
 
     getBadgesForAddress(signer)
       .then(badgeList      => { return badgeList.filter(b => { return b.unlocked === 1; }); })
@@ -70,6 +75,13 @@ const grantUnlockedBadges = (query, unlockedBadges) => {
 
   return unlockedBadges.map(async badge => {
     if (Object.keys(badgeMap).includes(badge.id.toString())) {
+      // prevent request from executing if 
+      const userBadges = query.account.badges.map(b => b.id);
+      console.log("userBadges:", userBadges);
+      if ( includes(userBadges, badgeMap[badge.id]) ){
+        return
+      }
+
       const requestOptions = {
         method: "POST",
         headers: {
