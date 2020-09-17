@@ -40,7 +40,7 @@ export function configureApp() {
     res.json({ success: true });
   });
 
-  app.get("/dev/discourse", async (req, res) => {
+  app.get("/dev/discourse", (req, res) => {
     const validParams = ["username", "address", "signature"];
     const matchesQueryParams = k => {
       return R.contains(k, R.keys(req.query));
