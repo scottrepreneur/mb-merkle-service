@@ -29,6 +29,7 @@ const discourseMessage = async query => {
     if (!VerifyMessage(query)) { reject(responseObject()); }
 
     // get the unlocked badges from discourse for this user
+    console.log(`${DISCOURSE_USER_BADGES_URL}/${query.username}.json`);
     const userAccount = await fetch(`${DISCOURSE_USER_BADGES_URL}/${query.username}.json`);
     query.account     = await userAccount.json();
     console.log("query.account", query.account);
