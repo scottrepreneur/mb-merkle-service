@@ -103,8 +103,8 @@ const grantUnlockedBadges = (query) => {
   });
 };
 
-const getUnlockedBadges = (query) => { query.unlockedBadges = filterUnlockedBadges(query.makerBadges); return query; };
-const getUserBadges = (query) => { query.userBadges = getUserBadgesFor(query.username); return query; };
+const getUnlockedBadges = (query) => { query.unlockedBadges = filterUnlockedBadges(query.makerBadges); console.log("getUnlockBadges returns:", query); return query; };
+const getUserBadges = (query) => { query.userBadges = getUserBadgesFor(query.username); console.log("getUserBadges returns:", query); return query; };
 
 const filterUnlockedBadges = (makerBadges) => {
   return makerBadges.filter(b => { return b.unlocked === 1; });
