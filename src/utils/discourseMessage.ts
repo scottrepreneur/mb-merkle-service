@@ -104,7 +104,7 @@ const grantUnlockedBadges = (query) => {
 };
 
 const getUnlockedBadges = (query) => { query.unlockedBadges = filterUnlockedBadges(query.makerBadges); return query; };
-const getUserBadges = (query) => { query.userBadges = getUserBadgesFor(query.username); return query; };
+const getUserBadges = async (query) => { query.userBadges = await getUserBadgesFor(query.username); return query; };
 
 const filterUnlockedBadges = (makerBadges) => {
   return makerBadges.filter(b => { return b.unlocked === 1; });
