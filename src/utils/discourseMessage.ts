@@ -77,7 +77,7 @@ const grantUnlockedBadges = (query) => {
       // if user already unlocked badge, then move on to the next one
       if (includes(query.userBadges.map(b => b.id), badgeMap[badge.id])) {
         errors.push(`${badge.id} already unlocked for ${query.username}`);
-        return;
+        return new Promise(resolve => resolve("none"));
       }
 
       const requestOptions = {
