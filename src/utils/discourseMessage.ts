@@ -7,6 +7,7 @@ import { includes, isEmpty, isNumber, isNaN } from "lodash";
 const DISCOURSE_BADGES_API: string = process.env.DISCOURSE_BADGES_API!;
 const DISCOURSE_API_USERNAME: string = process.env.DISCOURSE_API_USERNAME!;
 const DISCOURSE_FORUM_URL: string = process.env.DISCOURSE_FORUM_URL!;
+const DISCOURSE_USER_BADGES_URL: string = process.env.DISCOURSE_USER_BADGES_URL!;
 
 // ################################
 let success: boolean = false;
@@ -28,13 +29,8 @@ const discourseMessage = async query => {
     if (!VerifyMessage(query)) { reject(responseObject()); }
 
     // get the unlocked badges from discourse for this user
-    const userAccount = await fetch(`${DISCOURSE_FORUM_URL}`, {method:"GET", headers: {
-      "Content-Type": "application/json",
-      "Api-Username": `${query.username}`,
-      "Api-Key": `${DISCOURSE_BADGES_API}`,
-    }});
-    // console.log("userAccount:", userAccount);
-    query.account = await userAccount.json();
+    const userAccount = await fetch(`${DISCOURSE_USER_BADGES_URL}/${query.username}.json`);
+    query.account     = await userAccount.json();
     console.log("query.account", query.account);
 
     getBadgesForAddress(signer)
