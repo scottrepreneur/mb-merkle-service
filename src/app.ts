@@ -41,7 +41,6 @@ export function configureApp() {
   });
 
   app.get("/dev/discourse", async (req, res) => {
-    console.log("req.query:", req.query);
     const validParams = ["username", "address", "signature"];
     const matchesQueryParams = k => {
       return R.contains(k, R.keys(req.query));
@@ -56,12 +55,12 @@ export function configureApp() {
 
     discourseMessage(req.query)
       .then(response => {
-        console.log(response);
-        res.json(response);
+        console.log("response:", response);
+        res.status(200).json(response);
       })
       .catch(error => {
-        console.log(error);
-        res.json(error);
+        console.log("error:", error);
+        res.status(500).json(error);
       });
   });
 
