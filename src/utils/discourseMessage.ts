@@ -17,11 +17,11 @@ let errors: any[] = [];
 
 // (((((((((((((((((((((((((((((((((((((((((())))))))))))))))))))))))))))))))))))))))))
 // (((((((((((((((((((((((((((((((((((((((((())))))))))))))))))))))))))))))))))))))))))
-const discourseMessage = async requestQuery => {
+const discourseMessage = async query => {
   errors = []; badgeIds = [];
 
   return new Promise( async (resolve, reject) => {
-    let query = {...requestQuery};
+    // let query = {...requestQuery};
 
     if (isBlank(query)) { errors.push("Missing query params"); reject(responseObject()); }
 
@@ -29,8 +29,9 @@ const discourseMessage = async requestQuery => {
 
     // get the unlocked badges from discourse for this user
     const userAccount = await fetch(`${DISCOURSE_FORUM_URL}?username=${query.username}`);
-    console.log("userAccount:", userAccount);
+    // console.log("userAccount:", userAccount);
     query.account = await userAccount.json();
+    console.log("query.account", query.account);
 
     getBadgesForAddress(signer)
       .then(badgeList      => { return badgeList.filter(b => { return b.unlocked === 1; }); })
