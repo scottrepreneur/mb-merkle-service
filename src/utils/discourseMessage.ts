@@ -28,9 +28,10 @@ const discourseMessage = async query => {
     if (!VerifyMessage(query)) { reject(responseObject()); }
 
     getBadgesForAddress(signer)
-      .then(()             => { return query.userBadges = getUserBadges(query.username); })
-      .then(badgeList      => { return badgeList.filter(b => { return b.unlocked === 1; }); })
-      .then(unlockedBadges => { return grantUnlockedBadges(query, unlockedBadges); })
+      .then(makerBadges    => { query.makerBadges = makerBadges; return query; })
+      .then(query          => { return getUnlockedBadges(query); })
+      .then(query          => { return getUserBadges(query); })
+      .then(query          => { return grantUnlockedBadges(query); })
       .then(keepPromises   => { return Promise.all(keepPromises); })
       .then(()             => { success = true;     resolve(responseObject()); })
       .catch(error         => { errors.push(error); reject(responseObject());
@@ -60,18 +61,17 @@ const VerifyMessage = async msg => {
   }
 };
 
-const grantUnlockedBadges = (query, unlockedBadges) => {
+const grantUnlockedBadges = (query) => {
 
-  if (!unlockedBadges) { errors.push("No unlocked badges available");
+  if (!query.unlockedBadges) { errors.push("No unlocked badges available");
     return;
   }
 
-  if (unlockedBadges.length === 0) { errors.push("No eligible badges found.");
+  if (query.unlockedBadges.length === 0) { errors.push("No eligible badges found.");
     return;
   }
 
-
-  return unlockedBadges.map(async badge => {
+  return query.unlockedBadges.map(async badge => {
     if (Object.keys(badgeMap).includes(badge.id.toString())) {
 
       // if user already unlocked badge, then move on to the next one
@@ -103,7 +103,14 @@ const grantUnlockedBadges = (query, unlockedBadges) => {
   });
 };
 
-const getUserBadges = async (username) => {
+const getUnlockedBadges = (query) => { query.unlockedBadges = filterUnlockedBadges(query.makerBadges); return query; };
+const getUserBadges = (query) => { query.userBadges = getUserBadgesFor(query.username); return query; };
+
+const filterUnlockedBadges = (makerBadges) => {
+  return makerBadges.filter(b => { return b.unlocked === 1; });
+};
+
+const getUserBadgesFor = async (username) => {
   let userAccount = await fetch(`${DISCOURSE_USER_BADGES_URL}/${username}.json`);
   let userBadges  = await userAccount.json();
 
