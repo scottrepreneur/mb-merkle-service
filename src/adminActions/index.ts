@@ -2,6 +2,7 @@ import { addOrUpdateTemplateRecord } from "../utils/aws";
 import {
   pollVoteAddressesForFrequency,
   spellVoteAddressesForFrequency,
+  consecutivePollVoteAddressesForFrequency
 } from "./governance";
 import {
   biteAddressesForFrequency,
@@ -53,19 +54,30 @@ export async function updateRoots() {
         addresses.progress,
       );
     } else {
-      // console.log(addresses);
       console.log(tree.getHexRoot());
     }
   });
 
   // voting on N (frequency) consecutive governance polls
-  const consecutiveGovernanceVoteFrequencies = [
+  const consecutiveGovernancePollFrequencies = [
     { templateId: 12, frequency: 2 },
     { templateId: 13, frequency: 5 },
     { templateId: 14, frequency: 10 },
   ];
-  consecutiveGovernanceVoteFrequencies.map(async freq => {
-    console.log(freq);
+  consecutiveGovernancePollFrequencies.map(async freq => {
+    const addresses = await consecutivePollVoteAddressesForFrequency(freq.frequency)
+    const tree = new MerkleTree(addresses.addresses);
+
+    if (process.env.ENVIRONMENT === "production") {
+      addOrUpdateTemplateRecord(
+        freq.templateId,
+        addresses.addresses,
+        tree.getHexRoot(),
+        addresses.progress,
+      );
+    } else {
+      console.log(tree.getHexRoot());
+    }
   });
 
   // voting on at least N (frequency) executive proposals (spells)
@@ -85,11 +97,10 @@ export async function updateRoots() {
         freq.templateId,
         addresses.addresses || [],
         tree.getHexRoot() ||
-          "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
         addresses.progress || {},
       );
     } else {
-      // console.log(addresses);
       console.log(tree.getHexRoot());
     }
   });
@@ -116,11 +127,10 @@ export async function updateRoots() {
         freq.templateId,
         addresses.addresses || [],
         tree.getHexRoot() ||
-          "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
         addresses.progress || {},
       );
     } else {
-      // console.log(addresses);
       console.log(tree.getHexRoot());
     }
   });

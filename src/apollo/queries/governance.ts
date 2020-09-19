@@ -84,9 +84,30 @@ export const EARLY_POLL_VOTER_QUERY = gql`
   }
 `;
 
-// USER_SPELL_VOTE_QUERY
+// CONSECUTIVE_POLL_VOTE_QUERY
+export const USER_CONSECUTIVE_POLL_VOTE_QUERY = gql`
+  query consecutivePolls($address: String) {
+    votePollActions(where: {sender: $address}) {
+      id
+      sender
+      poll {
+        pollId
+      }
+    }
+  }
+`;
+
 // EARLY_SPELL_VOTER_QUERY
-// LOCK_MKR_QUERY
-// USER_CAST_SPELL_QUERY
-// USER_SPELL_10_VOTES_QUERY
-// USER_SPELL_CASTED_QUERY
+export const EARLY_SPELL_VOTER_QUERY = gql`
+  query earlySpellVotes($address: String) {
+    addActions(where: {sender: $address}) {
+      id
+      sender
+      timestamp
+      spell {
+        id
+        timestamp
+      }
+    }
+  }
+`;
