@@ -13,6 +13,7 @@ const DISCOURSE_USER_BADGES_URL: string = process.env.DISCOURSE_USER_BADGES_URL!
 let success: boolean = false;
 let signer: any = undefined;
 let badgeIds: any[] = [];
+let badges: any[] = [];
 let errors: any[] = [];
 // ################################
 
@@ -48,12 +49,8 @@ const VerifyMessage = async msg => {
 
     if (signer && signer.toLowerCase() !== msg.address.toLowerCase())
       return false;
-
   }
-  catch (error) {
-    errors.push(error);
-    return false;
-  }
+  catch (error) { errors.push(error); return false; }
   finally {
     if (signer) { return true; }
 
@@ -76,9 +73,9 @@ const grantUnlockedBadges = (query) => {
 
       // if user already unlocked badge, then move on to the next one
       if (includes(query.userBadges.map(b => b.id), badgeMap[badge.id])) {
-        // errors.push(`Badge "${badge.name}" already unlocked for ${query.username}`);
-        errors.push(badge);
-        return new Promise(resolve => resolve("none"));
+        errors.push(`Badge [${badgeMap[badge.id]}] '${badge.name}' already unlocked for ${query.username}`);
+        badges.push(badge);
+        return new Promise(resolve => resolve());
       }
 
       const requestOptions = {
@@ -97,7 +94,7 @@ const grantUnlockedBadges = (query) => {
       const response = await fetch(`${DISCOURSE_FORUM_URL}`, requestOptions);
       const json     = await response.json();
 
-      if (response.status === 200) { badgeIds.push(badgeMap[badge.id]); }
+      if (response.status === 200) { badgeIds.push(badgeMap[badge.id]); badges.push(badge); }
 
       return json;
     }
@@ -115,14 +112,14 @@ const getUserBadgesFor = (username) => {
   return new Promise(async resolve => {
     let userAccount = await fetch(`${DISCOURSE_USER_BADGES_URL}/${username}.json`);
     let userBadges  = await userAccount.json();
-  
+
     resolve(userBadges.badges);
   })
 };
 
 const isBlank = value => { return (isEmpty(value) && !isNumber(value)) || isNaN(value); };
 
-const responseObject = () => { return { success, errors, badgeIds }; };
+const responseObject = () => { return { success, errors, badgeIds, badges }; };
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 export default discourseMessage;
