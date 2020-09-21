@@ -9,8 +9,6 @@ export const ALL_POLL_VOTES_QUERY = gql`
       sender
       poll {
         pollId
-        startDate
-        creator
       }
       timestamp
     }
@@ -24,7 +22,31 @@ export const ALL_SPELL_VOTES_QUERY = gql`
       spell {
         id
       }
-      locked
+    }
+  }
+`;
+
+export const ALL_EARLY_POLL_VOTES_QUERY = gql`
+  query votePollActions($skip: Int) {
+    votePollActions(first: 1000, skip: $skip) {
+      sender
+      poll {
+        startDate
+      }
+      timestamp
+    }
+  }
+`;
+
+export const ALL_EARLY_SPELL_VOTES_QUERY = gql`
+  query spellVoteActions($skip: Int) {
+    addActions(first: 1000, skip: $skip) {
+      sender
+      spell {
+        id
+        timestamp
+      }
+      timestamp
     }
   }
 `;
@@ -70,9 +92,9 @@ export const USER_POLL_VOTES_QUERY = gql`
   }
 `;
 
-export const EARLY_POLL_VOTER_QUERY = gql`
+export const EARLY_POLL_VOTES_QUERY = gql`
   query votePollActions($address: String) {
-    votePollActions(where: { sender: $address }) {
+    votePollActions(where: {sender: $address}) {
       id
       sender
       poll {
@@ -98,7 +120,7 @@ export const USER_CONSECUTIVE_POLL_VOTE_QUERY = gql`
 `;
 
 // EARLY_SPELL_VOTER_QUERY
-export const EARLY_SPELL_VOTER_QUERY = gql`
+export const EARLY_SPELL_VOTES_QUERY = gql`
   query earlySpellVotes($address: String) {
     addActions(where: {sender: $address}) {
       id

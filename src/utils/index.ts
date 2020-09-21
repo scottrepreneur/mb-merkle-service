@@ -60,6 +60,9 @@ const getProxyAddress = async (query, address) => {
     fetchPolicy: "cache-first",
   }).catch(err => console.log(err));
 
+  // deal with multiple voterRegisty entries
+  // deal with multiple proxies
+
   if (result.data.voterRegistries[0]) {
     return result.data.voterRegistries[0]['voteProxies'][0]['id'];
   } else {
@@ -76,5 +79,20 @@ export async function checkForProxyAddresses(address: string): Promise<any[]> {
 
   return Promise.all(lookup_types.map(query => getProxyAddress(query, address)))
 }
-  // deal with multiple voterRegisty entries
-  // deal with multiple proxies
+
+export function longestConsecutiveCount(arr: number[]) {
+  let chunks: any[] = [];
+  let prev: number = 0;
+
+  var sorted = arr.sort(function (a, b) { return a - b });
+
+  sorted.forEach((current) => {
+    if (current - prev != 1) chunks.push([]);
+    chunks[chunks.length - 1].push(current);
+    prev = current;
+  })
+
+  chunks.sort((a, b) => b.length - a.length);
+
+  return chunks[0].length;
+}

@@ -2,7 +2,9 @@ import { addOrUpdateTemplateRecord } from "../utils/aws";
 import {
   pollVoteAddressesForFrequency,
   spellVoteAddressesForFrequency,
-  consecutivePollVoteAddressesForFrequency
+  consecutivePollVoteAddressesForFrequency,
+  earlyExecutiveVoteAddressesForTime,
+  earlyPollVoteAddressesForTime
 } from "./governance";
 import {
   biteAddressesForFrequency,
@@ -54,7 +56,7 @@ export async function updateRoots() {
         addresses.progress,
       );
     } else {
-      console.log(tree.getHexRoot());
+      console.log(tree.getHexRoot() || "0x0000000000000000000000000000000000000000000000000000000000000000");
     }
   });
 
@@ -76,7 +78,7 @@ export async function updateRoots() {
         addresses.progress,
       );
     } else {
-      console.log(tree.getHexRoot());
+      console.log(tree.getHexRoot() || "0x0000000000000000000000000000000000000000000000000000000000000000");
     }
   });
 
@@ -101,15 +103,52 @@ export async function updateRoots() {
         addresses.progress || {},
       );
     } else {
-      console.log(tree.getHexRoot());
+      console.log(tree.getHexRoot() || "0x0000000000000000000000000000000000000000000000000000000000000000");
     }
   });
 
   // early voter on Executive Spell (within 60 minutes of creation)
-  console.log({ templateId: 20, time: 60 });
+  const earlyExecutiveVotes = [
+    { templateId: 20, time: 3600 }
+  ]
+  earlyExecutiveVotes.map(async time => {
+    const addresses = await earlyExecutiveVoteAddressesForTime(time.time)
+    const tree = new MerkleTree(addresses.addresses);
+
+    if (process.env.ENVIRONMENT === "production") {
+      addOrUpdateTemplateRecord(
+        time.templateId,
+        addresses.addresses || [],
+        tree.getHexRoot() ||
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+        addresses.progress || {},
+      );
+    } else {
+      console.log(tree.getHexRoot() || "0x0000000000000000000000000000000000000000000000000000000000000000");
+    }
+
+  });
 
   // early voter on governance poll (within 60 minutes of start time)
-  console.log({ templateId: 21, time: 60 });
+  const earlyPollVotes = [
+    { templateId: 21, time: 3600 }
+  ]
+  earlyPollVotes.map(async time => {
+    const addresses = await earlyPollVoteAddressesForTime(time.time)
+    const tree = new MerkleTree(addresses.addresses);
+
+    if (process.env.ENVIRONMENT === "production") {
+      addOrUpdateTemplateRecord(
+        time.templateId,
+        addresses.addresses || [],
+        tree.getHexRoot() ||
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+        addresses.progress || {},
+      );
+    } else {
+      console.log(tree.getHexRoot() || "0x0000000000000000000000000000000000000000000000000000000000000000");
+    }
+  })
 
   // biting at least N (frequency) unsafe Vaults
   const bitingVaultsFrequencies = [
@@ -131,7 +170,7 @@ export async function updateRoots() {
         addresses.progress || {},
       );
     } else {
-      console.log(tree.getHexRoot());
+      console.log(tree.getHexRoot() || "0x0000000000000000000000000000000000000000000000000000000000000000");
     }
   });
 
@@ -157,7 +196,7 @@ export async function updateRoots() {
     } else {
       console.log(freq);
       // console.log(addresses);
-      // console.log(tree.getHexRoot());
+      // console.log(tree.getHexRoot() || "0x0000000000000000000000000000000000000000000000000000000000000000");
     }
   });
 
@@ -183,7 +222,7 @@ export async function updateRoots() {
     } else {
       console.log(freq);
       // console.log(addresses);
-      // console.log(tree.getHexRoot());
+      // console.log(tree.getHexRoot() || "0x0000000000000000000000000000000000000000000000000000000000000000");
     }
   });
 }

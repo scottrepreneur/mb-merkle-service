@@ -3,6 +3,10 @@ import {
   // checkTemplateProgressForAddressList,
   checkForProxyAddresses
 } from "./utils";
+import {
+  USER_DAI_TRANSFERS_QUERY
+} from "./apollo/queries/dai";
+import { daiClient } from "./apollo/clients";
 import { getTemplate } from "./utils/aws";
 import { MerkleTree } from "./utils/merkleTree";
 
@@ -1002,7 +1006,7 @@ export async function getBadgesForAddress(_address: string) {
         unlocked: 0,
         verified: 0,
         redeemed: 0,
-        completedAddress: '0x',
+        completedAddress: "0x",
         proof: [],
         root: ""
       }
@@ -1013,33 +1017,86 @@ export async function getBadgesForAddress(_address: string) {
       //   console.log('test')
       // }
 
-      // STANDARD IMPLEMENTATION
-      let template = await getTemplate(parseFloat(key.slice(3, key.length)));
-      // if (template.progress != {}) {
-      //   // if (template.progress[_address]) {
-      //   //   badge.progress = template.progress[_address];
-      //   // }
-      //   badge.progress = await checkTemplateProgressForAddressList(
-      //     addressList,
-      //     template.progress,
-      //   );
-      // }
+      // 4. Send 10 Dai, 5.
 
-      if (template.addresses.length > 0) {
-        let tree = new MerkleTree(template.addresses);
-        badge.root = tree.getHexRoot();
+      if (key === 'MKR4') {
+        const result = await daiClient.query({
+          query: USER_DAI_TRANSFERS_QUERY,
+          fetchPolicy: "cache-first",
+          variables: {
+            address: _address.toLowerCase()
+          }
+        });
 
-        badge.completedAddress = await checkTemplateAddressesForAddressList(
-          addressList,
-          template.addresses,
-        );
-
-        if (badge.completedAddress !== '0x') {
-          badge.unlocked = 1
+        let sent = 0;
+        if (result.data && result.data.transfers.length > 0) {
+          for (let i = 0; i < result.data.transfers.length; i++) {
+            sent = sent + parseInt(result.data.transfers[i]['wad'])
+            if (sent > 11) {
+              break;
+            }
+          }
         }
 
-        if (badge.unlocked && !badge.redeemed) {
-          badge.proof = tree.getHexProof(badge.completedAddress);
+        if (sent > 10) {
+          badge.unlocked = 1
+          badge.completedAddress = _address
+        }
+      } else if
+        (key === 'MKR5') {
+        const result = await daiClient.query({
+          query: USER_DAI_TRANSFERS_QUERY,
+          fetchPolicy: "cache-first",
+          variables: {
+            address: _address.toLowerCase()
+          }
+        });
+
+        let sent = 0;
+        if (result.data && result.data.transfers.length > 0) {
+          for (let i = 0; i < result.data.transfers.length; i++) {
+            sent = sent + parseInt(result.data.transfers[i]['wad'])
+            if (sent > 101) {
+              break;
+            }
+          }
+        }
+
+        if (sent > 100) {
+          badge.unlocked = 1
+          badge.completedAddress = _address
+        }
+      }
+
+      else {
+        // STANDARD IMPLEMENTATION
+        let template = await getTemplate(parseFloat(key.slice(3, key.length)));
+        // if (template.progress != {}) {
+        //   // if (template.progress[_address]) {
+        //   //   badge.progress = template.progress[_address];
+        //   // }
+        //   badge.progress = await checkTemplateProgressForAddressList(
+        //     addressList,
+        //     template.progress,
+        //   );
+        // }
+
+        if (template.addresses.length > 0) {
+          let tree = new MerkleTree(template.addresses);
+          badge.root = tree.getHexRoot();
+
+          badge.completedAddress = await checkTemplateAddressesForAddressList(
+            addressList,
+            template.addresses,
+          );
+
+          if (badge.completedAddress !== '0x') {
+            badge.unlocked = 1
+          }
+
+          if (badge.unlocked && !badge.redeemed) {
+            badge.proof = tree.getHexProof(badge.completedAddress);
+          }
         }
       }
 

@@ -2,11 +2,14 @@ import { governanceClient } from "../apollo/clients";
 import {
   ALL_POLL_VOTES_QUERY,
   // USER_CONSECUTIVE_POLL_VOTE_QUERY,
-  // EARLY_POLL_VOTER_QUERY,
+  ALL_EARLY_POLL_VOTES_QUERY,
   ALL_SPELL_VOTES_QUERY,
-  // EARLY_SPELL_VOTER_QUERY
+  ALL_EARLY_SPELL_VOTES_QUERY
 } from "../apollo/queries/governance";
-import { mapFrequenciesToProgressObject } from "../utils";
+import {
+  mapFrequenciesToProgressObject,
+  longestConsecutiveCount
+} from "../utils";
 
 // GOVERNANCE POLLS
 
@@ -41,13 +44,13 @@ async function allGovernancePollAddressesWithPollId() {
   let i = 0;
   while (b === true) {
     i = i + 1;
-    const result = await governanceClient.query({
+    const result: any = await governanceClient.query({
       query: ALL_POLL_VOTES_QUERY,
       fetchPolicy: "cache-first",
       variables: {
         skip: i * 1000,
       },
-    });
+    }).catch(err => console.log(err));
     if (result.data.votePollActions.length > 0) {
       wholeResult.push.apply(wholeResult, result.data.votePollActions);
     } else {
@@ -57,6 +60,35 @@ async function allGovernancePollAddressesWithPollId() {
 
   return wholeResult.map((action: any) => {
     return { sender: action.sender, pollId: action.poll.pollId };
+  });
+}
+
+async function allGovernancePollAddressesWithTimestamps() {
+  let wholeResult = [];
+  let b = true;
+  let i = 0;
+  while (b === true) {
+    i = i + 1;
+    const result: any = await governanceClient.query({
+      query: ALL_EARLY_POLL_VOTES_QUERY,
+      fetchPolicy: "cache-first",
+      variables: {
+        skip: i * 1000,
+      },
+    }).catch(err => console.log(err));
+    if (result.data.votePollActions.length > 0) {
+      wholeResult.push.apply(wholeResult, result.data.votePollActions);
+    } else {
+      b = false;
+    }
+  }
+
+  return wholeResult.map((action: any) => {
+    return {
+      sender: action.sender,
+      createdTimestamp: action.poll.startDate,
+      votedTimestamp: action.timestamp
+    };
   });
 }
 
@@ -79,33 +111,16 @@ export async function pollVoteAddressesForFrequency(
   };
 }
 
-function longestConsecutiveCount(arr: number[]) {
-  let chunks: any[] = [];
-  let prev: number = 0;
-
-  var sorted = arr.sort(function (a, b) { return a - b });
-
-  sorted.forEach((current) => {
-    if (current - prev != 1) chunks.push([]);
-    chunks[chunks.length - 1].push(current);
-    prev = current;
-  })
-
-  chunks.sort((a, b) => b.length - a.length);
-
-  return chunks[0].length;
-}
-
 export async function consecutivePollVoteAddressesForFrequency(
   frequency: number
 ): Promise<{ addresses: any[]; progress: Object }> {
   const pollVoteAddresses = await allGovernancePollAddressesWithPollId()
-  const consecutiveVoteFreq = new Map(
+  const consecutivePollVoteFreq = new Map(
     [...new Set(pollVoteAddresses)].map(poll => [
       poll.sender,
-      // get the longest consecutive count from the arrays
+      // get the longest consecutive count from the arrays of each address
       longestConsecutiveCount(pollVoteAddresses.filter(_poll => {
-        // get polls for current address
+        // get pollIds for current address
         if (_poll.sender === poll.sender) {
           return _poll.pollId
         }
@@ -117,12 +132,38 @@ export async function consecutivePollVoteAddressesForFrequency(
 
     ]))
 
-  console.log(consecutiveVoteFreq)
   return {
     addresses: Array.from(
-      new Map([...consecutiveVoteFreq].filter(([k, v]) => v >= frequency)).keys(),
+      new Map([...consecutivePollVoteFreq].filter(([k, v]) => v >= frequency)).keys(),
     ),
-    progress: mapFrequenciesToProgressObject(consecutiveVoteFreq, frequency),
+    progress: mapFrequenciesToProgressObject(consecutivePollVoteFreq, frequency),
+  }
+}
+
+export async function earlyPollVoteAddressesForTime(time: number) {
+  const earlyPollVoteAddresses = await allGovernancePollAddressesWithTimestamps();
+  const earlyPollVoteFreq = new Map(
+    [...new Set(earlyPollVoteAddresses)].map(poll => [
+      poll.sender,
+      // get the longest consecutive count from the arrays of each address
+      earlyPollVoteAddresses.filter(_poll => {
+        // get pollIds for current address
+        return _poll.sender === poll.sender && _poll.votedTimestamp - _poll.createdTimestamp < time
+      }).length
+    ])
+  )
+
+  const filterEarlyPollVoteFreq = new Map(
+    [...earlyPollVoteFreq]
+      .filter(([k, v]) => v !== 0)
+  );
+  // console.log(filterEarlyPollVoteFreq)
+
+  return {
+    addresses: Array.from(
+      filterEarlyPollVoteFreq.keys(),
+    ),
+    progress: {}
   }
 }
 
@@ -153,6 +194,35 @@ async function allExecutiveSpellAddresses() {
   });
 }
 
+async function allExecutiveSpellAddressesWithTimestamps() {
+  let wholeResult = [];
+  let b = true;
+  let i = 0;
+  while (b === true) {
+    i = i + 1;
+    const result = await governanceClient.query({
+      query: ALL_EARLY_SPELL_VOTES_QUERY,
+      fetchPolicy: "cache-first",
+      variables: {
+        skip: i * 1000,
+      },
+    });
+    if (result.data.addActions.length > 0) {
+      wholeResult.push.apply(wholeResult, result.data.addActions);
+    } else {
+      b = false;
+    }
+  }
+
+  return wholeResult.map((action: any) => {
+    return {
+      sender: action.sender,
+      createdTimestamp: action.spell.timestamp,
+      votedTimestamp: action.timestamp
+    };
+  });
+}
+
 export async function spellVoteAddressesForFrequency(
   frequency: number,
 ): Promise<{ addresses: string[]; progress: Object }> {
@@ -170,4 +240,33 @@ export async function spellVoteAddressesForFrequency(
     ),
     progress: mapFrequenciesToProgressObject(spellVoteFreq, frequency),
   };
+}
+
+export async function earlyExecutiveVoteAddressesForTime(time: number) {
+  const earlySpellVoteAddresses = await allExecutiveSpellAddressesWithTimestamps();
+  // console.log(earlySpellVoteAddresses)
+
+  const earlySpellVoteFreq = new Map(
+    [...new Set(earlySpellVoteAddresses)].map(spell => [
+      spell.sender,
+      // get the longest consecutive count from the arrays of each address
+      earlySpellVoteAddresses.filter(_spell => {
+        // get pollIds for current address
+        return _spell.sender === spell.sender && _spell.votedTimestamp - _spell.createdTimestamp < time
+      }).length
+    ])
+  )
+
+  const filterEarlySpellVoteFreq = new Map(
+    [...earlySpellVoteFreq]
+      .filter(([k, v]) => v !== 0)
+  );
+  // console.log(filterEarlySpellVoteFreq)
+
+  return {
+    addresses: Array.from(
+      filterEarlySpellVoteFreq.keys(),
+    ),
+    progress: {}
+  }
 }
