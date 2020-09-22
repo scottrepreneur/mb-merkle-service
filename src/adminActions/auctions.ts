@@ -6,6 +6,7 @@ import {
 import { makerClient } from "../apollo/clients";
 import { mapFrequenciesToProgressObject } from "../utils";
 import { collateralFlippers } from "../constants";
+import * as R from "ramda";
 
 async function allBiteAddresses(): Promise<any[]> {
   let superResult = [];
@@ -67,67 +68,97 @@ export async function biteAddressesForFrequency(
   };
 }
 
-// cost tradeoffs for 1k vs 10k record batches
-// 21 queries at 1k for 950 cost = 18k
-// 3 queries at 10k for 8500 cost = 24k
 
-async function allBidAddresses(): Promise<any[]> {
-  let wholeResult = [];
-  let b = true;
-  let i = 0;
-  while (b === true) {
-    setTimeout(async function() {
-      i = i + 1;
-      const result = await makerClient.query({
-        query: ALL_FLIP_BIDS_QUERY,
-        fetchPolicy: "cache-first",
-        variables: {
-          offset: i * 1000,
-        },
+const makerAllFlipBidsQuery = async function*(step=0) {
+  const query = await makerClient.query({
+    query: ALL_FLIP_BIDS_QUERY,
+    fetchPolicy: "cache-first",
+    variables: { offset: step * 1000 }
+  });
+
+  ++step;
+
+  const hasNextPage = R.prop("hasNextPage", query.data.allFlipBidEvents.pageInfo);
+
+  yield { step, query, hasNextPage };
+
+  if (!hasNextPage) return { step, query };
+};
+
+function allBidAddresses(): Promise<any[]> {
+
+  return new Promise(async (resolve, reject) => {
+
+    const allResults: any[] = [];
+
+    // Generator Function
+    let query = makerAllFlipBidsQuery(0);
+
+    // Invoke GenFunc and start process
+    let resultSet = await query.next();
+
+    // Deff
+    const fillResultsArray = eventNodes => {
+      eventNodes.map((bid: any) => {
+        if (bid.act === "TEND" || bid.act === "DENT") {
+          allResults.push(R.prop("txFrom", bid.tx.nodes[0]));
+        }
+
+        return;
       });
+    };
 
-      // get address sent from for TEND and DENT events
-      if (result.data.allFlipBidEvents.nodes.length > 0) {
-        let bidResults = result.data.allFlipBidEvents.nodes.map((bid: any) => {
-          if (bid.act === "TEND" || bid.act === "DENT") {
-            return bid.tx.nodes[0].txFrom;
-          } else {
-            return null;
-          }
-        });
-        let newResults = bidResults.filter(x => x);
-        wholeResult.push.apply(wholeResult, newResults);
-      } else {
-        b = false;
+    // Loop
+    do {
+      const nodes = R.prop("nodes", resultSet.value.query.data.allFlipBidEvents);
+
+      if (R.length(nodes) > 0) {
+        fillResultsArray(nodes);
       }
-    }, 500);
-  }
 
-  return wholeResult;
+      if (resultSet.value.hasNextPage)
+        resultSet = await query.next();
+
+    } while (resultSet.done === false);
+
+    console.log(allResults);
+
+    // Resolve Promise
+    resolve(allResults);
+  });
+
 }
 
 // for now, a tend and dent on the same auction are counted as 2 bids
-export async function bidAddressesForFrequency(
+export function bidAddressesForFrequency(
   frequency: number,
 ): Promise<{ addresses: any[]; progress: object }> {
-  const bidAddresses = await allBidAddresses();
+  return new Promise(async (resolve, reject) => {
+    const bidAddresses = await allBidAddresses();
+    console.log(bidAddresses);
+    const bidFreq = new Map(
+      [...new Set(bidAddresses)].map(x => [
+        x,
+        bidAddresses.filter(y => y === x).length,
+      ]),
+    );
 
-  const bidFreq = new Map(
-    [...new Set(bidAddresses)].map(x => [
-      x,
-      bidAddresses.filter(y => y === x).length,
-    ]),
-  );
-  // console.log(bidFreq);
+    let _addresses = Array.from(
+      new Map([...bidFreq].filter(([k, v]) => v >= frequency)).keys(),
+    );
 
-  let _addresses = Array.from(
-    new Map([...bidFreq].filter(([k, v]) => v >= frequency)).keys(),
-  );
-  // console.log(_addresses.length);
-  return {
-    addresses: _addresses,
-    progress: mapFrequenciesToProgressObject(bidFreq, frequency),
-  };
+    const progress = mapFrequenciesToProgressObject(bidFreq, frequency);
+
+    if (_addresses && progress) {
+      resolve({
+        addresses: _addresses,
+        progress: progress,
+      });
+      return;
+    }
+
+    reject("bidAddressForFreq Failed");
+  });
 }
 
 async function allBidGuyAddresses(): Promise<any[]> {

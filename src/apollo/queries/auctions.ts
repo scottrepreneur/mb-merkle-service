@@ -18,7 +18,7 @@ export const ALL_BITES_QUERY = gql`
 
 export const ALL_FLIP_BIDS_QUERY = gql`
   query allFlipBidEvents($offset: Int) {
-    allFlipBidEvents(first: 1000, offset: $offset) {
+    allFlipBidEvents(first: 5000, offset: $offset) {
       nodes {
         bidId
         act
@@ -27,6 +27,10 @@ export const ALL_FLIP_BIDS_QUERY = gql`
             txFrom
           }
         }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
       }
     }
   }
@@ -57,8 +61,8 @@ export const USER_FLIPS_BIDS_QUERY = gql`
   query userFlipBids($flipper: String!, $address: String) {
     allFlipBidGuys(
       filter: {
-        addressByAddressId: { address: { equalToInsensitive: $flipper } },
-        guy: { equalToInsensitive: $address}
+        addressByAddressId: { address: { equalToInsensitive: $flipper } }
+        guy: { equalToInsensitive: $address }
       }
       orderBy: HEADER_BY_HEADER_ID__BLOCK_NUMBER_DESC
       first: 1000
