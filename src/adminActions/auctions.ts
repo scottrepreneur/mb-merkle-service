@@ -121,8 +121,6 @@ function allBidAddresses(): Promise<any[]> {
 
     } while (resultSet.done === false);
 
-    console.log(allResults);
-
     // Resolve Promise
     resolve(allResults);
   });
