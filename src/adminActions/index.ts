@@ -9,11 +9,11 @@
 import {
   // biteAddressesForFrequency,
   bidAddressesForFrequency,
-  // bidGuyAddressesForFrequency,
+  bidGuyAddressesForFrequency,
 } from "./auctions";
 import { MerkleTree } from "../utils/merkleTree";
 
-export async function updateRoots () {
+export async function updateRoots() {
   // saving at least 1 dai in DSR
   console.log({ templateId: 1, dai_saved: 1 });
 
@@ -199,7 +199,7 @@ export async function updateRoots () {
   bidCollateralAuctionFrequencies.map(async freq => {
     bidAddressesForFrequency(freq.frequency)
       .then(addresses => {
-        console.log(addresses);
+        // console.log(addresses);
         const tree = new MerkleTree(addresses.addresses);
 
         if (process.env.ENVIRONMENT === "production") {
@@ -213,11 +213,11 @@ export async function updateRoots () {
           return;
         }
 
-        console.log(freq);
-        console.log(addresses);
+        // console.log(freq);
+        // console.log(addresses);
         console.log(
           tree.getHexRoot() ||
-            "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
         );
       })
       .catch(error => {
@@ -233,21 +233,26 @@ export async function updateRoots () {
     { templateId: 33, frequency: 25 },
   ];
   winCollateralAuctionFrequencies.map(async freq => {
-    // const addresses = await bidGuyAddressesForFrequency(freq.frequency);
-    // const tree = new MerkleTree(addresses.addresses);
+    bidGuyAddressesForFrequency(freq.frequency)
+      .then(addresses => {
+        const tree = new MerkleTree(addresses.addresses);
 
-    if (process.env.ENVIRONMENT === "production") {
-      // addOrUpdateTemplateRecord(
-      //   freq.templateId,
-      //   addresses.addresses || [],
-      //   tree.getHexRoot() ||
-      //     "0x0000000000000000000000000000000000000000000000000000000000000000",
-      //   addresses.progress || {},
-      // );
-    } else {
-      console.log(freq);
-      // console.log(addresses);
-      // console.log(tree.getHexRoot() || "0x0000000000000000000000000000000000000000000000000000000000000000");
-    }
+        if (process.env.ENVIRONMENT === "production") {
+          // addOrUpdateTemplateRecord(
+          //   freq.templateId,
+          //   addresses.addresses || [],
+          //   tree.getHexRoot() ||
+          //     "0x0000000000000000000000000000000000000000000000000000000000000000",
+          //   addresses.progress || {},
+          // );
+        } else {
+          console.log(freq);
+          console.log(addresses);
+          console.log(tree.getHexRoot() || "0x0000000000000000000000000000000000000000000000000000000000000000");
+        }
+      })
+      .catch(error => {
+        console.log(error)
+      })
   });
 }

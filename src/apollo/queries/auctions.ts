@@ -2,15 +2,16 @@ import gql from "graphql-tag";
 
 export const ALL_BITES_QUERY = gql`
   query allBites($collateral: String!, $offset: Int) {
-    allBites(ilkIdentifier: $collateral, first: 1000, offset: $offset) {
+    allBites(ilkIdentifier: $collateral, first: 5000, offset: $offset) {
       nodes {
         bidId
-        ilk {
-          id
-        }
         tx {
           txFrom
         }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
       }
     }
   }
@@ -36,7 +37,7 @@ export const ALL_FLIP_BIDS_QUERY = gql`
   }
 `;
 
-export const ALL_FLIPS_WON_QUERY = gql`
+export const ALL_FLIP_WINS_QUERY = gql`
   query allFlipBidGuys($flipper: String!, $offset: Int) {
     allFlipBidGuys(
       filter: {
@@ -49,6 +50,10 @@ export const ALL_FLIPS_WON_QUERY = gql`
       nodes {
         bidId
         guy
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
       }
     }
   }
