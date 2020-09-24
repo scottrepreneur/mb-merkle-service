@@ -9,7 +9,7 @@ import { updateRoots } from "./adminActions";
 
 import discourseMessage from "./utils/discourseMessage";
 
-export function configureApp () {
+export function configureApp() {
   const app = express();
   app.enable("trust proxy");
   app.set("trust proxy", true);

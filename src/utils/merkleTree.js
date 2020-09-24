@@ -7,8 +7,8 @@ class MerkleTree {
   constructor(elements) {
     // Filter empty strings and hash elements
     this.elements = elements
-      .filter((el) => el)
-      .map((el) => keccak256(toBuffer(el)));
+      .filter(el => el)
+      .map(el => keccak256(toBuffer(el)));
 
     // Sort elements
     this.elements.sort(Buffer.compare);
@@ -127,11 +127,11 @@ class MerkleTree {
   }
 
   bufArrToHexArr(arr) {
-    if (arr.some((el) => !Buffer.isBuffer(el))) {
+    if (arr.some(el => !Buffer.isBuffer(el))) {
       throw new Error("Array is not an array of buffers");
     }
 
-    return arr.map((el) => "0x" + el.toString("hex"));
+    return arr.map(el => "0x" + el.toString("hex"));
   }
 
   sortAndConcat(...args) {
