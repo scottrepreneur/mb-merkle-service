@@ -61,11 +61,13 @@ const VerifyMessage = async msg => {
 const grantUnlockedBadges = (query) => {
 
   if (!query.unlockedBadges) { errors.push("No unlocked badges available");
-    return;
+    // Does this fix Promise.all is not iterable error?
+    return new Promise(resolve => resolve());
   }
 
   if (query.unlockedBadges.length === 0) { errors.push("No eligible badges found.");
-    return;
+    // Does this fix Promise.all is not iterable error?
+    return new Promise(resolve => resolve());
   }
 
   return query.unlockedBadges.map(async badge => {
