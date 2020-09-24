@@ -4,6 +4,9 @@
 const { keccak256, bufferToHex, toBuffer } = require("ethereumjs-util");
 
 class MerkleTree {
+  public elements: any;
+  public layers: any;
+
   constructor(elements) {
     // Filter empty strings and hash elements
     this.elements = elements
@@ -24,7 +27,7 @@ class MerkleTree {
       return [[""]];
     }
 
-    const layers = [];
+    const layers: any[] = [];
     layers.push(elements);
 
     // Get next layer until we reach the root
@@ -139,6 +142,4 @@ class MerkleTree {
   }
 }
 
-module.exports = {
-  MerkleTree,
-};
+export default MerkleTree;

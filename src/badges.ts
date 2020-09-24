@@ -8,7 +8,7 @@ import {
 } from "./apollo/queries/dai";
 import { daiClient } from "./apollo/clients";
 import { getTemplate } from "./utils/aws";
-import { MerkleTree } from "./utils/merkleTree";
+import MerkleTree from "./utils/merkleTree";
 
 // HARDER TO TRACK IDEAS
 
