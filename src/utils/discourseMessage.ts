@@ -61,7 +61,7 @@ const VerifyMessage = async msg => {
 const grantUnlockedBadges = (query) => {
 
   if (!query.unlockedBadges) { errors.push("No unlocked badges available");
-    return  new Promise(resolve => resolve("none"));
+    return new Promise(resolve => resolve("none"));
   }
 
   if (query.unlockedBadges.length === 0) { errors.push("No eligible badges found.");
