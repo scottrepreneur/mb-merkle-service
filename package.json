@@ -6,11 +6,13 @@
   "author": {
     "name": "scottrepreneur"
   },
-  "contributors": [{
-    "name": "Scott Herren",
-    "email": "scottrepreneur@ethmail.cc",
-    "url": "https://github.com/scottrepreneur/mb-merkle-service"
-  }],
+  "contributors": [
+    {
+      "name": "Scott Herren",
+      "email": "scottrepreneur@ethmail.cc",
+      "url": "https://github.com/scottrepreneur/mb-merkle-service"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/scottrepreneur/mb-merkle-service"
@@ -53,6 +55,7 @@
     "node-cron": "^2.0.3",
     "node-fetch": "^2.6.0",
     "ramda": "^0.27.1",
+    "serverless-offline": "^6.8.0",
     "source-map-support": "^0.5.3",
     "uuid": "^8.0.0"
   },

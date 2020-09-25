@@ -1,3 +1,5 @@
+org: josiwave
+app: makerbadges
 service: metabadges-merkle-service
 
 provider:
@@ -24,6 +26,7 @@ package:
     - "*"
 plugins:
   - serverless-plugin-typescript
+  - serverless-offline
 
 functions:
   http:
@@ -41,3 +44,4 @@ functions:
       DISCOURSE_BADGES_API: ${env:DISCOURSE_BADGES_API}
       DISCOURSE_API_USERNAME: ${env:DISCOURSE_API_USERNAME}
       DISCOURSE_FORUM_URL: ${env:DISCOURSE_FORUM_URL}
+      DISCOURSE_USER_BADGES_URL: ${env:DISCOURSE_USER_BADGES_URL}

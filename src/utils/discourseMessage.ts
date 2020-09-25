@@ -20,7 +20,7 @@ let errors: any[] = [];
 // (((((((((((((((((((((((((((((((((((((((((())))))))))))))))))))))))))))))))))))))))))
 // (((((((((((((((((((((((((((((((((((((((((())))))))))))))))))))))))))))))))))))))))))
 const discourseMessage = async query => {
-  errors = []; badgeIds = [];
+  errors = []; badgeIds = []; badges = [];
 
   return new Promise( async (resolve, reject) => {
 
