@@ -7,6 +7,7 @@ import { makerClient } from "../apollo/clients";
 import { mapFrequenciesToProgressObject } from "../utils";
 import { collateralFlippers } from "../constants";
 import * as R from "ramda";
+import * as _ from 'lodash';
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
@@ -26,51 +27,78 @@ const makerAllBitesQuery = async function* (step = 0, collateral: string) {
   if (!hasNextPage) return { step, query };
 };
 
-function allBiteAddresses(): Promise<any[]> {
+function allBiteAddresses(flipper: string): Promise<any[]> {
 
   return new Promise(async (resolve, reject) => {
 
     const allResults: any[] = [];
 
-    Object.keys(collateralFlippers).forEach(async flipper => {
-      // Generator Function
-      let query = makerAllBitesQuery(0, flipper);
+    // Object.keys(collateralFlippers).forEach(async flipper => {
+    // Generator Function
+    // console.log(flipper)
+    let query = makerAllBitesQuery(0, flipper);
 
-      // Invoke GenFunc and start process
-      let resultSet = await query.next();
+    // Invoke GenFunc and start process
+    let resultSet = await query.next();
 
-      // Deff
-      const fillResultsArray = eventNodes => {
-        eventNodes.map((bite: any) => {
-          allResults.push(R.prop("txFrom", bite.tx.nodes[0]));
-          return;
-        });
-      };
+    // Deff
+    const fillResultsArray = eventNodes => {
+      console.log(eventNodes)
+      eventNodes.map((bite: any) => {
+        allResults.push(R.prop("txFrom", bite.tx));
+        return;
+      });
+    };
 
-      // Loop
-      do {
-        const nodes = R.prop("nodes", resultSet.value.query.data.allBites);
+    // Loop
+    do {
+      const nodes = R.prop("nodes", resultSet.value.query.data.allBites);
 
-        if (R.length(nodes) > 0) {
-          fillResultsArray(nodes);
-        }
+      if (R.length(nodes) > 0) {
+        fillResultsArray(nodes);
+      }
 
-        if (resultSet.value.hasNextPage)
-          resultSet = await query.next();
+      if (resultSet.value.hasNextPage)
+        resultSet = await query.next();
 
-      } while (resultSet.done === false);
-    })
+    } while (resultSet.done === false);
+    // })
 
     // Resolve Promise
     resolve(allResults);
   });
 }
 
+export const flipperProcessing = ((): Promise<any[]> => {
+  const returnArray: any[] = []
+
+  _.forEach(Object.keys(collateralFlippers), async (flipper) => {
+    // const flipperAddresses = await ;
+    // console.log(flipperAddresses)
+    returnArray.push(allBiteAddresses(flipper))
+  });
+  return Promise.all(returnArray).then((values) => {
+    console.log(values);
+    return values;
+  })
+  // return null;
+  // return new Promise(async (resolve, reject) => {
+
+
+  //   console.log(returnArray)
+
+  //   resolve(R.flatten(returnArray))
+  // })
+})
+
 export async function biteAddressesForFrequency(
   frequency: number,
 ): Promise<{ addresses: any[]; progress: Object }> {
   return new Promise(async (resolve, reject) => {
-    const biteAddresses = await allBiteAddresses();
+    const biteAddresses = await flipperProcessing();
+
+    console.log(R.flatten(biteAddresses))
+    // const biteAddresses = await allBiteAddresses();
     const biteFreq = new Map(
       [...new Set(biteAddresses)].map(x => [
         x,
@@ -273,23 +301,23 @@ async function allBidGuyAddresses(): Promise<any[]> {
   //           },
   //         );
 
-  //         // remove the 0x000 cleared result
-  //         let noZero = bidGuyResults.filter(bid => {
-  //           if (bid.guy != "0x0000000000000000000000000000000000000000") {
-  //             return true;
-  //           } else {
-  //             return false;
-  //           }
-  //         });
+  // // remove the 0x000 cleared result
+  // let noZero = bidGuyResults.filter(bid => {
+  //   if (bid.guy != "0x0000000000000000000000000000000000000000") {
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // });
 
-  //         // select the first from the array (most recent in time)
-  //         let onlyWinners = noZero.filter(
-  //           (e, i) => noZero.findIndex(a => a["bidId"] === e["bidId"]) === i,
-  //         );
+  // // select the first from the array (most recent in time)
+  // let onlyWinners = noZero.filter(
+  //   (e, i) => noZero.findIndex(a => a["bidId"] === e["bidId"]) === i,
+  // );
 
-  //         let winnerResults = onlyWinners.map(bid => {
-  //           return bid.guy;
-  //         });
+  // let winnerResults = onlyWinners.map(bid => {
+  //   return bid.guy;
+  // });
   //         // console.log(bidResults);
   //         wholeResult.push.apply(wholeResult, winnerResults);
   //       } else {
