@@ -2,7 +2,7 @@ import gql from "graphql-tag";
 
 export const ALL_BITES_QUERY = gql`
   query allBites($collateral: String!, $offset: Int) {
-    allBites(ilkIdentifier: $collateral, first: 5000, offset: $offset) {
+    allBites(ilkIdentifier: $collateral, first: 10000, offset: $offset) {
       nodes {
         bidId
         tx {

@@ -7,10 +7,12 @@
 //   earlyPollVoteAddressesForTime,
 // } from "./governance";
 import {
+  flipperProcessing,
   biteAddressesForFrequency,
   // bidAddressesForFrequency,
   // bidGuyAddressesForFrequency,
 } from "./auctions";
+// import * as R from 'ramda';
 import { MerkleTree } from "../utils/merkleTree";
 
 export async function updateRoots() {
@@ -169,9 +171,14 @@ export async function updateRoots() {
     { templateId: 24, frequency: 50 },
     { templateId: 25, frequency: 100 },
   ];
-  return bitingVaultsFrequencies.map(async freq => {
+  const biteAddresses = await flipperProcessing();
+  console.log(`FINISHED PROMISES.`, biteAddresses);
 
-    const addresses = await biteAddressesForFrequency(freq.frequency);
+  return bitingVaultsFrequencies.map(async freq => {
+    const addresses = await biteAddressesForFrequency(freq.frequency, biteAddresses);
+
+    console.log(addresses);
+
     const tree = new MerkleTree(addresses.addresses);
 
     if (process.env.ENVIRONMENT === "production") {
@@ -185,11 +192,10 @@ export async function updateRoots() {
     } else {
       console.log(
         tree.getHexRoot() ||
-        "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
       );
     }
   });
-
 
   // bidding on at least N (frequency) collateral auctions
   // const bidCollateralAuctionFrequencies = [

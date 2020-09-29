@@ -7,128 +7,80 @@ import { makerClient } from "../apollo/clients";
 import { mapFrequenciesToProgressObject } from "../utils";
 import { collateralFlippers } from "../constants";
 import * as R from "ramda";
-import * as _ from 'lodash';
+import * as _ from "lodash";
 
-const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-const makerAllBitesQuery = async function* (step = 0, collateral: string) {
+const makerAllBitesQuery = async function*(step = 0, collateral: string) {
   const query = await makerClient.query({
     query: ALL_BITES_QUERY,
     fetchPolicy: "cache-first",
-    variables: { offset: step * 5000, collateral: collateral }
+    variables: { offset: step * 10000, collateral: collateral },
   });
 
   ++step;
 
   const hasNextPage = R.prop("hasNextPage", query.data.allBites.pageInfo);
 
-  yield { step, query, hasNextPage };
-
   if (!hasNextPage) return { step, query };
+
+  yield { step, query, hasNextPage };
 };
 
 function allBiteAddresses(flipper: string): Promise<any[]> {
-
   return new Promise(async (resolve, reject) => {
+    let allResults: any[] = [];
 
-    const allResults: any[] = [];
-
-    // Object.keys(collateralFlippers).forEach(async flipper => {
     // Generator Function
-    // console.log(flipper)
     let query = makerAllBitesQuery(0, flipper);
 
     // Invoke GenFunc and start process
     let resultSet = await query.next();
+    let nextPage = R.prop("hasNextPage", resultSet.value);
 
-    // Deff
-    const fillResultsArray = eventNodes => {
-      console.log(eventNodes)
-      eventNodes.map((bite: any) => {
-        allResults.push(R.prop("txFrom", bite.tx));
-        return;
-      });
-    };
-
-    // Loop
     do {
       const nodes = R.prop("nodes", resultSet.value.query.data.allBites);
 
-      if (R.length(nodes) > 0) {
-        fillResultsArray(nodes);
-      }
+      if (R.length(nodes) > 0)
+        allResults.push(_.map(nodes, "tx.txFrom"));
 
-      if (resultSet.value.hasNextPage)
+      if (nextPage)
         resultSet = await query.next();
 
     } while (resultSet.done === false);
-    // })
 
     // Resolve Promise
     resolve(allResults);
   });
 }
 
-export const flipperProcessing = ((): Promise<any[]> => {
-  const returnArray: any[] = []
+export const flipperProcessing = async () => {
+  const results = await Promise.all(R.map(allBiteAddresses, Object.keys(collateralFlippers)));
 
-  _.forEach(Object.keys(collateralFlippers), async (flipper) => {
-    // const flipperAddresses = await ;
-    // console.log(flipperAddresses)
-    returnArray.push(allBiteAddresses(flipper))
-  });
-  return Promise.all(returnArray).then((values) => {
-    console.log(values);
-    return values;
-  })
-  // return null;
-  // return new Promise(async (resolve, reject) => {
-
-
-  //   console.log(returnArray)
-
-  //   resolve(R.flatten(returnArray))
-  // })
-})
+  return _.flattenDeep(results);
+};
 
 export async function biteAddressesForFrequency(
   frequency: number,
+  biteAddresses: any[],
 ): Promise<{ addresses: any[]; progress: Object }> {
   return new Promise(async (resolve, reject) => {
-    const biteAddresses = await flipperProcessing();
+    const biteFreq = new Map([...new Set(biteAddresses)].map(x => [ x, biteAddresses.filter(y => y === x).length ]));
+    const _addresses = Array.from(new Map([...biteFreq].filter(([k, v]) => v >= frequency)).keys());
+    const progress = mapFrequenciesToProgressObject(biteFreq, frequency);
 
-    console.log(R.flatten(biteAddresses))
-    // const biteAddresses = await allBiteAddresses();
-    const biteFreq = new Map(
-      [...new Set(biteAddresses)].map(x => [
-        x,
-        biteAddresses.filter(y => y === x).length,
-      ]),
-    );
-
-    const _addresses = Array.from(
-      new Map([...biteFreq].filter(([k, v]) => v >= frequency)).keys(),
-    );
-
-    const progress = mapFrequenciesToProgressObject(biteFreq, frequency)
-
-    if (_addresses && progress) {
-      resolve({
-        addresses: _addresses,
-        progress: progress,
-      });
-      return;
-    }
+    if (_addresses && progress)
+      resolve({ addresses: _addresses, progress: progress });
 
     reject("biteAddressForFreq " + frequency + " Failed");
-  })
+  });
 }
 
-const makerAllFlipBidsQuery = async function* (step = 0) {
+const makerAllFlipBidsQuery = async function*(step = 0) {
   const query = await makerClient.query({
     query: ALL_FLIP_BIDS_QUERY,
     fetchPolicy: "cache-first",
-    variables: { offset: step * 5000 }
+    variables: { offset: step * 5000 },
   });
 
   ++step;
@@ -141,9 +93,7 @@ const makerAllFlipBidsQuery = async function* (step = 0) {
 };
 
 function allBidAddresses(): Promise<any[]> {
-
   return new Promise(async (resolve, reject) => {
-
     const allResults: any[] = [];
 
     // Generator Function
@@ -167,9 +117,8 @@ function allBidAddresses(): Promise<any[]> {
     do {
       const nodes = R.prop("nodes", resultSet.value.query.data.allFlipBidEvents);
 
-      if (R.length(nodes) > 0) {
+      if (R.length(nodes) > 0)
         fillResultsArray(nodes);
-      }
 
       if (resultSet.value.hasNextPage)
         resultSet = await query.next();
@@ -179,7 +128,6 @@ function allBidAddresses(): Promise<any[]> {
     // Resolve Promise
     resolve(allResults);
   });
-
 }
 
 // for now, a tend and dent on the same auction are counted as 2 bids
@@ -188,7 +136,7 @@ export function bidAddressesForFrequency(
 ): Promise<{ addresses: any[]; progress: object }> {
   return new Promise(async (resolve, reject) => {
     const bidAddresses = await allBidAddresses();
-    console.log(bidAddresses);
+
     const bidFreq = new Map(
       [...new Set(bidAddresses)].map(x => [
         x,
@@ -214,14 +162,14 @@ export function bidAddressesForFrequency(
   });
 }
 
-const makerAllFlipWinsQuery = async function* (step = 0, flipper: string) {
+const makerAllFlipWinsQuery = async function*(step = 0, flipper: string) {
   const query = await makerClient.query({
     query: ALL_FLIP_WINS_QUERY,
     fetchPolicy: "cache-first",
     variables: {
       offset: step * 5000,
-      flipper: flipper
-    }
+      flipper: flipper,
+    },
   });
 
   ++step;
@@ -234,9 +182,7 @@ const makerAllFlipWinsQuery = async function* (step = 0, flipper: string) {
 };
 
 async function allBidGuyAddresses(): Promise<any[]> {
-
   return new Promise(async (resolve, reject) => {
-
     const allResults: any[] = [];
 
     Object.keys(collateralFlippers).forEach(async flipper => {
@@ -261,15 +207,14 @@ async function allBidGuyAddresses(): Promise<any[]> {
       do {
         const nodes = R.prop("nodes", resultSet.value.query.data.allFlipBidGuys);
 
-        if (R.length(nodes) > 0) {
+        if (R.length(nodes) > 0)
           fillResultsArray(nodes);
-        }
 
         if (resultSet.value.hasNextPage)
           resultSet = await query.next();
 
       } while (resultSet.done === false);
-    })
+    });
 
     // Resolve Promise
     resolve(allResults);
@@ -368,5 +313,5 @@ export async function bidGuyAddressesForFrequency(
     }
 
     reject("flipGuyAddressForFreq " + frequency + " Failed");
-  })
+  });
 }
