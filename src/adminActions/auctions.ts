@@ -54,7 +54,7 @@ function allBiteAddresses(flipper: string): Promise<any[]> {
   });
 }
 
-export const flipperProcessing = async () => {
+export const collateralProcessing = async () => {
   const results = await Promise.all(R.map(allBiteAddresses, Object.keys(collateralFlippers)));
 
   return _.flattenDeep(results);

@@ -7,12 +7,12 @@
 //   earlyPollVoteAddressesForTime,
 // } from "./governance";
 import {
-  flipperProcessing,
+  collateralProcessing,
   biteAddressesForFrequency,
   // bidAddressesForFrequency,
   // bidGuyAddressesForFrequency,
 } from "./auctions";
-// import * as R from 'ramda';
+
 import { MerkleTree } from "../utils/merkleTree";
 
 export async function updateRoots() {
@@ -205,31 +205,32 @@ export async function updateRoots() {
     { templateId: 24, frequency: 50 },
     { templateId: 25, frequency: 100 },
   ];
-  const biteAddresses = await flipperProcessing();
+  const biteAddresses = await collateralProcessing();
   console.log(`FINISHED PROMISES.`, biteAddresses);
 
   return bitingVaultsFrequencies.map(async freq => {
-    const addresses = await biteAddressesForFrequency(freq.frequency);
+    const addresses = await biteAddressesForFrequency(
+      freq.frequency,
+      biteAddresses,
+    );
 
-    if (addresses.addresses && addresses.addresses.length > 0) {
-      const tree = new MerkleTree(addresses.addresses);
+    console.log(addresses);
 
-      if (process.env.ENVIRONMENT === "production") {
-        // addOrUpdateTemplateRecord(
-        //   freq.templateId,
-        //   addresses.addresses || [],
-        //   tree.getHexRoot() ||
-        //     "0x0000000000000000000000000000000000000000000000000000000000000000",
-        //   addresses.progress || {},
-        // );
-      } else {
-        console.log(
-          tree.getHexRoot() ||
-            "0x0000000000000000000000000000000000000000000000000000000000000000",
-        );
-      }
+    const tree = new MerkleTree(addresses.addresses);
+
+    if (process.env.ENVIRONMENT === "production") {
+      // addOrUpdateTemplateRecord(
+      //   freq.templateId,
+      //   addresses.addresses || [],
+      //   tree.getHexRoot() ||
+      //     "0x0000000000000000000000000000000000000000000000000000000000000000",
+      //   addresses.progress || {},
+      // );
     } else {
-      console.log("No addresses");
+      console.log(
+        tree.getHexRoot() ||
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+      );
     }
 
     return;
