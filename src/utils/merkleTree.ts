@@ -4,11 +4,14 @@
 const { keccak256, bufferToHex, toBuffer } = require("ethereumjs-util");
 
 class MerkleTree {
+  public elements: any;
+  public layers: any;
+
   constructor(elements) {
     // Filter empty strings and hash elements
     this.elements = elements
-      .filter((el) => el)
-      .map((el) => keccak256(toBuffer(el)));
+      .filter(el => el)
+      .map(el => keccak256(toBuffer(el)));
 
     // Sort elements
     this.elements.sort(Buffer.compare);
@@ -24,7 +27,7 @@ class MerkleTree {
       return [[""]];
     }
 
-    const layers = [];
+    const layers: any[] = [];
     layers.push(elements);
 
     // Get next layer until we reach the root
@@ -127,11 +130,11 @@ class MerkleTree {
   }
 
   bufArrToHexArr(arr) {
-    if (arr.some((el) => !Buffer.isBuffer(el))) {
+    if (arr.some(el => !Buffer.isBuffer(el))) {
       throw new Error("Array is not an array of buffers");
     }
 
-    return arr.map((el) => "0x" + el.toString("hex"));
+    return arr.map(el => "0x" + el.toString("hex"));
   }
 
   sortAndConcat(...args) {
@@ -139,6 +142,4 @@ class MerkleTree {
   }
 }
 
-module.exports = {
-  MerkleTree,
-};
+export default MerkleTree;

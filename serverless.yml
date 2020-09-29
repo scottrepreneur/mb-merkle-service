@@ -1,3 +1,5 @@
+org: josiwave
+app: makerbadges
 service: metabadges-merkle-service
 
 provider:
@@ -22,6 +24,9 @@ package:
     - "scripts/**"
     - ".vscode/**"
     - "*"
+plugins:
+  - serverless-plugin-typescript
+  - serverless-offline
 
 functions:
   http:
@@ -39,136 +44,4 @@ functions:
       DISCOURSE_BADGES_API: ${env:DISCOURSE_BADGES_API}
       DISCOURSE_API_USERNAME: ${env:DISCOURSE_API_USERNAME}
       DISCOURSE_FORUM_URL: ${env:DISCOURSE_FORUM_URL}
-#     ## Uncomment below here to use the private VPC setup
-#     vpc:
-#       subnetIds:
-#         - 'Ref': 'PrivateSubnet1'
-#         - 'Ref': 'PrivateSubnet2'
-#         - 'Ref': 'PrivateSubnet3'
-
-# resources:
-#   Resources:
-#     ###### BADGE TEMPLATE TABLE ######
-#     BadgesDynamoDbTable:
-#       Type: "AWS::DynamoDB::Table"
-#       DeletionPolicy: Retain
-#       Properties:
-#         AttributeDefinitions:
-#           - AttributeName: id
-#             AttributeType: S
-#         KeySchema:
-#           - AttributeName: id
-#             KeyType: HASH
-#         ProvisionedThroughput:
-#           ReadCapacityUnits: 1
-#           WriteCapacityUnits: 1
-#         TableName: ${env:DYNAMODB_TABLE}
-#     ###### VPC & Subnets ######
-#     VPC:
-#       Type: 'AWS::EC2::VPC'
-#       Properties:
-#         CidrBlock: 10.0.0.0/16
-#         EnableDnsHostnames: true
-
-#     PrivateSubnet1:
-#       Type: AWS::EC2::Subnet
-#       Properties:
-#         AvailabilityZone: 'eu-west-1a'
-#         Tags:
-#           - Key: Name
-#             Value:
-#               Fn::Join:
-#                 - '-'
-#                 - [{Ref: 'AWS::StackName'}, 'private', 'eu-west-1a']
-#         VpcId:
-#           Ref: VPC
-#         CidrBlock: 10.0.0.0/24
-
-#     PrivateSubnet2:
-#       Type: AWS::EC2::Subnet
-#       Properties:
-#         AvailabilityZone: 'eu-west-1b'
-#         Tags:
-#           - Key: Name
-#             Value:
-#               Fn::Join:
-#                 - '-'
-#                 - [{Ref: 'AWS::StackName'}, 'private', 'eu-west-1b']
-#         VpcId:
-#           Ref: VPC
-#         CidrBlock: 10.0.1.0/24
-
-#     PrivateSubnet3:
-#       Type: AWS::EC2::Subnet
-#       Properties:
-#         AvailabilityZone: 'eu-west-1c'
-#         Tags:
-#           - Key: Name
-#             Value:
-#               Fn::Join:
-#                 - '-'
-#                 - [{Ref: 'AWS::StackName'}, 'private', 'eu-west-1c']
-#         VpcId:
-#           Ref: VPC
-#         CidrBlock: 10.0.2.0/24
-
-#     ###### Private Routing ######
-#     PrivateRouteTable1:
-#       Type: AWS::EC2::RouteTable
-#       Properties:
-#         Tags:
-#           - Key: Name
-#             Value:
-#               Fn::Join:
-#                 - '-'
-#                 - [{Ref: 'AWS::StackName'}, 'private-1']
-#         VpcId:
-#           Ref: VPC
-
-#     PrivateSubnetAssoc1:
-#       Type: AWS::EC2::SubnetRouteTableAssociation
-#       Properties:
-#         RouteTableId:
-#           Ref: PrivateRouteTable1
-#         SubnetId:
-#           Ref: PrivateSubnet1
-
-#     PrivateRouteTable2:
-#       Type: AWS::EC2::RouteTable
-#       Properties:
-#         Tags:
-#           - Key: Name
-#             Value:
-#               Fn::Join:
-#                 - '-'
-#                 - [{Ref: 'AWS::StackName'}, 'private-2']
-#         VpcId:
-#           Ref: VPC
-
-#     PrivateSubnetAssoc2:
-#       Type: AWS::EC2::SubnetRouteTableAssociation
-#       Properties:
-#         RouteTableId:
-#           Ref: PrivateRouteTable2
-#         SubnetId:
-#           Ref: PrivateSubnet2
-
-#     PrivateRouteTable3:
-#       Type: AWS::EC2::RouteTable
-#       Properties:
-#         Tags:
-#           - Key: Name
-#             Value:
-#               Fn::Join:
-#                 - '-'
-#                 - [{Ref: 'AWS::StackName'}, 'private-3']
-#         VpcId:
-#           Ref: VPC
-
-#     PrivateSubnetAssoc3:
-#       Type: AWS::EC2::SubnetRouteTableAssociation
-#       Properties:
-#         RouteTableId:
-#           Ref: PrivateRouteTable3
-#         SubnetId:
-#           Ref: PrivateSubnet3
+      DISCOURSE_USER_BADGES_URL: ${env:DISCOURSE_USER_BADGES_URL}
