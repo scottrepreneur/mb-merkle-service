@@ -13,7 +13,7 @@ import {
 
 // GOVERNANCE POLLS
 
-async function allGovernancePollAddresses() {
+export async function allGovernancePollAddresses() {
   let wholeResult = [];
   let b = true;
   let i = 0;
@@ -38,7 +38,7 @@ async function allGovernancePollAddresses() {
   });
 }
 
-async function allGovernancePollAddressesWithPollId() {
+export async function allGovernancePollAddressesWithPollId() {
   let wholeResult = [];
   let b = true;
   let i = 0;
@@ -63,7 +63,7 @@ async function allGovernancePollAddressesWithPollId() {
   });
 }
 
-async function allGovernancePollAddressesWithTimestamps() {
+export async function allGovernancePollAddressesWithTimestamps() {
   let wholeResult = [];
   let b = true;
   let i = 0;
@@ -92,34 +92,37 @@ async function allGovernancePollAddressesWithTimestamps() {
   });
 }
 
-export async function pollVoteAddressesForFrequency(
+export function pollVoteAddressesForFrequency(
   frequency: number,
-): Promise<{ addresses: any[]; progress: Object }> {
-  const pollVoteAddresses = await allGovernancePollAddresses();
+  addressList: string[]
+): { addresses: any[]; progress: Object } {
   const pollVoteFreq = new Map(
-    [...new Set(pollVoteAddresses)].map(x => [
+    [...new Set(addressList)].map(x => [
       x,
-      pollVoteAddresses.filter(y => y === x).length,
+      addressList.filter(y => y === x).length,
     ]),
   );
 
+  const _addresses = Array.from(
+    new Map([...pollVoteFreq].filter(([k, v]) => v >= frequency)).keys(),
+  )
+  const _progress = mapFrequenciesToProgressObject(pollVoteFreq, frequency)
+
   return {
-    addresses: Array.from(
-      new Map([...pollVoteFreq].filter(([k, v]) => v >= frequency)).keys(),
-    ),
-    progress: mapFrequenciesToProgressObject(pollVoteFreq, frequency),
+    addresses: _addresses,
+    progress: _progress,
   };
 }
 
-export async function consecutivePollVoteAddressesForFrequency(
-  frequency: number
-): Promise<{ addresses: any[]; progress: Object }> {
-  const pollVoteAddresses = await allGovernancePollAddressesWithPollId()
+export function consecutivePollVoteAddressesForFrequency(
+  frequency: number,
+  addressList: { sender: string, pollId: string }[]
+): { addresses: any[]; progress: Object } {
   const consecutivePollVoteFreq = new Map(
-    [...new Set(pollVoteAddresses)].map(poll => [
+    [...new Set(addressList)].map(poll => [
       poll.sender,
       // get the longest consecutive count from the arrays of each address
-      longestConsecutiveCount(pollVoteAddresses.filter(_poll => {
+      longestConsecutiveCount(addressList.filter(_poll => {
         // get pollIds for current address
         if (_poll.sender === poll.sender) {
           return _poll.pollId
@@ -132,21 +135,27 @@ export async function consecutivePollVoteAddressesForFrequency(
 
     ]))
 
+  const _addresses = Array.from(
+    new Map([...consecutivePollVoteFreq].filter(([k, v]) => v >= frequency)).keys(),
+  )
+
+  const _progress = mapFrequenciesToProgressObject(consecutivePollVoteFreq, frequency)
+
   return {
-    addresses: Array.from(
-      new Map([...consecutivePollVoteFreq].filter(([k, v]) => v >= frequency)).keys(),
-    ),
-    progress: mapFrequenciesToProgressObject(consecutivePollVoteFreq, frequency),
+    addresses: _addresses,
+    progress: _progress,
   }
 }
 
-export async function earlyPollVoteAddressesForTime(time: number) {
-  const earlyPollVoteAddresses = await allGovernancePollAddressesWithTimestamps();
+export function earlyPollVoteAddressesForTime(
+  time: number,
+  addressList: { sender: string, votedTimestamp: number, createdTimestamp: number }[]
+): { addresses: string[], progress: {} } {
   const earlyPollVoteFreq = new Map(
-    [...new Set(earlyPollVoteAddresses)].map(poll => [
+    [...new Set(addressList)].map(poll => [
       poll.sender,
       // get the longest consecutive count from the arrays of each address
-      earlyPollVoteAddresses.filter(_poll => {
+      addressList.filter(_poll => {
         // get pollIds for current address
         return _poll.sender === poll.sender && _poll.votedTimestamp - _poll.createdTimestamp < time
       }).length
@@ -159,17 +168,19 @@ export async function earlyPollVoteAddressesForTime(time: number) {
   );
   // console.log(filterEarlyPollVoteFreq)
 
+  const _addresses = Array.from(
+    filterEarlyPollVoteFreq.keys(),
+  )
+
   return {
-    addresses: Array.from(
-      filterEarlyPollVoteFreq.keys(),
-    ),
+    addresses: _addresses,
     progress: {}
   }
 }
 
 // EXECUTIVE PROPOSALS (SPELLS)
 
-async function allExecutiveSpellAddresses() {
+export async function allExecutiveSpellAddresses() {
   let wholeResult = [];
   let b = true;
   let i = 0;
@@ -194,7 +205,7 @@ async function allExecutiveSpellAddresses() {
   });
 }
 
-async function allExecutiveSpellAddressesWithTimestamps() {
+export async function allExecutiveSpellAddressesWithTimestamps() {
   let wholeResult = [];
   let b = true;
   let i = 0;
@@ -223,34 +234,38 @@ async function allExecutiveSpellAddressesWithTimestamps() {
   });
 }
 
-export async function spellVoteAddressesForFrequency(
+export function spellVoteAddressesForFrequency(
   frequency: number,
-): Promise<{ addresses: string[]; progress: Object }> {
-  const spellVoteAddresses = await allExecutiveSpellAddresses();
+  addressList: string[]
+): { addresses: string[]; progress: Object } {
   const spellVoteFreq = new Map(
-    [...new Set(spellVoteAddresses)].map(x => [
+    [...new Set(addressList)].map(x => [
       x,
-      spellVoteAddresses.filter(y => y === x).length,
+      addressList.filter(y => y === x).length,
     ]),
   );
 
+  const _addresses = Array.from(
+    new Map([...spellVoteFreq].filter(([k, v]) => v >= frequency)).keys(),
+  )
+
+  const _progress = mapFrequenciesToProgressObject(spellVoteFreq, frequency)
+
   return {
-    addresses: Array.from(
-      new Map([...spellVoteFreq].filter(([k, v]) => v >= frequency)).keys(),
-    ),
-    progress: mapFrequenciesToProgressObject(spellVoteFreq, frequency),
+    addresses: _addresses,
+    progress: _progress,
   };
 }
 
-export async function earlyExecutiveVoteAddressesForTime(time: number) {
-  const earlySpellVoteAddresses = await allExecutiveSpellAddressesWithTimestamps();
-  // console.log(earlySpellVoteAddresses)
-
+export function earlyExecutiveVoteAddressesForTime(
+  time: number,
+  addressList: { sender: string, votedTimestamp: number, createdTimestamp: number }[]
+) {
   const earlySpellVoteFreq = new Map(
-    [...new Set(earlySpellVoteAddresses)].map(spell => [
+    [...new Set(addressList)].map(spell => [
       spell.sender,
       // get the longest consecutive count from the arrays of each address
-      earlySpellVoteAddresses.filter(_spell => {
+      addressList.filter(_spell => {
         // get pollIds for current address
         return _spell.sender === spell.sender && _spell.votedTimestamp - _spell.createdTimestamp < time
       }).length
@@ -263,10 +278,14 @@ export async function earlyExecutiveVoteAddressesForTime(time: number) {
   );
   // console.log(filterEarlySpellVoteFreq)
 
+  const _addresses = Array.from(
+    filterEarlySpellVoteFreq.keys(),
+  )
+
+  const _progress = {} // need to deal with time in --> mapFrequenciesToProgressObject(time, filterEarlySpellVoteFreq)
+
   return {
-    addresses: Array.from(
-      filterEarlySpellVoteFreq.keys(),
-    ),
-    progress: {}
+    addresses: _addresses,
+    progress: _progress
   }
 }
