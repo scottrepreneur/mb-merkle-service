@@ -1,11 +1,9 @@
 import {
   checkTemplateAddressesForAddressList,
   // checkTemplateProgressForAddressList,
-  checkForProxyAddresses
+  checkForProxyAddresses,
 } from "./utils";
-import {
-  USER_DAI_TRANSFERS_QUERY
-} from "./apollo/queries/dai";
+import { USER_DAI_TRANSFERS_QUERY } from "./apollo/queries/dai";
 import { daiClient } from "./apollo/clients";
 import { getTemplate } from "./utils/aws";
 import MerkleTree from "./utils/merkleTree";
@@ -119,7 +117,7 @@ const badgeList = {
     name: "Vote on a Governance Poll",
     longName: "Vote on one Governance Poll",
     description:
-      "Driving decision making through on-chain consensus is a determined aspect of scientific governance. On-chain polling is done to understand sentiment from token holders around actions taken for risk parameters. Vote on a Governance Poll to unlock this achievement.",
+      "Driving decision making through on-chain consensus is a determining aspect of scientific governance. On-chain polling is done to understand sentiment from token holders around actions taken for risk parameters. Vote on a Governance Poll to unlock this achievement.",
     resource: "https://vote.makerdao.com",
     steps: {
       1: "Head over to the Governance portal",
@@ -136,7 +134,7 @@ const badgeList = {
     name: "Vote on 5 Governance Polls",
     longName: "Vote on at least 5 Governance Polls",
     description:
-      "Driving decision making through on-chain consensus is a determined aspect of scientific governance. On-chain polling is done to understand sentiment from token holders around actions taken for risk parameters. Vote on 5 Governance Polls to unlock this achievement.",
+      "Driving decision making through on-chain consensus is a determining aspect of scientific governance. On-chain polling is done to understand sentiment from token holders around actions taken for risk parameters. Vote on 5 Governance Polls to unlock this achievement.",
     resource: "https://vote.makerdao.com",
     steps: {
       1: "Head over to the Governance portal",
@@ -153,7 +151,7 @@ const badgeList = {
     name: "Vote on 10 Governance Polls",
     longName: "Vote on at least 10 Governance Polls",
     description:
-      "Driving decision making through on-chain consensus is a determined aspect of scientific governance. On-chain polling is done to understand sentiment from token holders around actions taken for risk parameters. Vote on 10 Governance Polls to unlock this achievement.",
+      "Driving decision making through on-chain consensus is a determining aspect of scientific governance. On-chain polling is done to understand sentiment from token holders around actions taken for risk parameters. Vote on 10 Governance Polls to unlock this achievement.",
     resource: "https://vote.makerdao.com",
     steps: {
       1: "Head over to the Governance portal",
@@ -170,7 +168,7 @@ const badgeList = {
     name: "Vote on 20 Governance Polls",
     longName: "Vote on at least 20 Governance Polls",
     description:
-      "Driving decision making through on-chain consensus is a determined aspect of scientific governance. On-chain polling is done to understand sentiment from token holders around actions taken for risk parameters. Vote on 20 Governance Polls to unlock this achievement.",
+      "Driving decision making through on-chain consensus is a determining aspect of scientific governance. On-chain polling is done to understand sentiment from token holders around actions taken for risk parameters. Vote on 20 Governance Polls to unlock this achievement.",
     resource: "https://vote.makerdao.com",
     steps: {
       1: "Head over to the Governance portal",
@@ -187,7 +185,7 @@ const badgeList = {
     name: "Vote on 50 Governance Polls",
     longName: "Vote on at least 50 Governance Polls",
     description:
-      "Driving decision making through on-chain consensus is a determined aspect of scientific governance. On-chain polling is done to understand sentiment from token holders around actions taken for risk parameters. Vote on 50 Governance Polls to unlock this achievement.",
+      "Driving decision making through on-chain consensus is a determining aspect of scientific governance. On-chain polling is done to understand sentiment from token holders around actions taken for risk parameters. Vote on 50 Governance Polls to unlock this achievement.",
     resource: "https://vote.makerdao.com",
     steps: {
       1: "Head over to the Governance portal",
@@ -204,7 +202,7 @@ const badgeList = {
     name: "Vote on 100 Governance Polls",
     longName: "Vote on at least 100 Governance Polls",
     description:
-      "Driving decision making through on-chain consensus is a determined aspect of scientific governance. On-chain polling is done to understand sentiment from token holders around actions taken for risk parameters. Vote on 100 Governance Polls to unlock this achievement.",
+      "Driving decision making through on-chain consensus is a determining aspect of scientific governance. On-chain polling is done to understand sentiment from token holders around actions taken for risk parameters. Vote on 100 Governance Polls to unlock this achievement.",
     resource: "https://vote.makerdao.com",
     steps: {
       1: "Head over to the Governance portal",
@@ -995,7 +993,7 @@ const badgeList = {
 // };
 
 export async function getBadgesForAddress(_address: string) {
-  const addressList = await checkForProxyAddresses(_address)
+  const addressList = await checkForProxyAddresses(_address);
 
   return Promise.all(
     Object.keys(badgeList).map(async key => {
@@ -1008,8 +1006,8 @@ export async function getBadgesForAddress(_address: string) {
         redeemed: 0,
         completedAddress: "0x",
         proof: [],
-        root: ""
-      }
+        root: "",
+      };
 
       // WORKAROUND FOR FORUM ROLL OUT
 
@@ -1019,19 +1017,19 @@ export async function getBadgesForAddress(_address: string) {
 
       // 4. Send 10 Dai, 5.
 
-      if (key === 'MKR4') {
+      if (key === "MKR4") {
         const result = await daiClient.query({
           query: USER_DAI_TRANSFERS_QUERY,
           fetchPolicy: "cache-first",
           variables: {
-            address: _address.toLowerCase()
-          }
+            address: _address.toLowerCase(),
+          },
         });
 
         let sent = 0;
         if (result.data && result.data.transfers.length > 0) {
           for (let i = 0; i < result.data.transfers.length; i++) {
-            sent = sent + parseInt(result.data.transfers[i]['wad'])
+            sent = sent + parseInt(result.data.transfers[i]["wad"]);
             if (sent > 11) {
               break;
             }
@@ -1039,23 +1037,22 @@ export async function getBadgesForAddress(_address: string) {
         }
 
         if (sent > 10) {
-          badge.unlocked = 1
-          badge.completedAddress = _address
+          badge.unlocked = 1;
+          badge.completedAddress = _address;
         }
-      } else if
-        (key === 'MKR5') {
+      } else if (key === "MKR5") {
         const result = await daiClient.query({
           query: USER_DAI_TRANSFERS_QUERY,
           fetchPolicy: "cache-first",
           variables: {
-            address: _address.toLowerCase()
-          }
+            address: _address.toLowerCase(),
+          },
         });
 
         let sent = 0;
         if (result.data && result.data.transfers.length > 0) {
           for (let i = 0; i < result.data.transfers.length; i++) {
-            sent = sent + parseInt(result.data.transfers[i]['wad'])
+            sent = sent + parseInt(result.data.transfers[i]["wad"]);
             if (sent > 101) {
               break;
             }
@@ -1063,12 +1060,10 @@ export async function getBadgesForAddress(_address: string) {
         }
 
         if (sent > 100) {
-          badge.unlocked = 1
-          badge.completedAddress = _address
+          badge.unlocked = 1;
+          badge.completedAddress = _address;
         }
-      }
-
-      else {
+      } else {
         // STANDARD IMPLEMENTATION
         let template = await getTemplate(parseFloat(key.slice(3, key.length)));
         // if (template.progress != {}) {
@@ -1090,8 +1085,8 @@ export async function getBadgesForAddress(_address: string) {
             template.addresses,
           );
 
-          if (badge.completedAddress !== '0x') {
-            badge.unlocked = 1
+          if (badge.completedAddress !== "0x") {
+            badge.unlocked = 1;
           }
 
           if (badge.unlocked && !badge.redeemed) {
