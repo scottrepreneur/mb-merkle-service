@@ -9,7 +9,7 @@ import { updateRoots } from "./adminActions";
 
 import discourseMessage from "./utils/discourseMessage";
 
-export function configureApp () {
+export function configureApp() {
   const app = express();
   app.enable("trust proxy");
   app.set("trust proxy", true);
@@ -40,7 +40,7 @@ export function configureApp () {
     res.json({ success: true });
   });
 
-  app.get("/dev/discourse", (req, res) => {
+  app.get("/discourse", (req, res) => {
     const validParams = ["username", "address", "signature"];
     const matchesQueryParams = k => { return R.contains(k, R.keys(req.query)); };
 
@@ -48,10 +48,12 @@ export function configureApp () {
       return res.json({ errors: ["Invalid request query, please check request params."] });
 
     discourseMessage(req.query)
-      .then(response => { console.log("response:", response);
+      .then(response => {
+        console.log("response:", response);
         res.status(200).json(response);
       })
-      .catch(error => { console.log("error:", error);
+      .catch(error => {
+        console.log("error:", error);
         res.status(500).json(error);
       });
 

@@ -1,15 +1,30 @@
+import * as _ from 'lodash';
+
 import { governanceClient } from '../apollo/clients'
 import { PROXY_HOT_LOOKUP_QUERY, PROXY_COLD_LOOKUP_QUERY } from "../apollo/queries/governance";
 
-export function mapFrequenciesToProgressObject(freqMap, frequency) {
-  let obj = {};
+export function mapFrequenciesToProgressObject(
+  freqMap: { address: string, frequency: number }[],
+  frequency: number
+): {} {
+  let progressObject = {};
 
-  freqMap.forEach(function (value, key) {
-    obj[key] = value / frequency > 1 ? 1 : value / frequency;
+  _.each(freqMap, function (obj) {
+    progressObject[obj.address] = obj.frequency / frequency > 1 ? 1 : obj.frequency / frequency;
   });
 
-  return obj;
+  return progressObject;
 }
+
+export const addressListFilteredByFrequency = (list: string[]): any[] => {
+  return _.map(_.uniq(list), ((x) => {
+    return {
+      address: x,
+      frequency: list.filter(y => y === x).length
+    }
+  }));
+};
+
 
 export async function checkTemplateAddressesForAddressList(
   addressList: string[],

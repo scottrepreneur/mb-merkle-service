@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 // import { addOrUpdateTemplateRecord } from "../utils/aws";
 // import {
 //   allGovernancePollAddresses,
@@ -258,7 +259,8 @@ export async function updateRoots() {
   //       //   bidAddresses.progress || {},
   //       // );
   //     }
-
+  //     console.log(bidAddresses.addresses)
+  //     console.log(bidAddresses.progress)
   //     console.log(
   //       tree.getHexRoot() || ZERO_ROOT,
   //     );
@@ -277,10 +279,11 @@ export async function updateRoots() {
     { templateId: 33, frequency: 25 },
   ];
   const allBidGuyAddressList = await allBidGuysAllFlippers();
+  console.log(allBidGuyAddressList)
 
-  winCollateralAuctionFrequencies.map(async freq => {
+  winCollateralAuctionFrequencies.map(freq => {
     const bidGuyAddresses = bidGuyAddressesForFrequency(freq.frequency, allBidGuyAddressList)
-    if (bidGuyAddresses.addresses && bidGuyAddresses.addresses.length > 0) {
+    if (bidGuyAddresses.addresses && _.size(bidGuyAddresses.addresses) > 0) {
       const tree = new MerkleTree(bidGuyAddresses.addresses);
 
       if (process.env.ENVIRONMENT === "production") {
@@ -291,6 +294,8 @@ export async function updateRoots() {
         //   bidGuyAddresses.progress || {},
         // );
       }
+      console.log(bidGuyAddresses.addresses)
+      console.log(bidGuyAddresses.progress)
       console.log(tree.getHexRoot() || ZERO_ROOT);
     }
   });

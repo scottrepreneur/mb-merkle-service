@@ -1,10 +1,11 @@
 import gql from "graphql-tag";
+import { SUBGRAPH_BATCHES } from "../../constants";
 
 // ADMIN QUERIES
 
 export const ALL_POLL_VOTES_QUERY = gql`
   query votePollActions($skip: Int) {
-    votePollActions(first: 1000, skip: $skip) {
+    votePollActions(first: ${SUBGRAPH_BATCHES}, skip: $skip) {
       id
       sender
       poll {
@@ -17,7 +18,7 @@ export const ALL_POLL_VOTES_QUERY = gql`
 
 export const ALL_SPELL_VOTES_QUERY = gql`
   query spellVoteActions($skip: Int) {
-    addActions(first: 1000, skip: $skip) {
+    addActions(first: ${SUBGRAPH_BATCHES}, skip: $skip) {
       sender
       spell {
         id
@@ -28,7 +29,7 @@ export const ALL_SPELL_VOTES_QUERY = gql`
 
 export const ALL_EARLY_POLL_VOTES_QUERY = gql`
   query votePollActions($skip: Int) {
-    votePollActions(first: 1000, skip: $skip) {
+    votePollActions(first: ${SUBGRAPH_BATCHES}, skip: $skip) {
       sender
       poll {
         startDate
@@ -40,7 +41,7 @@ export const ALL_EARLY_POLL_VOTES_QUERY = gql`
 
 export const ALL_EARLY_SPELL_VOTES_QUERY = gql`
   query spellVoteActions($skip: Int) {
-    addActions(first: 1000, skip: $skip) {
+    addActions(first: ${SUBGRAPH_BATCHES}, skip: $skip) {
       sender
       spell {
         id
