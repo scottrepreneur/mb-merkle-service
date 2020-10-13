@@ -1,3 +1,6 @@
+import * as R from 'ramda';
+import * as _ from 'lodash';
+
 import { governanceClient } from "../apollo/clients";
 import {
   ALL_POLL_VOTES_QUERY,
@@ -8,12 +11,16 @@ import {
 } from "../apollo/queries/governance";
 import {
   mapFrequenciesToProgressObject,
-  longestConsecutiveCount
+  longestConsecutiveCount,
+  addressListFilteredByFrequency
 } from "../utils";
+import {
+  SUBGRAPH_BATCHES
+} from "../constants";
 
 // GOVERNANCE POLLS
 
-async function allGovernancePollAddresses() {
+export async function allGovernancePollAddresses() {
   let wholeResult = [];
   let b = true;
   let i = 0;
@@ -23,7 +30,7 @@ async function allGovernancePollAddresses() {
       query: ALL_POLL_VOTES_QUERY,
       fetchPolicy: "cache-first",
       variables: {
-        skip: i * 1000,
+        skip: i * SUBGRAPH_BATCHES,
       },
     });
     if (result.data.votePollActions.length > 0) {
@@ -38,7 +45,7 @@ async function allGovernancePollAddresses() {
   });
 }
 
-async function allGovernancePollAddressesWithPollId() {
+export async function allGovernancePollAddressesWithPollId() {
   let wholeResult = [];
   let b = true;
   let i = 0;
@@ -48,7 +55,7 @@ async function allGovernancePollAddressesWithPollId() {
       query: ALL_POLL_VOTES_QUERY,
       fetchPolicy: "cache-first",
       variables: {
-        skip: i * 1000,
+        skip: i * SUBGRAPH_BATCHES,
       },
     }).catch(err => console.log(err));
     if (result.data.votePollActions.length > 0) {
@@ -63,7 +70,7 @@ async function allGovernancePollAddressesWithPollId() {
   });
 }
 
-async function allGovernancePollAddressesWithTimestamps() {
+export async function allGovernancePollAddressesWithTimestamps() {
   let wholeResult = [];
   let b = true;
   let i = 0;
@@ -73,7 +80,7 @@ async function allGovernancePollAddressesWithTimestamps() {
       query: ALL_EARLY_POLL_VOTES_QUERY,
       fetchPolicy: "cache-first",
       variables: {
-        skip: i * 1000,
+        skip: i * SUBGRAPH_BATCHES,
       },
     }).catch(err => console.log(err));
     if (result.data.votePollActions.length > 0) {
@@ -92,84 +99,104 @@ async function allGovernancePollAddressesWithTimestamps() {
   });
 }
 
-export async function pollVoteAddressesForFrequency(
+export function pollVoteAddressesForFrequency(
   frequency: number,
-): Promise<{ addresses: any[]; progress: Object }> {
-  const pollVoteAddresses = await allGovernancePollAddresses();
-  const pollVoteFreq = new Map(
-    [...new Set(pollVoteAddresses)].map(x => [
-      x,
-      pollVoteAddresses.filter(y => y === x).length,
-    ]),
-  );
+  addressList: string[]
+): { addresses: any[]; progress: Object } {
+  const pollVoteFreq = addressListFilteredByFrequency(addressList);
+
+  const greaterThanOrEqualToFrequency = (x: { address: string, frequency: number }) => {
+    return x.frequency >= frequency;
+  }
+
+  const _addressList = _.filter(pollVoteFreq, greaterThanOrEqualToFrequency)
+  const _addresses = _.map(_addressList, 'address')
+
+  const _progress = mapFrequenciesToProgressObject(pollVoteFreq, frequency)
 
   return {
-    addresses: Array.from(
-      new Map([...pollVoteFreq].filter(([k, v]) => v >= frequency)).keys(),
-    ),
-    progress: mapFrequenciesToProgressObject(pollVoteFreq, frequency),
+    addresses: _addresses,
+    progress: _progress,
   };
 }
 
-export async function consecutivePollVoteAddressesForFrequency(
-  frequency: number
-): Promise<{ addresses: any[]; progress: Object }> {
-  const pollVoteAddresses = await allGovernancePollAddressesWithPollId()
-  const consecutivePollVoteFreq = new Map(
-    [...new Set(pollVoteAddresses)].map(poll => [
-      poll.sender,
-      // get the longest consecutive count from the arrays of each address
-      longestConsecutiveCount(pollVoteAddresses.filter(_poll => {
-        // get pollIds for current address
-        if (_poll.sender === poll.sender) {
-          return _poll.pollId
-        }
-        return null;
-      }).map(function (el) {
-        // return an array of pollIds for each address
-        return parseInt(el.pollId)
-      }))
+const addressListFilteredForConsecutive = (list: { sender: string, pollId: string }[]) => {
+  return _.map(_.uniq(list), ((x) => {
+    return {
+      address: x.sender,
+      frequency: longestConsecutiveCount(
+        list.filter(_poll => {
+          // get pollIds for current address
+          if (_poll.sender === x.sender) {
+            return _poll.pollId
+          }
+          return null;
+        }).map(function (el) {
+          // return an array of pollIds for each address
+          return parseInt(el.pollId)
+        })
+      )
+    }
+  }));
+}
 
-    ]))
+export function consecutivePollVoteAddressesForFrequency(
+  frequency: number,
+  addressList: { sender: string, pollId: string }[]
+): { addresses: any[]; progress: Object } {
+  const consecutivePollVoteFreq = addressListFilteredForConsecutive(addressList)
+
+  const greaterThanOrEqualToFrequency = (x: { address: string, frequency: number }) => {
+    return x.frequency >= frequency;
+  }
+
+  const _addressList = _.filter(consecutivePollVoteFreq, greaterThanOrEqualToFrequency)
+  const _addresses = _.map(_addressList, 'address')
+
+
+  const _progress = mapFrequenciesToProgressObject(consecutivePollVoteFreq, frequency)
 
   return {
-    addresses: Array.from(
-      new Map([...consecutivePollVoteFreq].filter(([k, v]) => v >= frequency)).keys(),
-    ),
-    progress: mapFrequenciesToProgressObject(consecutivePollVoteFreq, frequency),
+    addresses: _addresses,
+    progress: _progress,
   }
 }
 
-export async function earlyPollVoteAddressesForTime(time: number) {
-  const earlyPollVoteAddresses = await allGovernancePollAddressesWithTimestamps();
-  const earlyPollVoteFreq = new Map(
-    [...new Set(earlyPollVoteAddresses)].map(poll => [
-      poll.sender,
-      // get the longest consecutive count from the arrays of each address
-      earlyPollVoteAddresses.filter(_poll => {
+const addressListFilteredByTime = (list: any[], time: number): any[] => {
+  return _.map(_.uniq(list), ((x) => {
+    return {
+      address: x,
+      frequency: _.size(_.filter(list, (poll) => {
         // get pollIds for current address
-        return _poll.sender === poll.sender && _poll.votedTimestamp - _poll.createdTimestamp < time
-      }).length
-    ])
-  )
+        return poll.sender === poll.sender && (poll.votedTimestamp - poll.createdTimestamp) < time
+      }))
+    }
+  }));
+};
 
-  const filterEarlyPollVoteFreq = new Map(
-    [...earlyPollVoteFreq]
-      .filter(([k, v]) => v !== 0)
-  );
-  // console.log(filterEarlyPollVoteFreq)
+export function earlyPollVoteAddressesForTime(
+  time: number,
+  addressList: { sender: string, votedTimestamp: number, createdTimestamp: number }[]
+): { addresses: string[], progress: {} } {
+
+  const earlyPollVoteFreq = addressListFilteredByTime(addressList, time)
+
+  const filterByFreqGtZero = (obj: { address: string, frequency: number }) => {
+    if (R.gt(obj.frequency, 0)) { return obj.address; }
+    return;
+  };
+
+  const _addresses = _.compact(_.map(earlyPollVoteFreq, filterByFreqGtZero));
 
   return {
-    addresses: Array.from(
-      filterEarlyPollVoteFreq.keys(),
-    ),
+    addresses: _addresses,
     progress: {}
   }
 }
 
 // EXECUTIVE PROPOSALS (SPELLS)
 
-async function allExecutiveSpellAddresses() {
+export async function allExecutiveSpellAddresses() {
   let wholeResult = [];
   let b = true;
   let i = 0;
@@ -194,7 +221,7 @@ async function allExecutiveSpellAddresses() {
   });
 }
 
-async function allExecutiveSpellAddressesWithTimestamps() {
+export async function allExecutiveSpellAddressesWithTimestamps() {
   let wholeResult = [];
   let b = true;
   let i = 0;
@@ -223,50 +250,39 @@ async function allExecutiveSpellAddressesWithTimestamps() {
   });
 }
 
-export async function spellVoteAddressesForFrequency(
+export function spellVoteAddressesForFrequency(
   frequency: number,
-): Promise<{ addresses: string[]; progress: Object }> {
-  const spellVoteAddresses = await allExecutiveSpellAddresses();
-  const spellVoteFreq = new Map(
-    [...new Set(spellVoteAddresses)].map(x => [
-      x,
-      spellVoteAddresses.filter(y => y === x).length,
-    ]),
-  );
+  addressList: string[]
+): { addresses: string[]; progress: Object } {
+  const spellVoteFreq = addressListFilteredByFrequency(addressList);
+
+  const greaterThanOrEqualToFrequency = (x: { address: string, frequency: number }) => {
+    return x.frequency >= frequency;
+  }
+
+  const _addressList = _.filter(spellVoteFreq, greaterThanOrEqualToFrequency)
+  const _addresses = _.map(_addressList, 'address')
+
+  const _progress = mapFrequenciesToProgressObject(spellVoteFreq, frequency)
 
   return {
-    addresses: Array.from(
-      new Map([...spellVoteFreq].filter(([k, v]) => v >= frequency)).keys(),
-    ),
-    progress: mapFrequenciesToProgressObject(spellVoteFreq, frequency),
+    addresses: _addresses,
+    progress: _progress,
   };
 }
 
-export async function earlyExecutiveVoteAddressesForTime(time: number) {
-  const earlySpellVoteAddresses = await allExecutiveSpellAddressesWithTimestamps();
-  // console.log(earlySpellVoteAddresses)
+export function earlyExecutiveVoteAddressesForTime(
+  time: number,
+  addressList: { sender: string, votedTimestamp: number, createdTimestamp: number }[]
+) {
+  const earlySpellVoteFreq = addressListFilteredByTime(addressList, time)
 
-  const earlySpellVoteFreq = new Map(
-    [...new Set(earlySpellVoteAddresses)].map(spell => [
-      spell.sender,
-      // get the longest consecutive count from the arrays of each address
-      earlySpellVoteAddresses.filter(_spell => {
-        // get pollIds for current address
-        return _spell.sender === spell.sender && _spell.votedTimestamp - _spell.createdTimestamp < time
-      }).length
-    ])
-  )
+  const _addresses = _.map(_.map(earlySpellVoteFreq, (obj) => { return R.gt(obj.frequency, 0) }), 'address')
 
-  const filterEarlySpellVoteFreq = new Map(
-    [...earlySpellVoteFreq]
-      .filter(([k, v]) => v !== 0)
-  );
-  // console.log(filterEarlySpellVoteFreq)
+  const _progress = {} // need to deal with time in --> mapFrequenciesToProgressObject(time, filterEarlySpellVoteFreq)
 
   return {
-    addresses: Array.from(
-      filterEarlySpellVoteFreq.keys(),
-    ),
-    progress: {}
+    addresses: _addresses,
+    progress: _progress
   }
 }

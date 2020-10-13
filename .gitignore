@@ -67,3 +67,5 @@ typings/
 *.d.ts
 *.js.map
 .serverless/
+__tests__
+/jest.config.js

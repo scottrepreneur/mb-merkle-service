@@ -1,6 +1,6 @@
-# Serverless Express Typescript Starter Kit
+# Maker Badges Merkle Service
 
-A starter kit for building express apps using typescript deployed to AWS Lambda via serverless.
+A micro service for the Maker Badges to ease client burden.
 
 ## Getting Started
 

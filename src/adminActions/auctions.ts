@@ -1,79 +1,92 @@
 import {
   ALL_FLIP_BIDS_QUERY,
-  ALL_FLIPS_WON_QUERY,
+  ALL_FLIP_WINS_QUERY,
   ALL_BITES_QUERY,
 } from "../apollo/queries/auctions";
 import { makerClient } from "../apollo/clients";
-import { mapFrequenciesToProgressObject } from "../utils";
-import { collateralFlippers } from "../constants";
+import {
+  mapFrequenciesToProgressObject,
+  addressListFilteredByFrequency
+} from "../utils";
+import {
+  collateralFlippers,
+  BATCH_QUERIES
+} from "../constants";
 import * as R from "ramda";
+import * as _ from "lodash";
 
-async function allBiteAddresses(): Promise<any[]> {
-  let superResult = [];
-  for (let flipper in collateralFlippers) {
-    // console.log(flipper);
-    let wholeResult = [];
-    let b = true;
-    let i = 0;
-    while (b === true) {
-      i = i + 1;
-      const result = await makerClient.query({
-        query: ALL_BITES_QUERY,
-        fetchPolicy: "cache-first",
-        variables: {
-          collateral: flipper,
-          offset: i * 1000,
-        },
-      });
-      if (result.data.allBites.nodes.length > 0) {
-        let biteResults = result.data.allBites.nodes.map((bite: any) => {
-          return bite.tx.txFrom;
-        });
-        // console.log(biteResults);
-        wholeResult.push.apply(wholeResult, biteResults);
-      } else {
-        b = false;
-      }
-    }
+const makerAllBitesQuery = async function* (step = 0, collateral: string) {
+  const query = await makerClient.query({
+    query: ALL_BITES_QUERY,
+    fetchPolicy: "cache-first",
+    variables: { offset: step * 10000, collateral: collateral },
+  });
 
-    wholeResult.map((action: any) => {
-      return action.sender;
-    });
+  ++step;
 
-    superResult.push.apply(superResult, wholeResult);
-  }
-  return superResult;
+  const hasNextPage = R.prop("hasNextPage", query.data.allBites.pageInfo);
+
+  if (!hasNextPage) return { step, query };
+
+  yield { step, query, hasNextPage };
+};
+
+function allBiteAddresses(flipper: string): Promise<any[]> {
+  return new Promise(async (resolve, reject) => {
+    let allResults: any[] = [];
+
+    // Generator Function
+    let query = makerAllBitesQuery(0, flipper);
+
+    // Invoke GenFunc and start process
+    let resultSet = await query.next();
+    let nextPage = R.prop("hasNextPage", resultSet.value);
+
+    do {
+      const nodes = R.prop("nodes", resultSet.value.query.data.allBites);
+
+      if (R.length(nodes) > 0)
+        allResults.push(_.map(nodes, "tx.txFrom"));
+
+      if (nextPage)
+        resultSet = await query.next();
+
+    } while (resultSet.done === false);
+
+    // Resolve Promise
+    resolve(allResults);
+  });
 }
 
-export async function biteAddressesForFrequency(
+export const allBitesAllFlippers = async () => {
+  const results = await Promise.all(R.map(allBiteAddresses, Object.keys(collateralFlippers)));
+
+  return _.flattenDeep(results);
+};
+
+export function biteAddressesForFrequency(
   frequency: number,
-): Promise<{ addresses: any[]; progress: Object }> {
-  const biteAddresses = await allBiteAddresses();
-  // console.log(biteAddresses);
-  const biteFreq = new Map(
-    [...new Set(biteAddresses)].map(x => [
-      x,
-      biteAddresses.filter(y => y === x).length,
-    ]),
-  );
-  // console.log(biteFreq);
+  biteAddresses: any[],
+): { addresses: any[]; progress: Object } {
+  const biteFreq = addressListFilteredByFrequency(biteAddresses)
 
-  let _addresses = Array.from(
-    new Map([...biteFreq].filter(([k, v]) => v >= frequency)).keys(),
-  );
-  // console.log(test.length);
-  return {
-    addresses: _addresses,
-    progress: mapFrequenciesToProgressObject(biteFreq, frequency),
-  };
+  const greaterThanOrEqualToFrequency = (x: { address: string, frequency: number }) => {
+    return x.frequency >= frequency;
+  }
+
+  const _addressList = _.filter(biteFreq, greaterThanOrEqualToFrequency)
+  const _addresses = _.map(_addressList, 'address')
+
+  const _progress = mapFrequenciesToProgressObject(biteFreq, frequency);
+
+  return { addresses: _addresses, progress: _progress }
 }
 
-
-const makerAllFlipBidsQuery = async function*(step=0) {
+const makerAllFlipBidsQuery = async function* (step = 0) {
   const query = await makerClient.query({
     query: ALL_FLIP_BIDS_QUERY,
     fetchPolicy: "cache-first",
-    variables: { offset: step * 1000 }
+    variables: { offset: step * BATCH_QUERIES },
   });
 
   ++step;
@@ -85,10 +98,8 @@ const makerAllFlipBidsQuery = async function*(step=0) {
   if (!hasNextPage) return { step, query };
 };
 
-function allBidAddresses(): Promise<any[]> {
-
+export function allBidAddresses(): Promise<any[]> {
   return new Promise(async (resolve, reject) => {
-
     const allResults: any[] = [];
 
     // Generator Function
@@ -112,9 +123,8 @@ function allBidAddresses(): Promise<any[]> {
     do {
       const nodes = R.prop("nodes", resultSet.value.query.data.allFlipBidEvents);
 
-      if (R.length(nodes) > 0) {
+      if (R.length(nodes) > 0)
         fillResultsArray(nodes);
-      }
 
       if (resultSet.value.hasNextPage)
         resultSet = await query.next();
@@ -124,117 +134,139 @@ function allBidAddresses(): Promise<any[]> {
     // Resolve Promise
     resolve(allResults);
   });
-
 }
 
 // for now, a tend and dent on the same auction are counted as 2 bids
 export function bidAddressesForFrequency(
   frequency: number,
-): Promise<{ addresses: any[]; progress: object }> {
-  return new Promise(async (resolve, reject) => {
-    const bidAddresses = await allBidAddresses();
-    console.log(bidAddresses);
-    const bidFreq = new Map(
-      [...new Set(bidAddresses)].map(x => [
-        x,
-        bidAddresses.filter(y => y === x).length,
-      ]),
-    );
+  addressList: string[]
+): { addresses: any[]; progress: object } {
 
-    let _addresses = Array.from(
-      new Map([...bidFreq].filter(([k, v]) => v >= frequency)).keys(),
-    );
+  const bidFreq = addressListFilteredByFrequency(addressList);
 
-    const progress = mapFrequenciesToProgressObject(bidFreq, frequency);
+  const greaterThanOrEqualToFrequency = (x: { address: string, frequency: number }) => {
+    return x.frequency >= frequency;
+  }
 
-    if (_addresses && progress) {
-      resolve({
-        addresses: _addresses,
-        progress: progress,
-      });
-      return;
+  const _addressList = _.filter(bidFreq, greaterThanOrEqualToFrequency)
+  const _addresses = _.map(_addressList, 'address')
+
+  const _progress = mapFrequenciesToProgressObject(bidFreq, frequency);
+
+  return {
+    addresses: _addresses,
+    progress: _progress,
+  };
+}
+
+const makerAllFlipWinsQuery = async function* (step = 0, flipper: string) {
+  console.log(flipper)
+  const query = await makerClient.query({
+    query: ALL_FLIP_WINS_QUERY,
+    fetchPolicy: "cache-first",
+    variables: {
+      offset: step * BATCH_QUERIES,
+      flipper: flipper,
+    },
+  });
+
+  ++step;
+
+  const hasNextPage = R.prop("hasNextPage", query.data.allFlipBidGuys.pageInfo);
+
+  if (!hasNextPage) return { step, query };
+
+  yield { step, query, hasNextPage };
+};
+
+const addressListFilteredByBidId = (list: { guy: string, bidId: string }[]): any[] => {
+  return _.map(_.uniq(list), ((x) => {
+    return {
+      address: x.guy,
+      frequency: _.size(_.filter(list, (bid) => {
+        // get pollIds for current address
+        return bid.guy === x.guy
+      }))
     }
+  }));
+};
 
-    reject("bidAddressForFreq Failed");
+export const allBidGuysAllFlippers = async (): Promise<any[]> => {
+  const results = await Promise.all(R.map(allBidGuyAddresses, Object.keys(collateralFlippers)));
+  // console.log(results);
+  return _.flattenDeep(results);
+};
+
+export async function allBidGuyAddresses(flipper: string): Promise<{ address: string, frequency: number }[]> {
+  return new Promise(async (resolve, reject) => {
+    const allResults: any[] = [];
+
+    // Generator Function
+    let query = makerAllFlipWinsQuery(0, collateralFlippers[flipper]);
+
+    // Invoke GenFunc and start process
+    let resultSet = await query.next();
+    // console.log(resultSet.value.query.data);
+
+    // Deff
+    const fillResultsArray = eventNodes => {
+      // console.log(eventNodes);
+      eventNodes.map((bid: any) => {
+        allResults.push({
+          guy: R.prop("guy", bid),
+          bidId: R.prop("bidId", bid)
+        });
+      });
+    };
+
+    // Loop
+    do {
+      const nodes = R.prop("nodes", resultSet.value.query.data.allFlipBidGuys);
+
+      if (R.length(nodes) > 0)
+        fillResultsArray(nodes);
+
+      if (resultSet.value.hasNextPage)
+        resultSet = await query.next();
+
+    } while (resultSet.done === false);
+
+    // console.log(allResults)
+
+    const zeroPred = R.whereEq({ guy: "0x0000000000000000000000000000000000000000" });
+    const sorted = _.orderBy(allResults, ['bidId']);
+
+    const zeroIndexes = _.keys(_.pickBy(sorted, zeroPred));
+    const indexes = _.map(zeroIndexes, (x: any) => Number(++x));
+    const filter = _.map(indexes, idx => sorted[idx]);
+
+    // allResults.findIndex(a => a["bidId"] === e["bidId"]) === i;
+    const filteredFrequencies = addressListFilteredByBidId(filter)
+    // console.log(filter)
+    // Resolve Promise
+    resolve(filteredFrequencies);
   });
 }
 
-async function allBidGuyAddresses(): Promise<any[]> {
-  let superResult = [];
-  for (let flipper in collateralFlippers) {
-    let wholeResult = [];
-    let b = true;
-    let i = 0;
-    while (b === true) {
-      setTimeout(async function() {
-        i = i + 1;
-        const result = await makerClient.query({
-          query: ALL_FLIPS_WON_QUERY,
-          fetchPolicy: "cache-first",
-          variables: {
-            flipper: flipper,
-            offset: i * 1000,
-          },
-        });
-        if (result.data.allFlipBidGuys.nodes.length > 0) {
-          let bidGuyResults = result.data.allFlipBidGuys.nodes.map(
-            (bid: any) => {
-              return {
-                guy: bid.guy,
-                bidId: bid.bidId,
-              };
-            },
-          );
-
-          // remove the 0x000 cleared result
-          let noZero = bidGuyResults.filter(bid => {
-            if (bid.guy != "0x0000000000000000000000000000000000000000") {
-              return true;
-            } else {
-              return false;
-            }
-          });
-
-          // select the first from the array (most recent in time)
-          let onlyWinners = noZero.filter(
-            (e, i) => noZero.findIndex(a => a["bidId"] === e["bidId"]) === i,
-          );
-
-          let winnerResults = onlyWinners.map(bid => {
-            return bid.guy;
-          });
-          // console.log(bidResults);
-          wholeResult.push.apply(wholeResult, winnerResults);
-        } else {
-          b = false;
-        }
-      }, 500);
-    }
-
-    superResult.push.apply(superResult, wholeResult);
-  }
-  return superResult;
-}
-
-export async function bidGuyAddressesForFrequency(
+export function bidGuyAddressesForFrequency(
   frequency: number,
-): Promise<{ addresses: any[]; progress: object }> {
-  const bidGuyAddresses = await allBidGuyAddresses();
+  addressList: { address: string, frequency: number }[]
+): { addresses: any[]; progress: object } {
+  console.log(addressList);
+  // const bidGuyFreq = await allBidGuysAllFlippers();
 
-  const bidGuyFreq = new Map(
-    [...new Set(bidGuyAddresses)].map(x => [
-      x,
-      bidGuyAddresses.filter(y => y === x).length,
-    ]),
-  );
-  // console.log(bidGuyFreq);
+  const greaterThanOrEqualToFrequency = (x: { address: string, frequency: number }) => {
+    return x.frequency >= frequency;
+  }
 
-  let _addresses = Array.from(
-    new Map([...bidGuyFreq].filter(([k, v]) => v >= frequency)).keys(),
-  );
-  // console.log(_addresses.length);
+  const _addressList = _.filter(addressList, greaterThanOrEqualToFrequency)
+  const _addresses = _.map(_addressList, 'address')
+
+  const _progress = mapFrequenciesToProgressObject(addressList, frequency);
+
   return {
     addresses: _addresses,
-    progress: mapFrequenciesToProgressObject(bidGuyFreq, frequency),
-  };
+    progress: _progress,
+  }
+
 }
