@@ -1,28 +1,28 @@
 import * as _ from 'lodash';
-// import { addOrUpdateTemplateRecord } from "../utils/aws";
-// import {
-//   allGovernancePollAddresses,
-//   pollVoteAddressesForFrequency,
-//   allExecutiveSpellAddresses,
-//   spellVoteAddressesForFrequency,
-//   allGovernancePollAddressesWithPollId,
-//   consecutivePollVoteAddressesForFrequency,
-//   allExecutiveSpellAddressesWithTimestamps,
-//   earlyExecutiveVoteAddressesForTime,
-//   allGovernancePollAddressesWithTimestamps,
-//   earlyPollVoteAddressesForTime,
-// } from "./governance";
+import { addOrUpdateTemplateRecord } from "../utils/aws";
 import {
-  // allBitesAllFlippers,
-  // biteAddressesForFrequency,
-  // allBidAddresses,
-  // bidAddressesForFrequency,
+  allGovernancePollAddresses,
+  pollVoteAddressesForFrequency,
+  allExecutiveSpellAddresses,
+  spellVoteAddressesForFrequency,
+  allGovernancePollAddressesWithPollId,
+  consecutivePollVoteAddressesForFrequency,
+  // allExecutiveSpellAddressesWithTimestamps,
+  // earlyExecutiveVoteAddressesForTime,
+  // allGovernancePollAddressesWithTimestamps,
+  // earlyPollVoteAddressesForTime,
+} from "./governance";
+import {
+  allBitesAllFlippers,
+  biteAddressesForFrequency,
+  allBidAddresses,
+  bidAddressesForFrequency,
   allBidGuysAllFlippers,
   bidGuyAddressesForFrequency,
 } from "./auctions";
 import { ZERO_ROOT } from '../constants';
 
-import { MerkleTree } from "../utils/merkleTree";
+import MerkleTree from "../utils/merkleTree";
 
 export async function updateRoots() {
   // saving at least 1 dai in DSR
@@ -47,129 +47,133 @@ export async function updateRoots() {
   });
 
   // voting on at least N (frequency) governance polls
-  // const governanceVoteFrequencies = [
-  //   { templateId: 6, frequency: 1 },
-  //   { templateId: 7, frequency: 5 },
-  //   { templateId: 8, frequency: 10 },
-  //   { templateId: 9, frequency: 20 },
-  //   { templateId: 10, frequency: 50 },
-  //   { templateId: 11, frequency: 100 },
-  // ];
-  // const govVoteAddresses = await allGovernancePollAddresses();
+  const governanceVoteFrequencies = [
+    { templateId: 6, frequency: 1 },
+    { templateId: 7, frequency: 5 },
+    { templateId: 8, frequency: 10 },
+    { templateId: 9, frequency: 20 },
+    { templateId: 10, frequency: 50 },
+    { templateId: 11, frequency: 100 },
+  ];
+  const govVoteAddresses = await allGovernancePollAddresses();
 
-  // governanceVoteFrequencies.map(freq => {
-  //   const govVoteAddressList = pollVoteAddressesForFrequency(freq.frequency, govVoteAddresses);
-  //   if (govVoteAddressList.addresses && govVoteAddressList.addresses.length > 0) {
-  //     const tree = new MerkleTree(govVoteAddressList.addresses);
+  governanceVoteFrequencies.map(freq => {
+    const govVoteAddressList = pollVoteAddressesForFrequency(freq.frequency, govVoteAddresses);
+    if (govVoteAddressList.addresses && _.size(govVoteAddressList.addresses) > 0) {
+      const tree = new MerkleTree(govVoteAddressList.addresses);
 
-  //     if (process.env.ENVIRONMENT === "production") {
-  //       // addOrUpdateTemplateRecord(
-  //       //   freq.templateId,
-  //       //   govVoteAddressList.addresses,
-  //       //   tree.getHexRoot(),
-  //       //   govVoteAddressList.progress,
-  //       // );
-  //     } else {
-  //       console.log(
-  //         tree.getHexRoot() || ZERO_ROOT,
-  //       );
-  //     }
-  //   } else {
-  //     console.log('No Addresses for template #' + freq.templateId);
-  //   }
+      if (process.env.ENVIRONMENT === "production") {
+        addOrUpdateTemplateRecord(
+          freq.templateId,
+          govVoteAddressList.addresses,
+          tree.getHexRoot(),
+          govVoteAddressList.progress,
+        );
+      } else {
+        console.log(
+          freq.templateId,
+          tree.getHexRoot() || ZERO_ROOT,
+        );
+      }
+    } else {
+      console.log('No Addresses for template #' + freq.templateId);
+    }
 
-  //   return;
-  // });
+    return;
+  });
 
   // voting on N (frequency) consecutive governance polls
-  // const consecutiveGovernancePollFrequencies = [
-  //   { templateId: 12, frequency: 2 },
-  //   { templateId: 13, frequency: 5 },
-  //   { templateId: 14, frequency: 10 },
-  // ];
-  // const governancePollAddresses = await allGovernancePollAddressesWithPollId();
+  const consecutiveGovernancePollFrequencies = [
+    { templateId: 12, frequency: 2 },
+    { templateId: 13, frequency: 5 },
+    { templateId: 14, frequency: 10 },
+  ];
+  const governancePollAddresses = await allGovernancePollAddressesWithPollId();
 
-  // consecutiveGovernancePollFrequencies.map(freq => {
-  //   const consecutiveAddresses = consecutivePollVoteAddressesForFrequency(freq.frequency, governancePollAddresses);
+  consecutiveGovernancePollFrequencies.map(freq => {
+    const consecutiveAddresses = consecutivePollVoteAddressesForFrequency(freq.frequency, governancePollAddresses);
 
-  //   if (consecutiveAddresses.addresses && consecutiveAddresses.addresses.length > 0) {
-  //     const tree = new MerkleTree(consecutiveAddresses.addresses);
+    if (consecutiveAddresses.addresses && _.size(consecutiveAddresses.addresses) > 0) {
+      const tree = new MerkleTree(consecutiveAddresses.addresses);
 
-  //     if (process.env.ENVIRONMENT === "production") {
-  //       // addOrUpdateTemplateRecord(
-  //       //   freq.templateId,
-  //       //   consecutiveAddresses.addresses,
-  //       //   tree.getHexRoot(),
-  //       //   consecutiveAddresses.progress,
-  //       // );
-  //     }
-  //     console.log(
-  //       tree.getHexRoot() || ZERO_ROOT,
-  //     );
-  //   } else {
-  //     console.log('No Addresses for template #' + freq.templateId)
-  //   }
+      if (process.env.ENVIRONMENT === "production") {
+        addOrUpdateTemplateRecord(
+          freq.templateId,
+          consecutiveAddresses.addresses,
+          tree.getHexRoot(),
+          consecutiveAddresses.progress,
+        );
+      }
+      console.log(
+        freq.templateId,
+        tree.getHexRoot() || ZERO_ROOT,
+      );
+    } else {
+      console.log('No Addresses for template #' + freq.templateId)
+    }
 
-  //   return;
-  // });
+    return;
+  });
 
   // voting on at least N (frequency) executive proposals (spells)
-  // const executiveSpellFrequencies = [
-  //   { templateId: 15, frequency: 1 },
-  //   { templateId: 16, frequency: 5 },
-  //   { templateId: 17, frequency: 10 },
-  //   { templateId: 18, frequency: 20 },
-  //   { templateId: 19, frequency: 50 },
-  // ];
-  // const execSpellAddresses = await allExecutiveSpellAddresses();
+  const executiveSpellFrequencies = [
+    { templateId: 15, frequency: 1 },
+    { templateId: 16, frequency: 5 },
+    { templateId: 17, frequency: 10 },
+    { templateId: 18, frequency: 20 },
+    { templateId: 19, frequency: 50 },
+  ];
+  const execSpellAddresses = await allExecutiveSpellAddresses();
 
-  // executiveSpellFrequencies.map(freq => {
-  //   const execAddresses = spellVoteAddressesForFrequency(freq.frequency, execSpellAddresses);
+  executiveSpellFrequencies.map(freq => {
+    const execAddresses = spellVoteAddressesForFrequency(freq.frequency, execSpellAddresses);
 
-  //   if (execAddresses.addresses && execAddresses.addresses.length > 0) {
-  //     const tree = new MerkleTree(execAddresses.addresses);
+    if (execAddresses.addresses && _.size(execAddresses.addresses) > 0) {
+      const tree = new MerkleTree(execAddresses.addresses);
 
-  //     if (process.env.ENVIRONMENT === "production") {
-  //       // addOrUpdateTemplateRecord(
-  //       //   freq.templateId,
-  //       //   execAddresses.addresses || [],
-  //       //   tree.getHexRoot() || ZERO_ROOT,
-  //       //   execAddresses.progress || {},
-  //       // );
-  //     }
-  //     console.log(
-  //       tree.getHexRoot() || ZERO_ROOT,
-  //     );
-  //   } else {
-  //     console.log('No Addresses for template #' + freq.templateId);
-  //   }
+      if (process.env.ENVIRONMENT === "production") {
+        addOrUpdateTemplateRecord(
+          freq.templateId,
+          execAddresses.addresses || [],
+          tree.getHexRoot() || ZERO_ROOT,
+          execAddresses.progress || {},
+        );
+      }
+      console.log(
+        freq.templateId,
+        tree.getHexRoot() || ZERO_ROOT,
+      );
+    } else {
+      console.log('No Addresses for template #' + freq.templateId);
+    }
 
-  //   return;
-  // });
+    return;
+  });
 
   // early voter on Executive Spell (within 60 minutes of creation)
   // const earlyExecutiveVotes = [{ templateId: 20, time: 3600 }];
-  // const executiveAddressesWithTimestamp = await allExecutiveSpellAddressesWithTimestamps()
+  // const executiveAddressesWithTimestamp = await allExecutiveSpellAddressesWithTimestamps();
 
   // earlyExecutiveVotes.map(time => {
   //   const earlyExecutiveAddresses = earlyExecutiveVoteAddressesForTime(time.time, executiveAddressesWithTimestamp);
-
-  //   if (earlyExecutiveAddresses.addresses && earlyExecutiveAddresses.addresses.length > 0) {
+  //   console.log(earlyExecutiveAddresses.addresses)
+  //   if (earlyExecutiveAddresses.addresses && _.size(earlyExecutiveAddresses.addresses) > 0) {
   //     const tree = new MerkleTree(earlyExecutiveAddresses.addresses);
 
   //     if (process.env.ENVIRONMENT === "production") {
-  //       // addOrUpdateTemplateRecord(
-  //       //   time.templateId,
-  //       //   earlyExecutiveAddresses.addresses || [],
-  //       //   tree.getHexRoot() || ZERO_ROOT,
-  //       //   earlyExecutiveAddresses.progress || {},
-  //       // );
+  //       addOrUpdateTemplateRecord(
+  //         time.templateId,
+  //         earlyExecutiveAddresses.addresses || [],
+  //         tree.getHexRoot() || ZERO_ROOT,
+  //         earlyExecutiveAddresses.progress || {},
+  //       );
   //     }
   //     console.log(
+  //       time.templateId,
   //       tree.getHexRoot() || ZERO_ROOT,
   //     );
   //   } else {
-  //     console.log('No Addresses for template #' + freq.templateId)
+  //     console.log('No Addresses for template #' + time.templateId)
   //   }
 
   //   return;
@@ -181,18 +185,19 @@ export async function updateRoots() {
 
   // earlyPollVotes.map(time => {
   //   const addresses = earlyPollVoteAddressesForTime(time.time, govVoteAddressesWithTimestamp);
-  //   if (addresses.addresses && addresses.addresses.length > 0) {
+  //   if (addresses.addresses && _.size(addresses.addresses) > 0) {
   //     const tree = new MerkleTree(addresses.addresses);
 
   //     if (process.env.ENVIRONMENT === "production") {
-  //       // addOrUpdateTemplateRecord(
-  //       //   time.templateId,
-  //       //   addresses.addresses || [],
-  //       //   tree.getHexRoot() || ZERO_ROOT,
-  //       //   addresses.progress || {},
-  //       // );
+  //       addOrUpdateTemplateRecord(
+  //         time.templateId,
+  //         addresses.addresses || [],
+  //         tree.getHexRoot() || ZERO_ROOT,
+  //         addresses.progress || {},
+  //       );
   //     }
   //     console.log(
+  //       time.templateId,
   //       tree.getHexRoot() || ZERO_ROOT,
   //     );
   //   } else {
@@ -203,73 +208,75 @@ export async function updateRoots() {
   // });
 
   // biting at least N (frequency) unsafe Vaults
-  // const bitingVaultsFrequencies = [
-  //   { templateId: 22, frequency: 1 },
-  //   { templateId: 23, frequency: 10 },
-  //   { templateId: 24, frequency: 50 },
-  //   { templateId: 25, frequency: 100 },
-  // ];
-  // const allBiteAddresses = await allBitesAllFlippers();
+  const bitingVaultsFrequencies = [
+    { templateId: 22, frequency: 1 },
+    { templateId: 23, frequency: 10 },
+    { templateId: 24, frequency: 50 },
+    { templateId: 25, frequency: 100 },
+  ];
+  const allBiteAddresses = await allBitesAllFlippers();
 
-  // bitingVaultsFrequencies.map(freq => {
-  //   const biteAddresses = biteAddressesForFrequency(freq.frequency, allBiteAddresses);
+  bitingVaultsFrequencies.map(freq => {
+    const biteAddresses = biteAddressesForFrequency(freq.frequency, allBiteAddresses);
 
-  //   if (biteAddresses.addresses && biteAddresses.addresses.length > 0) {
-  //     const tree = new MerkleTree(biteAddresses.addresses);
+    if (biteAddresses.addresses && _.size(biteAddresses.addresses) > 0) {
+      const tree = new MerkleTree(biteAddresses.addresses);
 
-  //     if (process.env.ENVIRONMENT === "production") {
-  //       // addOrUpdateTemplateRecord(
-  //       //   freq.templateId,
-  //       //   biteAddresses.addresses || [],
-  //       //   tree.getHexRoot() || ZERO_ROOT,
-  //       //   biteAddresses.progress || {},
-  //       // );
-  //     }
-  //     console.log(
-  //       tree.getHexRoot() || ZERO_ROOT,
-  //     );
-  //   } else {
-  //     console.log('No addresses for template #' + freq.templateId)
-  //   }
+      if (process.env.ENVIRONMENT === "production") {
+        addOrUpdateTemplateRecord(
+          freq.templateId,
+          biteAddresses.addresses || [],
+          tree.getHexRoot() || ZERO_ROOT,
+          biteAddresses.progress || {},
+        );
+      }
+      console.log(
+        freq.templateId,
+        tree.getHexRoot() || ZERO_ROOT,
+      );
+    } else {
+      console.log('No addresses for template #' + freq.templateId)
+    }
 
-  //   return;
-  // });
+    return;
+  });
 
   // bidding on at least N (frequency) collateral auctions
-  // const bidCollateralAuctionFrequencies = [
-  //   { templateId: 26, frequency: 1 },
-  //   { templateId: 27, frequency: 5 },
-  //   { templateId: 28, frequency: 10 },
-  //   { templateId: 29, frequency: 25 },
-  // ];
-  // const allBidAddressList = await allBidAddresses();
+  const bidCollateralAuctionFrequencies = [
+    { templateId: 26, frequency: 1 },
+    { templateId: 27, frequency: 5 },
+    { templateId: 28, frequency: 10 },
+    { templateId: 29, frequency: 25 },
+  ];
+  const allBidAddressList = await allBidAddresses();
 
-  // bidCollateralAuctionFrequencies.map(freq => {
-  //   const bidAddresses = bidAddressesForFrequency(freq.frequency, allBidAddressList)
+  bidCollateralAuctionFrequencies.map(freq => {
+    const bidAddresses = bidAddressesForFrequency(freq.frequency, allBidAddressList)
 
-  //   if (bidAddresses.addresses && bidAddresses.addresses.length > 0) {
+    if (bidAddresses.addresses && _.size(bidAddresses.addresses) > 0) {
 
-  //     const tree = new MerkleTree(bidAddresses.addresses);
+      const tree = new MerkleTree(bidAddresses.addresses);
 
-  //     if (process.env.ENVIRONMENT === "production") {
-  //       // addOrUpdateTemplateRecord(
-  //       //   freq.templateId,
-  //       //   bidAddresses.addresses || [],
-  //       //   tree.getHexRoot() || ZERO_ROOT,
-  //       //   bidAddresses.progress || {},
-  //       // );
-  //     }
-  //     console.log(bidAddresses.addresses)
-  //     console.log(bidAddresses.progress)
-  //     console.log(
-  //       tree.getHexRoot() || ZERO_ROOT,
-  //     );
-  //   } else {
-  //     console.log('No Addresses for template #' + freq.templateId);
-  //   }
+      if (process.env.ENVIRONMENT === "production") {
+        addOrUpdateTemplateRecord(
+          freq.templateId,
+          bidAddresses.addresses || [],
+          tree.getHexRoot() || ZERO_ROOT,
+          bidAddresses.progress || {},
+        );
+      }
+      // console.log(bidAddresses.addresses)
+      // console.log(bidAddresses.progress)
+      console.log(
+        freq.templateId,
+        tree.getHexRoot() || ZERO_ROOT,
+      );
+    } else {
+      console.log('No Addresses for template #' + freq.templateId);
+    }
 
-  //   return;
-  // });
+    return;
+  });
 
   // winning at least N (frequency) collateral auctions
   const winCollateralAuctionFrequencies = [
@@ -279,7 +286,7 @@ export async function updateRoots() {
     { templateId: 33, frequency: 25 },
   ];
   const allBidGuyAddressList = await allBidGuysAllFlippers();
-  console.log(allBidGuyAddressList)
+  // console.log(allBidGuyAddressList)
 
   winCollateralAuctionFrequencies.map(freq => {
     const bidGuyAddresses = bidGuyAddressesForFrequency(freq.frequency, allBidGuyAddressList)
@@ -287,16 +294,16 @@ export async function updateRoots() {
       const tree = new MerkleTree(bidGuyAddresses.addresses);
 
       if (process.env.ENVIRONMENT === "production") {
-        // addOrUpdateTemplateRecord(
-        //   freq.templateId,
-        //   bidGuyAddresses.addresses || [],
-        //   tree.getHexRoot() || ZERO_ROOT,
-        //   bidGuyAddresses.progress || {},
-        // );
+        addOrUpdateTemplateRecord(
+          freq.templateId,
+          bidGuyAddresses.addresses || [],
+          tree.getHexRoot() || ZERO_ROOT,
+          bidGuyAddresses.progress || {},
+        );
       }
-      console.log(bidGuyAddresses.addresses)
-      console.log(bidGuyAddresses.progress)
-      console.log(tree.getHexRoot() || ZERO_ROOT);
+      // console.log(bidGuyAddresses.addresses)
+      // console.log(bidGuyAddresses.progress)
+      console.log(freq.templateId, tree.getHexRoot() || ZERO_ROOT);
     }
   });
 }

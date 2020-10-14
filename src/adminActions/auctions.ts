@@ -160,7 +160,7 @@ export function bidAddressesForFrequency(
 }
 
 const makerAllFlipWinsQuery = async function* (step = 0, flipper: string) {
-  console.log(flipper)
+
   const query = await makerClient.query({
     query: ALL_FLIP_WINS_QUERY,
     fetchPolicy: "cache-first",
@@ -193,7 +193,6 @@ const addressListFilteredByBidId = (list: { guy: string, bidId: string }[]): any
 
 export const allBidGuysAllFlippers = async (): Promise<any[]> => {
   const results = await Promise.all(R.map(allBidGuyAddresses, Object.keys(collateralFlippers)));
-  // console.log(results);
   return _.flattenDeep(results);
 };
 
@@ -206,11 +205,9 @@ export async function allBidGuyAddresses(flipper: string): Promise<{ address: st
 
     // Invoke GenFunc and start process
     let resultSet = await query.next();
-    // console.log(resultSet.value.query.data);
 
     // Deff
     const fillResultsArray = eventNodes => {
-      // console.log(eventNodes);
       eventNodes.map((bid: any) => {
         allResults.push({
           guy: R.prop("guy", bid),
@@ -231,8 +228,6 @@ export async function allBidGuyAddresses(flipper: string): Promise<{ address: st
 
     } while (resultSet.done === false);
 
-    // console.log(allResults)
-
     const zeroPred = R.whereEq({ guy: "0x0000000000000000000000000000000000000000" });
     const sorted = _.orderBy(allResults, ['bidId']);
 
@@ -242,7 +237,6 @@ export async function allBidGuyAddresses(flipper: string): Promise<{ address: st
 
     // allResults.findIndex(a => a["bidId"] === e["bidId"]) === i;
     const filteredFrequencies = addressListFilteredByBidId(filter)
-    // console.log(filter)
     // Resolve Promise
     resolve(filteredFrequencies);
   });
@@ -252,7 +246,6 @@ export function bidGuyAddressesForFrequency(
   frequency: number,
   addressList: { address: string, frequency: number }[]
 ): { addresses: any[]; progress: object } {
-  console.log(addressList);
   // const bidGuyFreq = await allBidGuysAllFlippers();
 
   const greaterThanOrEqualToFrequency = (x: { address: string, frequency: number }) => {
