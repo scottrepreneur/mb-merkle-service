@@ -276,6 +276,7 @@ export function earlyExecutiveVoteAddressesForTime(
   addressList: { sender: string, votedTimestamp: number, createdTimestamp: number }[]
 ) {
   const earlySpellVoteFreq = addressListFilteredByTime(addressList, time)
+  console.log(earlySpellVoteFreq);
 
   const _addresses = _.map(_.map(earlySpellVoteFreq, (obj) => { return R.gt(obj.frequency, 0) }), 'address')
 
