@@ -69,3 +69,4 @@ typings/
 .serverless/
 __tests__
 /jest.config.js
+*.js
