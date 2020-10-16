@@ -165,10 +165,10 @@ export function consecutivePollVoteAddressesForFrequency(
 const addressListFilteredByTime = (list: any[], time: number): any[] => {
   return _.map(_.uniq(list), ((x) => {
     return {
-      address: x,
+      address: x.sender,
       frequency: _.size(_.filter(list, (poll) => {
         // get pollIds for current address
-        return poll.sender === poll.sender && (poll.votedTimestamp - poll.createdTimestamp) < time
+        return x.sender === poll.sender && (poll.votedTimestamp - poll.createdTimestamp) < time
       }))
     }
   }));
@@ -276,9 +276,10 @@ export function earlyExecutiveVoteAddressesForTime(
   addressList: { sender: string, votedTimestamp: number, createdTimestamp: number }[]
 ) {
   const earlySpellVoteFreq = addressListFilteredByTime(addressList, time)
-  console.log(earlySpellVoteFreq);
 
-  const _addresses = _.map(_.map(earlySpellVoteFreq, (obj) => { return R.gt(obj.frequency, 0) }), 'address')
+  const mapping = _.map(earlySpellVoteFreq, (obj) => { if (R.gt(obj.frequency, 0)) { return obj; } });
+
+  const _addresses = _.compact(_.map(mapping, 'address'))
 
   const _progress = {} // need to deal with time in --> mapFrequenciesToProgressObject(time, filterEarlySpellVoteFreq)
 
