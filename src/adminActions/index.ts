@@ -69,14 +69,17 @@ export async function updateRoots() {
           tree.getHexRoot(),
           govVoteAddressList.progress,
         );
-      } else {
-        console.log(
-          freq.templateId,
-          tree.getHexRoot() || ZERO_ROOT,
-        );
       }
+      console.log(
+        freq.templateId,
+        tree.getHexRoot() || ZERO_ROOT,
+      );
     } else {
       console.log('No Addresses for template #' + freq.templateId);
+
+      if (process.env.ENVIRONMENT === "production") {
+        addOrUpdateTemplateRecord(freq.templateId, [], ZERO_ROOT, {});
+      }
     }
 
     return;
@@ -109,7 +112,11 @@ export async function updateRoots() {
         tree.getHexRoot() || ZERO_ROOT,
       );
     } else {
-      console.log('No Addresses for template #' + freq.templateId)
+      console.log('No Addresses for template #' + freq.templateId);
+
+      if (process.env.ENVIRONMENT === "production") {
+        addOrUpdateTemplateRecord(freq.templateId, [], ZERO_ROOT, {});
+      }
     }
 
     return;
@@ -145,6 +152,10 @@ export async function updateRoots() {
       );
     } else {
       console.log('No Addresses for template #' + freq.templateId);
+
+      if (process.env.ENVIRONMENT === "production") {
+        addOrUpdateTemplateRecord(freq.templateId, [], ZERO_ROOT, {});
+      }
     }
 
     return;
@@ -174,6 +185,10 @@ export async function updateRoots() {
       );
     } else {
       console.log('No Addresses for template #' + time.templateId)
+
+      if (process.env.ENVIRONMENT === "production") {
+        addOrUpdateTemplateRecord(time.templateId, [], ZERO_ROOT, {});
+      }
     }
 
     return;
@@ -202,6 +217,10 @@ export async function updateRoots() {
       );
     } else {
       console.log('No addresses for template #' + time.templateId);
+
+      if (process.env.ENVIRONMENT === "production") {
+        addOrUpdateTemplateRecord(time.templateId, [], ZERO_ROOT, {});
+      }
     }
 
     return;
@@ -235,7 +254,11 @@ export async function updateRoots() {
         tree.getHexRoot() || ZERO_ROOT,
       );
     } else {
-      console.log('No addresses for template #' + freq.templateId)
+      console.log('No addresses for template #' + freq.templateId);
+
+      if (process.env.ENVIRONMENT === "production") {
+        addOrUpdateTemplateRecord(freq.templateId, [], ZERO_ROOT, {});
+      }
     }
 
     return;
@@ -272,6 +295,10 @@ export async function updateRoots() {
       );
     } else {
       console.log('No Addresses for template #' + freq.templateId);
+
+      if (process.env.ENVIRONMENT === "production") {
+        addOrUpdateTemplateRecord(freq.templateId, [], ZERO_ROOT, {});
+      }
     }
 
     return;
@@ -301,6 +328,12 @@ export async function updateRoots() {
       }
 
       console.log(freq.templateId, tree.getHexRoot() || ZERO_ROOT);
+    } else {
+      console.log('No Addresses for template #' + freq.templateId);
+
+      if (process.env.ENVIRONMENT === "production") {
+        addOrUpdateTemplateRecord(freq.templateId, [], ZERO_ROOT, {});
+      }
     }
   });
 }
