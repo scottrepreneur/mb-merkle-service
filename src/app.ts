@@ -9,6 +9,8 @@ import { updateRoots } from "./adminActions";
 
 import discourseMessage from "./utils/discourseMessage";
 
+require('dotenv').config()
+
 export function configureApp() {
   const app = express();
   app.enable("trust proxy");
